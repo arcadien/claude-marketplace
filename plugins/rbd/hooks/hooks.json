@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Inspect the bash command about to be executed. If it contains 'git push':\n\n1. AUDIT CHECK: Read the latest file in audits/ (highest date in filename). If any finding has status 'open', block the push and tell the user which findings must be resolved first with /rbd-audit.\n\n2. COMMIT ALIGNMENT CHECK (mechanical): Run git log --oneline <base>..HEAD (use origin/HEAD or main/master as base). For each commit: verify it follows RBD format (req/test/feat/tech/perf/ui/conf/arch/plan prefix). For every feat/tech/perf/ui/conf/arch/test commit, extract the requirement ID and verify it exists in requirements/*.md with status 'validated'. Flag any violation.\n\n3. MR SAFETY NET: Check if a remote PR/MR already exists for this branch on GitHub/GitLab (run: gh pr view 2>/dev/null or check git remote). If a remote MR exists, use the Skill tool to invoke the rbd-review skill against it — this catches code that was pushed outside the RBD workflow. If no MR exists yet, skip this step.\n\n4. If steps 1 or 2 have failures, block the push. Explain clearly which checks failed. Offer two options:\n   - Option A: Fix the issue and retry.\n   - Option B: Type OVERRIDE to push anyway — but this requires a justified exclusion entry in audits/exclusions.yml first. Ask the user for a justification, write the entry (id: OVERRIDE-YYYYMMDD-N, where N is the next available integer; justification: user's reason; date: today), then allow the push. Never allow OVERRIDE without a written justification and exclusion entry.\n\n5. If all checks pass (including REVIEW PASSED from rbd-review if it was invoked), say 'Pre-push checks passed.' and allow the push.\n\nIf the command does not contain 'git push', do nothing and allow it to proceed."
+          }
+        ]
+      }
+    ]
+  }
+}

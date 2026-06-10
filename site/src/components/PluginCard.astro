@@ -5,7 +5,7 @@ interface Props {
   description: string;
 }
 const { name, version, description } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <article style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
   <h2 style="font-size: 1.1rem;">
