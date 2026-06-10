@@ -1,0 +1,16 @@
+---
+interface Props {
+  name: string;
+  version: string;
+  description: string;
+}
+const { name, version, description } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<article style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+  <h2 style="font-size: 1.1rem;">
+    <a href={`${base}plugins/${name}`}>{name}</a>
+    <span style="font-size: 0.85rem; color: #6b7280; font-weight: normal; margin-left: 0.5rem;">v{version}</span>
+  </h2>
+  <p style="color: #4b5563; margin-top: 0.25rem;">{description}</p>
+</article>
