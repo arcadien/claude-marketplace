@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import registry from '../../data/registry.json';
+import type { GetStaticPaths } from 'astro';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return registry.plugins.map((plugin) => ({
+    params: { name: plugin.name },
+    props: { plugin },
+  }));
+};
+
+interface Props {
+  plugin: (typeof registry.plugins)[number];
+}
+const { plugin } = Astro.props;
+---
+<Layout title={plugin.name}>
+  <h1>
+    {plugin.name}
+    <small style="font-size: 0.75em; color: #6b7280;"> v{plugin.version}</small>
+  </h1>
+  <p style="color: #4b5563; margin: 0.5rem 0 1.5rem;">{plugin.description}</p>
+  <p style="margin-bottom: 1.5rem;">Auteur : <strong>{plugin.author}</strong></p>
+
+  <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Installation</h2>
+  <pre style="background: #f3f4f6; padding: 1rem; border-radius: 6px; overflow-x: auto;"><code>claude plugin install https://arcadien.github.io/marketplace/registry.json {plugin.name}</code></pre>
+</Layout>
