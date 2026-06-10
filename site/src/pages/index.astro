@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PluginCard from '../components/PluginCard.astro';
+import registry from '../data/registry.json';
+---
+<Layout title="Plugins">
+  <h1>Plugins disponibles ({registry.plugins.length})</h1>
+  {registry.plugins.length === 0 && <p>Aucun plugin pour l'instant.</p>}
+  {registry.plugins.map((plugin) => (
+    <PluginCard
+      name={plugin.name}
+      version={plugin.version}
+      description={plugin.description}
+    />
+  ))}
+</Layout>
