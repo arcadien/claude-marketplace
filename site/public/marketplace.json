@@ -1,5 +1,6 @@
 {
   "name": "arcadien-plugins",
+  "description": "Personal Claude Code plugin marketplace by Aurelien",
   "owner": {
     "name": "Aurelien"
   },
@@ -11,7 +12,7 @@
       "author": {
         "name": "Aurelien"
       },
-      "source": "plugins/rbd"
+      "source": "./plugins/rbd"
     },
     {
       "name": "magi-7",
@@ -20,16 +21,7 @@
       "author": {
         "name": "Aurelien"
       },
-      "source": "plugins/magi-7"
-    },
-    {
-      "name": "example-plugin",
-      "version": "1.0.0",
-      "description": "Un plugin d'exemple pour le marketplace",
-      "author": {
-        "name": "Aurelien"
-      },
-      "source": "plugins/example-plugin"
+      "source": "./plugins/magi-7"
     }
   ]
 }
