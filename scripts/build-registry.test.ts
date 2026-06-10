@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { buildRegistry } from './build-registry';
+import { buildRegistry, buildMarketplace } from './build-registry';
 import { mkdirSync, writeFileSync, rmSync } from 'fs';
 import { resolve } from 'path';
 import { tmpdir } from 'os';
@@ -65,5 +65,52 @@ describe('buildRegistry', () => {
       JSON.stringify({ name: 'second-plugin', version: '0.1.0', description: '', author: '' })
     );
     expect(buildRegistry(tmpDir).plugins).toHaveLength(2);
+  });
+});
+
+describe('buildMarketplace', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = resolve(tmpdir(), `marketplace-test-${Date.now()}`);
+    mkdirSync(resolve(tmpDir, 'plugins/my-plugin'), { recursive: true });
+    writeFileSync(
+      resolve(tmpDir, 'plugins/my-plugin/plugin.json'),
+      JSON.stringify({
+        name: 'my-plugin',
+        version: '1.2.0',
+        description: 'A test plugin',
+        author: 'Tester',
+      })
+    );
+  });
+
+  afterEach(() => {
+    rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('has a name field', () => {
+    const mp = buildMarketplace(tmpDir, 'my-marketplace', 'Owner');
+    expect(mp.name).toBe('my-marketplace');
+  });
+
+  it('has an owner field', () => {
+    const mp = buildMarketplace(tmpDir, 'my-marketplace', 'Owner');
+    expect(mp.owner.name).toBe('Owner');
+  });
+
+  it('maps plugin to official format', () => {
+    const { plugins } = buildMarketplace(tmpDir, 'my-marketplace', 'Owner');
+    expect(plugins[0].name).toBe('my-plugin');
+    expect(plugins[0].version).toBe('1.2.0');
+    expect(plugins[0].description).toBe('A test plugin');
+    expect(plugins[0].author.name).toBe('Tester');
+    expect(plugins[0].source).toBe('plugins/my-plugin');
+  });
+
+  it('returns empty plugins when directory is empty', () => {
+    rmSync(resolve(tmpDir, 'plugins'), { recursive: true });
+    mkdirSync(resolve(tmpDir, 'plugins'), { recursive: true });
+    expect(buildMarketplace(tmpDir, 'my-marketplace', 'Owner').plugins).toHaveLength(0);
   });
 });

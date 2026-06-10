@@ -17,6 +17,38 @@ export interface Registry {
   plugins: PluginEntry[];
 }
 
+export interface MarketplacePlugin {
+  name: string;
+  version: string;
+  description: string;
+  author: { name: string };
+  source: string;
+}
+
+export interface Marketplace {
+  name: string;
+  owner: { name: string };
+  plugins: MarketplacePlugin[];
+}
+
+export function buildMarketplace(rootDir: string, marketplaceName: string, ownerName: string): Marketplace {
+  const manifests = globSync('plugins/*/plugin.json', { cwd: rootDir });
+
+  const plugins: MarketplacePlugin[] = manifests.map((manifestPath) => {
+    const raw = readFileSync(resolve(rootDir, manifestPath), 'utf-8');
+    const plugin = JSON.parse(raw) as Record<string, string>;
+    return {
+      name: plugin.name,
+      version: plugin.version,
+      description: plugin.description ?? '',
+      author: { name: plugin.author ?? '' },
+      source: dirname(manifestPath).replace(/\\/g, '/'),
+    };
+  });
+
+  return { name: marketplaceName, owner: { name: ownerName }, plugins };
+}
+
 export function buildRegistry(rootDir: string): Registry {
   const manifests = globSync('plugins/*/plugin.json', { cwd: rootDir });
 
@@ -45,5 +77,8 @@ if (isMain) {
   mkdirSync(resolve(rootDir, 'site/public'), { recursive: true });
   writeFileSync(resolve(rootDir, 'site/src/data/registry.json'), json);
   writeFileSync(resolve(rootDir, 'site/public/registry.json'), json);
+
+  const marketplace = buildMarketplace(rootDir, 'arcadien-plugins', 'Aurelien');
+  writeFileSync(resolve(rootDir, 'site/public/marketplace.json'), JSON.stringify(marketplace, null, 2));
   console.log(`Registry built: ${registry.plugins.length} plugin(s)`);
 }
