@@ -5,14 +5,5 @@
   "author": {
     "name": "Aurelien",
     "email": "aurelien.labrosse@gmail.com"
-  },
-  "keywords": ["decision", "vote", "architecture", "strategy", "deliberation"],
-  "skills": ["skills/magi"],
-  "agents": [
-    "agents/gaspard.md",
-    "agents/melchior.md",
-    "agents/balthazar.md"
-  ],
-  "commands": ["commands/magi.md"],
-  "hooks": []
+  }
 }

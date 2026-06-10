@@ -5,19 +5,5 @@
   "author": {
     "name": "Aurelien",
     "email": "aurelien.labrosse@gmail.com"
-  },
-  "keywords": ["requirements", "tdd", "audit", "workflow", "traceability"],
-  "skills": [
-    "skills/rbd",
-    "skills/rbd-audit",
-    "skills/rbd-review"
-  ],
-  "agents": [
-    "agents/requirement-analyst.md",
-    "agents/test-builder.md",
-    "agents/code-builder.md",
-    "agents/audit-traceability.md",
-    "agents/audit-coherence.md"
-  ],
-  "hooks": ["hooks/hooks.json"]
+  }
 }
