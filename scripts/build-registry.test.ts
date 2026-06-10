@@ -43,6 +43,15 @@ describe('buildRegistry', () => {
     expect(buildRegistry(tmpDir).version).toBe(1);
   });
 
+  it('includes generatedAt as ISO date string', () => {
+    const before = new Date().toISOString();
+    const registry = buildRegistry(tmpDir);
+    const after = new Date().toISOString();
+    expect(registry.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(registry.generatedAt >= before).toBe(true);
+    expect(registry.generatedAt <= after).toBe(true);
+  });
+
   it('returns empty plugins when directory is empty', () => {
     rmSync(resolve(tmpDir, 'plugins'), { recursive: true });
     mkdirSync(resolve(tmpDir, 'plugins'), { recursive: true });
