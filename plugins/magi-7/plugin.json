@@ -1,0 +1,15 @@
+{
+  "name": "magi-7",
+  "version": "1.0.0",
+  "description": "MAGI deliberation system — Gaspard (proceduralist), Melchior (yolo) and Balthazar (sage) vote on your technical and strategic decisions via /magi",
+  "author": "Aurelien",
+  "keywords": ["decision", "vote", "architecture", "strategy", "deliberation"],
+  "skills": ["skills/magi"],
+  "agents": [
+    "agents/gaspard.md",
+    "agents/melchior.md",
+    "agents/balthazar.md"
+  ],
+  "commands": ["commands/magi.md"],
+  "hooks": []
+}
