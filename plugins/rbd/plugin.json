@@ -2,7 +2,10 @@
   "name": "rbd",
   "version": "0.1.0",
   "description": "Requirement-Based Development workflow: guided requirements, TDD cycle, audit, and MR review.",
-  "author": "Aurelien",
+  "author": {
+    "name": "Aurelien",
+    "email": "aurelien.labrosse@gmail.com"
+  },
   "keywords": ["requirements", "tdd", "audit", "workflow", "traceability"],
   "skills": [
     "skills/rbd",

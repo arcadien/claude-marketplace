@@ -32,17 +32,23 @@ export interface Marketplace {
   plugins: MarketplacePlugin[];
 }
 
+function readAuthorName(author: unknown): string {
+  if (typeof author === 'string') return author;
+  if (author && typeof author === 'object' && 'name' in author) return (author as { name: string }).name;
+  return '';
+}
+
 export function buildMarketplace(rootDir: string, marketplaceName: string, ownerName: string): Marketplace {
   const manifests = globSync('plugins/*/plugin.json', { cwd: rootDir });
 
   const plugins: MarketplacePlugin[] = manifests.map((manifestPath) => {
     const raw = readFileSync(resolve(rootDir, manifestPath), 'utf-8');
-    const plugin = JSON.parse(raw) as Record<string, string>;
+    const plugin = JSON.parse(raw) as Record<string, unknown>;
     return {
-      name: plugin.name,
-      version: plugin.version,
-      description: plugin.description ?? '',
-      author: { name: plugin.author ?? '' },
+      name: plugin.name as string,
+      version: plugin.version as string,
+      description: (plugin.description as string) ?? '',
+      author: { name: readAuthorName(plugin.author) },
       source: './' + dirname(manifestPath).replace(/\\/g, '/'),
     };
   });
@@ -60,12 +66,12 @@ export function buildRegistry(rootDir: string): Registry {
 
   const plugins: PluginEntry[] = manifests.map((manifestPath) => {
     const raw = readFileSync(resolve(rootDir, manifestPath), 'utf-8');
-    const plugin = JSON.parse(raw) as Record<string, string>;
+    const plugin = JSON.parse(raw) as Record<string, unknown>;
     return {
-      name: plugin.name,
-      version: plugin.version,
-      description: plugin.description ?? '',
-      author: plugin.author ?? '',
+      name: plugin.name as string,
+      version: plugin.version as string,
+      description: (plugin.description as string) ?? '',
+      author: readAuthorName(plugin.author),
       installPath: dirname(manifestPath).replace(/\\/g, '/'),
     };
   });
