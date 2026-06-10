@@ -1,9 +1,0 @@
-{
-  "name": "example-plugin",
-  "version": "1.0.0",
-  "description": "Un plugin d'exemple pour le marketplace",
-  "author": "Aurelien",
-  "skills": [],
-  "hooks": [],
-  "commands": []
-}

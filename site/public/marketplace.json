@@ -1,0 +1,35 @@
+{
+  "name": "arcadien-plugins",
+  "owner": {
+    "name": "Aurelien"
+  },
+  "plugins": [
+    {
+      "name": "rbd",
+      "version": "0.1.0",
+      "description": "Requirement-Based Development workflow: guided requirements, TDD cycle, audit, and MR review.",
+      "author": {
+        "name": "Aurelien"
+      },
+      "source": "plugins/rbd"
+    },
+    {
+      "name": "magi-7",
+      "version": "1.0.0",
+      "description": "MAGI deliberation system — Gaspard (proceduralist), Melchior (yolo) and Balthazar (sage) vote on your technical and strategic decisions via /magi",
+      "author": {
+        "name": "Aurelien"
+      },
+      "source": "plugins/magi-7"
+    },
+    {
+      "name": "example-plugin",
+      "version": "1.0.0",
+      "description": "Un plugin d'exemple pour le marketplace",
+      "author": {
+        "name": "Aurelien"
+      },
+      "source": "plugins/example-plugin"
+    }
+  ]
+}
