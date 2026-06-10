@@ -1,0 +1,17 @@
+{
+  "name": "claude-plugin-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:registry": "tsx scripts/build-registry.ts",
+    "build": "npm run build:registry && cd site && npm run build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "glob": "^11.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
