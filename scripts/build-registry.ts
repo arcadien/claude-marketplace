@@ -79,6 +79,8 @@ if (isMain) {
   writeFileSync(resolve(rootDir, 'site/public/registry.json'), json);
 
   const marketplace = buildMarketplace(rootDir, 'arcadien-plugins', 'Aurelien');
-  writeFileSync(resolve(rootDir, 'site/public/marketplace.json'), JSON.stringify(marketplace, null, 2));
+  const marketplaceJson = JSON.stringify(marketplace, null, 2);
+  writeFileSync(resolve(rootDir, 'marketplace.json'), marketplaceJson);
+  writeFileSync(resolve(rootDir, 'site/public/marketplace.json'), marketplaceJson);
   console.log(`Registry built: ${registry.plugins.length} plugin(s)`);
 }
