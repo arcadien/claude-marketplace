@@ -6,3 +6,4 @@ site/src/data/registry.json
 site/public/registry.json
 docs/superpowers/plans/
 marketplace.json
+.claude-plugin/marketplace.json

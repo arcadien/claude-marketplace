@@ -105,7 +105,7 @@ describe('buildMarketplace', () => {
     expect(plugins[0].version).toBe('1.2.0');
     expect(plugins[0].description).toBe('A test plugin');
     expect(plugins[0].author.name).toBe('Tester');
-    expect(plugins[0].source).toBe('plugins/my-plugin');
+    expect(plugins[0].source).toBe('./plugins/my-plugin');
   });
 
   it('returns empty plugins when directory is empty', () => {

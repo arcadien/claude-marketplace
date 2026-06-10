@@ -27,6 +27,7 @@ export interface MarketplacePlugin {
 
 export interface Marketplace {
   name: string;
+  description: string;
   owner: { name: string };
   plugins: MarketplacePlugin[];
 }
@@ -42,11 +43,16 @@ export function buildMarketplace(rootDir: string, marketplaceName: string, owner
       version: plugin.version,
       description: plugin.description ?? '',
       author: { name: plugin.author ?? '' },
-      source: dirname(manifestPath).replace(/\\/g, '/'),
+      source: './' + dirname(manifestPath).replace(/\\/g, '/'),
     };
   });
 
-  return { name: marketplaceName, owner: { name: ownerName }, plugins };
+  return {
+    name: marketplaceName,
+    description: `Personal Claude Code plugin marketplace by ${ownerName}`,
+    owner: { name: ownerName },
+    plugins,
+  };
 }
 
 export function buildRegistry(rootDir: string): Registry {
@@ -82,5 +88,7 @@ if (isMain) {
   const marketplaceJson = JSON.stringify(marketplace, null, 2);
   writeFileSync(resolve(rootDir, 'marketplace.json'), marketplaceJson);
   writeFileSync(resolve(rootDir, 'site/public/marketplace.json'), marketplaceJson);
+  mkdirSync(resolve(rootDir, '.claude-plugin'), { recursive: true });
+  writeFileSync(resolve(rootDir, '.claude-plugin/marketplace.json'), marketplaceJson);
   console.log(`Registry built: ${registry.plugins.length} plugin(s)`);
 }
