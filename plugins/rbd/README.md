@@ -1,28 +1,36 @@
 # RBD — Requirement-Based Development
 
-A Claude Code plugin that enforces a structured requirement-based development workflow.
-Every code change originates from a validated requirement.
-Traceability between requirements, tests, and code is mandatory and continuously audited.
+## The Problem
 
-## Goal
+Six months after a feature ships, nobody remembers why a function exists. The ticket is closed. The PR says "fix edge case." You read the code, you understand *what* it does — you have no idea *whether you can change it*.
 
-Most projects accumulate code whose origin no one can explain six months later.
-RBD solves this by making the requirement the single source of truth for every change.
+That's the code archaeology problem. Not a quality failure — a traceability failure. The decision was made somewhere, just not anywhere you can find it now.
 
-The core invariants are:
+## What is RBD?
 
-1. **No code without a requirement.** Every behavior committed to the codebase is traceable to a validated, written requirement.
-2. **No requirement without tests.** Before any implementation begins, integration tests tagged with the requirement ID are committed (TDD red).
-3. **No test without a requirement.** Orphan tests — tags that reference a non-existent ID — are a hard audit failure.
+**Requirement-Based Development** is a discipline where every code change originates from a written, validated requirement. Not a ticket. Not a task. A requirement: a precise, testable statement of what the system must do and why.
+
+This is not Agile. Agile manages delivery cadence — it says nothing about traceability between decisions and code. This is not TDD. TDD ensures your code is correct — it doesn't record *why* the test exists. This is not an issue tracker. A closed ticket is an archive; a validated requirement is a living contract the codebase is held against.
+
+RBD sits on top of all of these. You can run sprints, write tests, use GitHub issues — and still have a codebase where every behavior is traceable to a written reason.
+
+## The Four Invariants
+
+1. **No code without a requirement.** Every committed behavior is traceable to a validated, written requirement.
+2. **No requirement without tests.** Before any implementation, integration tests tagged with the requirement ID are committed (TDD red). The test exists *because* the requirement exists.
+3. **No test without a requirement.** Orphan tags — referencing a non-existent ID — are a hard audit failure.
 4. **Continuous auditability.** At any point, a full audit can verify that requirements, tests, and code form a coherent, gap-free chain.
 
+If any link in that chain is missing, you know exactly where the gap is — and exactly what to do about it.
+
+## This Plugin
+
+This plugin implements the RBD workflow for Claude Code. It enforces the invariants through a structured cycle: requirement elicitation and challenge, architecture update, TDD red phase, implementation, and pre-push verification. Each phase is guided — you are never left wondering what to do next.
+
 The workflow is intentionally structured but lightweight:
-
-- Requirements are discussed and challenged *before* tests or code are written, so splitting a bloated requirement never forces rework.
-- The `plan:` commit type covers workflow-level changes (skills, config, requirements files) without dragging them into the TDD cycle — avoiding circular dependency.
-- Audit findings block new audits until resolved, keeping technical debt visible and actionable.
-
-The result is a codebase where every line of code has a traceable reason to exist.
+- Requirements are challenged *before* tests are written, so splitting a bloated requirement never forces rework.
+- The `plan:` commit type covers workflow-level changes without dragging them into the TDD cycle.
+- Audit findings block new audits until resolved — technical debt stays visible and actionable.
 
 ## Skills
 
