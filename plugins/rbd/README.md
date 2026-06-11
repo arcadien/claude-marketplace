@@ -32,6 +32,41 @@ The workflow is intentionally structured but lightweight:
 - The `plan:` commit type covers workflow-level changes without dragging them into the TDD cycle.
 - Audit findings block new audits until resolved — technical debt stays visible and actionable.
 
+## Workflow Overview
+
+```mermaid
+flowchart TD
+    rbd(["/rbd"]) --> cfg{".rbd/config.yml?"}
+    cfg -- absent --> P1["Phase 1 · Init\nconfig.yml · requirements files\ncommit: plan: init rbd project"]
+    cfg -- present --> PD{Determine phase}
+    P1 --> PD
+
+    PD --> P2["Phase 2 · Requirement\nrequirement-analyst\ncommit: req(ID): title"]
+    P2 -- SPLIT REQUIRED --> P2
+    P2 -- REQUIREMENT VALIDATED --> P3["Phase 3 · Architecture\nrequirement-analyst\ncommit: arch(ID): ..."]
+
+    P3 --> P4["Phase 4 · Tests  TDD red\ntest-builder\ncommit: test(ID): ..."]
+    P4 -- TOO_LARGE --> P2
+    P4 -- TESTS COMMITTED --> P5["Phase 5 · Implementation  TDD green\ncode-builder\ncommit: feat/tech/perf/ui/conf(ID): ..."]
+
+    P5 -- SCOPE TOO WIDE --> P2
+    P5 -- IMPLEMENTATION COMMITTED --> P6["Phase 6 · Pre-push\naudit findings · commit alignment\nrbd-review if remote MR exists"]
+
+    P6 -- blocked --> FIX["Resolve findings"]
+    FIX --> P6
+    P6 -- all clear --> PUSH["git push"]
+
+    subgraph audit ["/rbd-audit"]
+        direction LR
+        AC["audit-coherence"] & AT["audit-traceability"] --> AR["audits/YYYY-MM-DD-audit.md"]
+    end
+
+    subgraph review ["/rbd-review"]
+        direction LR
+        RV["Analyze MR commits + diffs"] --> RR["REVIEW PASSED / FAILED"]
+    end
+```
+
 ## Skills
 
 | Skill | Invoke | Purpose |
