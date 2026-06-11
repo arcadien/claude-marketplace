@@ -1,0 +1,19 @@
+plan_files:
+  - .rbd/config.yml
+  - .rbd/plan-files.yml
+  - requirements/functional.md
+  - requirements/technical.md
+  - requirements/performance.md
+  - requirements/ui.md
+  - requirements/configuration.md
+  - audits/exclusions.yml
+  - plugin.json
+  - hooks/hooks.json
+  - skills/rbd/SKILL.md
+  - skills/rbd-audit/SKILL.md
+  - skills/rbd-review/SKILL.md
+  - agents/requirement-analyst.md
+  - agents/test-builder.md
+  - agents/code-builder.md
+  - agents/audit-coherence.md
+  - agents/audit-traceability.md

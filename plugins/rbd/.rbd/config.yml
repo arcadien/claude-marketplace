@@ -1,0 +1,11 @@
+id_format:
+  categories: [FUNC, TECH, PERF, UI, CONF]
+  levels: ["component"]
+  example: "FUNC-ORCH-001"
+
+test_tagging:
+  language: bash
+  convention: "# @req: {id}"
+
+linter:
+  command: "markdownlint \"**/*.md\" --ignore node_modules"
