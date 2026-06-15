@@ -359,19 +359,19 @@
 ## Architecture Analysis (ANALYZE)
 
 ### FUNC-ANALYZE-001
-**Title:** rbd-analyze skill triggers the arch-analyst agent
+**Title:** rbd-arch-analyze skill triggers the arch-analyst agent
 **Status:** validated
 **Dependencies:** [FUNC-INIT-004](functional.md#func-init-004)
-**Description:** The `/rbd-analyze` skill dispatches the `arch-analyst` agent, providing it with the full project context: all `requirements/*.md` files, `docs/architecture.md`, and all skill and agent definition files. The agent produces a timestamped Markdown report `docs/analysis-YYYY-MM-DD.md` and the skill confirms the output path to the user.
+**Description:** The `/rbd-arch-analyze` skill dispatches the `arch-analyst` agent, providing it with the full project context: all `requirements/*.md` files and `docs/architecture.md` of the target project. The agent produces a timestamped Markdown report `docs/analysis-YYYY-MM-DD.md` and the skill confirms the output path to the user.
 
 ### FUNC-ANALYZE-002
-**Title:** arch-analyst generates a Mermaid execution flow diagram
+**Title:** arch-analyst generates a global component partitioning diagram
 **Status:** validated
 **Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
-**Description:** The `arch-analyst` agent produces a `flowchart TD` Mermaid diagram representing the RBD workflow execution flow: skill entry points, phase transitions, agent dispatches, return signals, and routing decisions. The diagram is derived by reading the skill and agent definition files.
+**Description:** The `arch-analyst` agent produces one global Mermaid diagram (`graph LR` or `classDiagram`) showing the software components of the target project and their relationships. The diagram is inferred from the requirement files and `docs/architecture.md` of the target project. Its purpose is to help the user maintain architectural coherence across the project.
 
 ### FUNC-ANALYZE-003
-**Title:** arch-analyst generates a Mermaid component decomposition diagram
+**Title:** arch-analyst generates per-component Mermaid diagrams
 **Status:** validated
 **Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
-**Description:** The `arch-analyst` agent produces a `graph LR` Mermaid diagram representing the component decomposition: each component (skills, agents, hooks), its responsibility, and the dependencies between components. The diagram is derived from `docs/architecture.md` and the agent definition files. Both diagrams appear in the same output document `docs/analysis-YYYY-MM-DD.md`.
+**Description:** For each identified software component of the target project, the `arch-analyst` agent produces one Mermaid diagram: a `flowchart` for process or algorithm components, or a `stateDiagram` for stateful components. The diagram type is chosen based on the component's nature. The number of per-component diagrams is variable (one per identified component). All diagrams — one global and N per-component — appear in the same output document `docs/analysis-YYYY-MM-DD.md`.
