@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-001_
+_Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-004_
 
 ---
 
@@ -169,3 +169,4 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-ANALYZE-001](../requirements/functional.md#func-analyze-001) | rbd-arch-analyze skill triggers the arch-analyst agent | `rbd-arch-analyze` |
 | [FUNC-ANALYZE-002](../requirements/functional.md#func-analyze-002) | arch-analyst generates a global component partitioning diagram | `arch-analyst` |
 | [FUNC-ANALYZE-003](../requirements/functional.md#func-analyze-003) | arch-analyst generates per-component Mermaid diagrams | `arch-analyst` |
+| [FUNC-ANALYZE-004](../requirements/functional.md#func-analyze-004) | arch-analyst performs a code-vs-architecture coherence scan | `arch-analyst` |
