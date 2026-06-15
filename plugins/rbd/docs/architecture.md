@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-003_
+_Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-001_
 
 ---
 
@@ -44,7 +44,7 @@ _Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-003_
 │  └──────────────────┘                                              │
 │                                                                    │
 │  ┌──────────────────┐           ┌─────────────────────────┐        │
-│  │  rbd-analyze     │──────────▶│  arch-analyst           │        │
+│  │  rbd-arch-analyze│──────────▶│  arch-analyst           │        │
 │  │  (ANALYZE skill) │           │  (read-only, diagrams)  │        │
 │  │                  │           └─────────────────────────┘        │
 │  │  - dispatch agent│                                              │
@@ -80,8 +80,8 @@ _Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-003_
 | `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure) checks |
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by pre-push hook; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment; triggers `rbd-review` when remote MR exists |
-| `rbd-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements, architecture, skill/agent files); confirms output path to the user |
-| `arch-analyst` | Agent | Read-only; reads requirements, `docs/architecture.md`, and skill/agent definition files; produces `docs/analysis-YYYY-MM-DD.md` containing a Mermaid execution flow diagram and a Mermaid component decomposition diagram |
+| `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
+| `arch-analyst` | Agent | Read-only; infers software components of the target project from requirement files and `docs/architecture.md`; produces `docs/analysis-YYYY-MM-DD.md` containing one global component partitioning diagram (`graph LR` or `classDiagram`) and one per-component diagram (`flowchart` or `stateDiagram`) for each identified software component |
 
 ---
 
@@ -166,6 +166,6 @@ If a future requirement introduces a component that depends on an external servi
 | [CONF-TAG-001](../requirements/configuration.md#conf-tag-001) | Configurable test tagging convention | `init-agent`, `test-builder` |
 | [CONF-LINT-001](../requirements/configuration.md#conf-lint-001) | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
 | [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst` |
-| [FUNC-ANALYZE-001](../requirements/functional.md#func-analyze-001) | rbd-analyze skill triggers the arch-analyst agent | `rbd-analyze` |
-| [FUNC-ANALYZE-002](../requirements/functional.md#func-analyze-002) | arch-analyst generates a Mermaid execution flow diagram | `arch-analyst` |
-| [FUNC-ANALYZE-003](../requirements/functional.md#func-analyze-003) | arch-analyst generates a Mermaid component decomposition diagram | `arch-analyst` |
+| [FUNC-ANALYZE-001](../requirements/functional.md#func-analyze-001) | rbd-arch-analyze skill triggers the arch-analyst agent | `rbd-arch-analyze` |
+| [FUNC-ANALYZE-002](../requirements/functional.md#func-analyze-002) | arch-analyst generates a global component partitioning diagram | `arch-analyst` |
+| [FUNC-ANALYZE-003](../requirements/functional.md#func-analyze-003) | arch-analyst generates per-component Mermaid diagrams | `arch-analyst` |
