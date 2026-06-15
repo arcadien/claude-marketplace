@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-11 — triggering requirements: all initial validated requirements_
+_Last updated: 2026-06-15 — triggering requirement: UI-DOC-001_
 
 ---
 
@@ -155,3 +155,4 @@ If a future requirement introduces a component that depends on an external servi
 | CONF-IDLVL-001 | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
 | CONF-TAG-001 | Configurable test tagging convention | `init-agent`, `test-builder` |
 | CONF-LINT-001 | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
+| [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst` |
