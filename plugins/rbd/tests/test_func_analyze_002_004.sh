@@ -21,9 +21,14 @@ FAIL=0
 assert_contains() {
   local description="$1"
   local file="$2"
+  local grep_flag=""
   local pattern="$3"
+  if [ "$3" = "-E" ]; then
+    grep_flag="-E"
+    pattern="$4"
+  fi
 
-  if grep -q "$pattern" "$file" 2>/dev/null; then
+  if grep -q $grep_flag "$pattern" "$file" 2>/dev/null; then
     echo "  PASS: $description"
     PASS=$((PASS + 1))
   else
