@@ -353,3 +353,25 @@
 **Status:** validated
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-REVIEW-001](functional.md#func-review-001)
 **Description:** If a remote MR/PR exists for the current branch at push time, the hook triggers `rbd-review` for analysis. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
+
+---
+
+## Architecture Analysis (ANALYZE)
+
+### FUNC-ANALYZE-001
+**Title:** rbd-analyze skill triggers the arch-analyst agent
+**Status:** validated
+**Dependencies:** [FUNC-INIT-004](functional.md#func-init-004)
+**Description:** The `/rbd-analyze` skill dispatches the `arch-analyst` agent, providing it with the full project context: all `requirements/*.md` files, `docs/architecture.md`, and all skill and agent definition files. The agent produces a timestamped Markdown report `docs/analysis-YYYY-MM-DD.md` and the skill confirms the output path to the user.
+
+### FUNC-ANALYZE-002
+**Title:** arch-analyst generates a Mermaid execution flow diagram
+**Status:** validated
+**Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
+**Description:** The `arch-analyst` agent produces a `flowchart TD` Mermaid diagram representing the RBD workflow execution flow: skill entry points, phase transitions, agent dispatches, return signals, and routing decisions. The diagram is derived by reading the skill and agent definition files.
+
+### FUNC-ANALYZE-003
+**Title:** arch-analyst generates a Mermaid component decomposition diagram
+**Status:** validated
+**Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
+**Description:** The `arch-analyst` agent produces a `graph LR` Mermaid diagram representing the component decomposition: each component (skills, agents, hooks), its responsibility, and the dependencies between components. The diagram is derived from `docs/architecture.md` and the agent definition files. Both diagrams appear in the same output document `docs/analysis-YYYY-MM-DD.md`.
