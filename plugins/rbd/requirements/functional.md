@@ -20,13 +20,19 @@
 **Title:** Inter-phase routing via agent return signals
 **Status:** validated
 **Dependencies:** [FUNC-ORCH-001](functional.md#func-orch-001)
-**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`). The orchestrator contains no business logic.
+**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
 
 ### FUNC-ORCH-004
 **Title:** Exclusive delegation to specialized agents
 **Status:** validated
 **Dependencies:** [FUNC-ORCH-003](functional.md#func-orch-003)
 **Description:** Each phase is fully delegated to a dedicated agent. The orchestrator provides context (requirement ID, config files, test files) and routes the return signal. It makes no domain decisions.
+
+### FUNC-ORCH-005
+**Title:** Orchestrator handles ARCH MISMATCH signal from code-builder
+**Status:** validated
+**Dependencies:** [FUNC-IMPL-006](functional.md#func-impl-006), [FUNC-ORCH-003](functional.md#func-orch-003)
+**Description:** On receiving an `ARCH MISMATCH` signal from `code-builder`, the orchestrator informs the user that implementation cannot proceed as-is and presents two options: (a) update the architecture — the orchestrator re-dispatches `requirement-analyst` to revise `docs/architecture.md`, after which `code-builder` may be resumed; (b) revise the requirement — the orchestrator re-dispatches `requirement-analyst` for a requirement update or split. `code-builder` is not resumed until option (a) completes.
 
 ---
 
@@ -197,6 +203,12 @@
 **Status:** validated
 **Dependencies:** [FUNC-IMPL-002](functional.md#func-impl-002)
 **Description:** If `code-builder` detects that the necessary implementation exceeds the requirement's scope (typically > 500-600 lines or modifications to unplanned components), it emits the signal `SCOPE TOO WIDE: <reason>`. The orchestrator asks the user to split the requirement or justify an exception.
+
+### FUNC-IMPL-006
+**Title:** Architectural boundary check before writing any code
+**Status:** validated
+**Dependencies:** [FUNC-IMPL-001](functional.md#func-impl-001)
+**Description:** Before writing or modifying any file, `code-builder` reads `docs/architecture.md` and verifies that every file it plans to create or modify belongs to a component declared in the architecture. If any planned file cannot be mapped to a declared component, `code-builder` emits the signal `ARCH MISMATCH: <reason>` and stops — no file is written.
 
 ---
 
