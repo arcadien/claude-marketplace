@@ -375,3 +375,9 @@
 **Status:** validated
 **Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
 **Description:** For each identified software component of the target project, the `arch-analyst` agent produces one Mermaid diagram: a `flowchart` for process or algorithm components, or a `stateDiagram` for stateful components. The diagram type is chosen based on the component's nature. The number of per-component diagrams is variable (one per identified component). All diagrams — one global and N per-component — appear in the same output document `docs/analysis-YYYY-MM-DD.md`.
+
+### FUNC-ANALYZE-004
+**Title:** arch-analyst performs a code-vs-architecture coherence scan
+**Status:** validated
+**Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
+**Description:** When source code files are present in the target project, the `arch-analyst` agent scans them to detect structural mismatches between the actual code and the declared architecture. It reports two categories of finding in `docs/analysis-YYYY-MM-DD.md`: (a) code elements (modules, classes, or top-level functions) that cannot be mapped to any component in `docs/architecture.md` or any validated requirement; (b) component dependencies declared in `docs/architecture.md` that are not reflected in any import, instantiation, or inheritance relationship found in the scanned files. This section is omitted if no source code files are found.
