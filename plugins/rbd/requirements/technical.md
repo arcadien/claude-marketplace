@@ -43,3 +43,9 @@
 **Status:** validated
 **Dependencies:** none
 **Description:** The orchestrator skill (`rbd`) contains no domain logic. All business decisions (requirement elicitation, test design, implementation strategy, audit analysis) are performed by dedicated agents. The orchestrator is responsible only for context assembly and signal routing.
+
+### TECH-ANALYST-001
+**Title:** arch-analyst write access limited to its output document
+**Status:** validated
+**Dependencies:** none
+**Description:** The `arch-analyst` agent must not write, edit, or delete any requirement file (`requirements/*.md`), the architecture document (`docs/architecture.md`), or any source code file of the target project. Its only permitted write operation is creating or overwriting its output document at `docs/analysis-YYYY-MM-DD.md`.
