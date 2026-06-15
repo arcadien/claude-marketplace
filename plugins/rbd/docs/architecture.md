@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-004_
+_Last updated: 2026-06-15 — triggering requirement: FUNC-IMPL-006_
 
 ---
 
@@ -70,11 +70,11 @@ _Last updated: 2026-06-15 — triggering requirement: FUNC-ANALYZE-004_
 
 | Component | Type | Responsibilities |
 |---|---|---|
-| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals; no domain logic (TECH-AGENT-001) |
+| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH` (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic (TECH-AGENT-001) |
 | `init-agent` | Agent | Negotiates ID format, language/framework, linter; generates all initial project files; performs initial commit |
 | `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
 | `test-builder` | Agent | Generates integration tests in GWT structure; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
-| `code-builder` | Agent | Reads test contracts; proposes design alternatives; implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
+| `code-builder` | Agent | Reads test contracts; proposes design alternatives; verifies architectural boundary before writing any file (emits `ARCH MISMATCH` if a planned file cannot be mapped to a declared component); implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
 | `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure) checks |
@@ -105,6 +105,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-ORCH-002](../requirements/functional.md#func-orch-002) | Ambiguous phase resolution | `rbd` |
 | [FUNC-ORCH-003](../requirements/functional.md#func-orch-003) | Inter-phase routing via agent return signals | `rbd` |
 | [FUNC-ORCH-004](../requirements/functional.md#func-orch-004) | Exclusive delegation to specialized agents | `rbd` |
+| [FUNC-ORCH-005](../requirements/functional.md#func-orch-005) | Orchestrator handles ARCH MISMATCH signal | `rbd` |
 | [FUNC-INIT-001](../requirements/functional.md#func-init-001) | Interactive ID format negotiation | `init-agent` |
 | [FUNC-INIT-002](../requirements/functional.md#func-init-002) | Test framework and language elicitation | `init-agent` |
 | [FUNC-INIT-003](../requirements/functional.md#func-init-003) | Linter command elicitation | `init-agent` |
@@ -130,6 +131,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-IMPL-003](../requirements/functional.md#func-impl-003) | Full test suite green gate before commit | `code-builder` |
 | [FUNC-IMPL-004](../requirements/functional.md#func-impl-004) | Production code linting before commit | `code-builder` |
 | [FUNC-IMPL-005](../requirements/functional.md#func-impl-005) | SCOPE TOO WIDE signal | `code-builder` |
+| [FUNC-IMPL-006](../requirements/functional.md#func-impl-006) | Architectural boundary check before writing any code | `code-builder` |
 | [FUNC-AUDIT-001](../requirements/functional.md#func-audit-001) | Block audit if open findings exist | `rbd-audit` |
 | [FUNC-AUDIT-002](../requirements/functional.md#func-audit-002) | Parallel dispatch of coherence and traceability agents | `rbd-audit` |
 | [FUNC-AUDIT-003](../requirements/functional.md#func-audit-003) | C1 check — semantic overlap | `audit-coherence` |
