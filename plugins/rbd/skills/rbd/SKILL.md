@@ -90,6 +90,16 @@ The agent handles everything: design pattern analysis (proposes alternatives to 
 |--------|-------------|
 | `IMPLEMENTATION COMMITTED: <prefix>(<ID>): ...` | Proceed to Phase 6. |
 | `SCOPE TOO WIDE: <reason>` | Ask the user: split the requirement (re-dispatch requirement-analyst) or proceed with a justified exception? |
+| `ARCH MISMATCH: <reason>` | Present two options to the user (see below). code-builder is blocked until the chosen option completes. |
+
+### ARCH MISMATCH — two-option routing
+
+When `code-builder` emits `ARCH MISMATCH`, present the user with exactly two choices:
+
+- **Option (a) — Update architecture:** Re-dispatch `requirement-analyst` to update `docs/architecture.md` so that the missing component is declared. code-builder is not resumed until the architecture update is committed and the `requirement-analyst` returns successfully. Then re-dispatch `code-builder` with the same requirement.
+- **Option (b) — Revise or split the requirement:** Re-dispatch `requirement-analyst` to revise the requirement scope or split it so that all planned files fit within declared components. After the updated or split requirement is validated, return to Phase 4 (test-builder) for the revised requirement before dispatching code-builder again.
+
+In both cases, code-builder is gated: it must not be resumed until the selected option has completed.
 
 ---
 

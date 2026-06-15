@@ -48,7 +48,18 @@ Read the committed test files for this requirement. Map what the tests expect:
 
 Only implement what the tests require. Do not add behavior that is not tested — it would be an untraceable code addition.
 
-### Step 2 — Design pattern analysis
+### Step 2 — Architecture boundary check
+
+Before writing or modifying any file, read `docs/architecture.md`.
+
+Map every file you plan to create or modify to a component declared in `architecture.md`.
+
+- If every planned file belongs to a declared component → proceed to Step 3.
+- If any planned file cannot be mapped to a declared component → emit `ARCH MISMATCH: <reason>` and stop. You MUST NOT write any file. Return the signal immediately to the orchestrator.
+
+This check is mandatory. No file is written before it completes successfully.
+
+### Step 3 — Design pattern analysis
 
 Before writing any code, reason explicitly about the design.
 
@@ -66,7 +77,7 @@ Before writing any code, reason explicitly about the design.
 
 Do not ask about every micro-decision — only when the trade-off is meaningful and the choice will affect how the code evolves. Good triggers: adding a new abstraction layer, choosing between two equally valid data flow patterns, deciding whether a concern belongs in a new class or an extension of an existing one.
 
-### Step 3 — Announce and confirm
+### Step 4 — Announce and confirm
 
 Announce each non-trivial implementation step before writing it:
 - What you are about to create or modify.
@@ -74,20 +85,20 @@ Announce each non-trivial implementation step before writing it:
 
 Ask the user before any decision that affects the architecture or creates new public interfaces not already implied by the tests.
 
-### Step 4 — Implement
+### Step 5 — Implement
 
 Write production code. Stay within the scope of what the tagged tests require.
 
 Follow the project's existing conventions: naming, file structure, dependency injection patterns already in use.
 
-### Step 5 — Size check
+### Step 6 — Size check
 
 If code volume is unexpectedly large (signal: > 500–600 lines added, or the implementation clearly spans independent concerns):
 - Do NOT commit.
 - Emit `SCOPE TOO WIDE: <reason>`.
 - The rbd skill asks the user whether to split the requirement (returning to Phase 2+3) or to proceed with a justified exception.
 
-### Step 6 — Run the full test suite
+### Step 7 — Run the full test suite
 
 Run all tests — not just the new ones. Every test in the suite must be green before committing.
 
@@ -96,11 +107,11 @@ If any test outside this requirement's scope breaks:
 - Fix it in the production code (if the regression is a real bug you introduced).
 - Do NOT touch test files. If the broken test appears to be the fault of the test itself, surface it to the user.
 
-### Step 7 — Lint
+### Step 8 — Lint
 
 Run the linter command from `.rbd/config.yml`. Fix all issues before committing.
 
-### Step 8 — Commit
+### Step 9 — Commit
 
 Commit with the correct category prefix (see `references/formats.md`):
 - `feat(<ID>):` — functional requirement (FUNC-*)
@@ -125,7 +136,9 @@ Emit exactly one of these lines when your work is complete:
 ```
 IMPLEMENTATION COMMITTED: <prefix>(<ID>): <description>
 SCOPE TOO WIDE: <reason> — awaiting user decision
+ARCH MISMATCH: <reason> — stop, no file written
 ```
 
 - `IMPLEMENTATION COMMITTED` → rbd proceeds to Phase 6 (pre-push check).
 - `SCOPE TOO WIDE` → rbd surfaces the decision to the user.
+- `ARCH MISMATCH` → rbd presents two resolution options to the user; code-builder is not resumed until the architecture is updated.
