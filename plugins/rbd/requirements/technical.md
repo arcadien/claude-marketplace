@@ -23,7 +23,7 @@
 ### TECH-TAG-001
 **Title:** Untagged test functions are a hard gate blocking commit
 **Status:** validated
-**Dependencies:** TECH-SEP-001
+**Dependencies:** [TECH-SEP-001](technical.md#tech-sep-001)
 **Description:** The presence of a valid requirement ID tag on every test function is a hard gate enforced by `test-builder` before every test commit. Any test function missing its tag causes the commit to be rejected. This check is also enforced by `audit-traceability` (T6a).
 
 ### TECH-FMT-001

@@ -91,68 +91,68 @@ If a future requirement introduces a component that depends on an external servi
 
 | Requirement ID | Title (abbreviated) | Component(s) |
 |---|---|---|
-| FUNC-ORCH-001 | Phase detection at invocation | `rbd` |
-| FUNC-ORCH-002 | Ambiguous phase resolution | `rbd` |
-| FUNC-ORCH-003 | Inter-phase routing via agent return signals | `rbd` |
-| FUNC-ORCH-004 | Exclusive delegation to specialized agents | `rbd` |
-| FUNC-INIT-001 | Interactive ID format negotiation | `init-agent` |
-| FUNC-INIT-002 | Test framework and language elicitation | `init-agent` |
-| FUNC-INIT-003 | Linter command elicitation | `init-agent` |
-| FUNC-INIT-004 | Creation of all project files and initial commit | `init-agent` |
-| FUNC-REQ-001 | Requirement elicitation via dialogue | `requirement-analyst` |
-| FUNC-REQ-002 | Requirement size challenge | `requirement-analyst` |
-| FUNC-REQ-003 | Semantic overlap challenge | `requirement-analyst` |
-| FUNC-REQ-004 | Consistency challenge | `requirement-analyst` |
-| FUNC-REQ-005 | User validation before commit | `requirement-analyst` |
-| FUNC-REQ-006 | Requirement splitting when too large | `rbd` |
-| FUNC-REQ-007 | Requirement deletion | `requirement-analyst` |
-| FUNC-ARCH-001 | Component assignment for each requirement | `requirement-analyst` |
-| FUNC-ARCH-002 | DI constraint identification → TECH requirement | `requirement-analyst` |
-| FUNC-ARCH-003 | docs/architecture.md update with arch(ID) commit | `requirement-analyst` |
-| FUNC-ARCH-004 | Architecture coherence gate before tests | `requirement-analyst` |
-| FUNC-TEST-001 | Integration test generation with GWT structure | `test-builder` |
-| FUNC-TEST-002 | Mandatory requirement ID tag on every test function | `test-builder` |
-| FUNC-TEST-003 | Parametrized tests for multiple cases | `test-builder` |
-| FUNC-TEST-004 | TOO_LARGE signal when requirement is too large | `test-builder` |
-| FUNC-TEST-005 | Test file linting before commit | `test-builder` |
-| FUNC-IMPL-001 | Design pattern analysis with alternative proposals | `code-builder` |
-| FUNC-IMPL-002 | Production code implementation | `code-builder` |
-| FUNC-IMPL-003 | Full test suite green gate before commit | `code-builder` |
-| FUNC-IMPL-004 | Production code linting before commit | `code-builder` |
-| FUNC-IMPL-005 | SCOPE TOO WIDE signal | `code-builder` |
-| FUNC-AUDIT-001 | Block audit if open findings exist | `rbd-audit` |
-| FUNC-AUDIT-002 | Parallel dispatch of coherence and traceability agents | `rbd-audit` |
-| FUNC-AUDIT-003 | C1 check — semantic overlap | `audit-coherence` |
-| FUNC-AUDIT-004 | C2 check — precision and testability | `audit-coherence` |
-| FUNC-AUDIT-005 | C3 check — dependency validity | `audit-coherence` |
-| FUNC-AUDIT-006 | C4 check — circular dependency detection | `audit-coherence` |
-| FUNC-AUDIT-007 | C5 check — architecture coherence | `audit-coherence` |
-| FUNC-AUDIT-008 | T1 check — test coverage per requirement | `audit-traceability` |
-| FUNC-AUDIT-009 | T2 check — tag validity in tests | `audit-traceability` |
-| FUNC-AUDIT-010 | T3 check — implementation coverage | `audit-traceability` |
-| FUNC-AUDIT-011 | T4 check — plan file coverage | `audit-traceability` |
-| FUNC-AUDIT-012 | T5 check — architecture document currency | `audit-traceability` |
-| FUNC-AUDIT-013 | T6 check — test structure conventions | `audit-traceability` |
-| FUNC-AUDIT-014 | Timestamped audit report generation | `rbd-audit` |
-| FUNC-AUDIT-015 | Finding resolution with the user | `rbd-audit` |
-| FUNC-REVIEW-001 | Manual review trigger by MR number or URL | `rbd-review` |
-| FUNC-REVIEW-003 | R1 check — requirement coverage in commits | `rbd-review` |
-| FUNC-REVIEW-004 | R2 check — uncovered behaviors via inference | `rbd-review` |
-| FUNC-REVIEW-005 | R3 check — commit prefix consistency | `rbd-review` |
-| FUNC-REVIEW-006 | R4 check — test presence for each impl commit | `rbd-review` |
-| FUNC-REVIEW-007 | Review report generation | `rbd-review` |
-| FUNC-PUSH-001 | Block push if open audit findings exist | `pre-push hook` |
-| FUNC-PUSH-002 | Commit alignment validation | `pre-push hook` |
-| FUNC-PUSH-003 | rbd-review safety net trigger when remote MR exists | `pre-push hook` |
-| PERF-AUDIT-001 | Coherence and traceability audit agents run in parallel | `rbd-audit` |
-| TECH-HOOK-001 | PreToolUse Bash hook for git push interception | `pre-push hook` |
-| TECH-SEP-001 | test-builder must not modify production code | `test-builder` |
-| TECH-SEP-002 | code-builder must not modify test files | `code-builder` |
-| TECH-TAG-001 | Untagged test functions are a hard gate | `test-builder` |
-| TECH-FMT-001 | Non-plan commits must follow prefix(ID): format | `pre-push hook`, `test-builder`, `code-builder` |
-| TECH-AUDIT-001 | Audit agents are strictly read-only | `audit-coherence`, `audit-traceability` |
-| TECH-AGENT-001 | Each phase is delegated to a dedicated agent | `rbd` |
-| CONF-IDLVL-001 | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
-| CONF-TAG-001 | Configurable test tagging convention | `init-agent`, `test-builder` |
-| CONF-LINT-001 | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
+| [FUNC-ORCH-001](../requirements/functional.md#func-orch-001) | Phase detection at invocation | `rbd` |
+| [FUNC-ORCH-002](../requirements/functional.md#func-orch-002) | Ambiguous phase resolution | `rbd` |
+| [FUNC-ORCH-003](../requirements/functional.md#func-orch-003) | Inter-phase routing via agent return signals | `rbd` |
+| [FUNC-ORCH-004](../requirements/functional.md#func-orch-004) | Exclusive delegation to specialized agents | `rbd` |
+| [FUNC-INIT-001](../requirements/functional.md#func-init-001) | Interactive ID format negotiation | `init-agent` |
+| [FUNC-INIT-002](../requirements/functional.md#func-init-002) | Test framework and language elicitation | `init-agent` |
+| [FUNC-INIT-003](../requirements/functional.md#func-init-003) | Linter command elicitation | `init-agent` |
+| [FUNC-INIT-004](../requirements/functional.md#func-init-004) | Creation of all project files and initial commit | `init-agent` |
+| [FUNC-REQ-001](../requirements/functional.md#func-req-001) | Requirement elicitation via dialogue | `requirement-analyst` |
+| [FUNC-REQ-002](../requirements/functional.md#func-req-002) | Requirement size challenge | `requirement-analyst` |
+| [FUNC-REQ-003](../requirements/functional.md#func-req-003) | Semantic overlap challenge | `requirement-analyst` |
+| [FUNC-REQ-004](../requirements/functional.md#func-req-004) | Consistency challenge | `requirement-analyst` |
+| [FUNC-REQ-005](../requirements/functional.md#func-req-005) | User validation before commit | `requirement-analyst` |
+| [FUNC-REQ-006](../requirements/functional.md#func-req-006) | Requirement splitting when too large | `rbd` |
+| [FUNC-REQ-007](../requirements/functional.md#func-req-007) | Requirement deletion | `requirement-analyst` |
+| [FUNC-ARCH-001](../requirements/functional.md#func-arch-001) | Component assignment for each requirement | `requirement-analyst` |
+| [FUNC-ARCH-002](../requirements/functional.md#func-arch-002) | DI constraint identification → TECH requirement | `requirement-analyst` |
+| [FUNC-ARCH-003](../requirements/functional.md#func-arch-003) | docs/architecture.md update with arch(ID) commit | `requirement-analyst` |
+| [FUNC-ARCH-004](../requirements/functional.md#func-arch-004) | Architecture coherence gate before tests | `requirement-analyst` |
+| [FUNC-TEST-001](../requirements/functional.md#func-test-001) | Integration test generation with GWT structure | `test-builder` |
+| [FUNC-TEST-002](../requirements/functional.md#func-test-002) | Mandatory requirement ID tag on every test function | `test-builder` |
+| [FUNC-TEST-003](../requirements/functional.md#func-test-003) | Parametrized tests for multiple cases | `test-builder` |
+| [FUNC-TEST-004](../requirements/functional.md#func-test-004) | TOO_LARGE signal when requirement is too large | `test-builder` |
+| [FUNC-TEST-005](../requirements/functional.md#func-test-005) | Test file linting before commit | `test-builder` |
+| [FUNC-IMPL-001](../requirements/functional.md#func-impl-001) | Design pattern analysis with alternative proposals | `code-builder` |
+| [FUNC-IMPL-002](../requirements/functional.md#func-impl-002) | Production code implementation | `code-builder` |
+| [FUNC-IMPL-003](../requirements/functional.md#func-impl-003) | Full test suite green gate before commit | `code-builder` |
+| [FUNC-IMPL-004](../requirements/functional.md#func-impl-004) | Production code linting before commit | `code-builder` |
+| [FUNC-IMPL-005](../requirements/functional.md#func-impl-005) | SCOPE TOO WIDE signal | `code-builder` |
+| [FUNC-AUDIT-001](../requirements/functional.md#func-audit-001) | Block audit if open findings exist | `rbd-audit` |
+| [FUNC-AUDIT-002](../requirements/functional.md#func-audit-002) | Parallel dispatch of coherence and traceability agents | `rbd-audit` |
+| [FUNC-AUDIT-003](../requirements/functional.md#func-audit-003) | C1 check — semantic overlap | `audit-coherence` |
+| [FUNC-AUDIT-004](../requirements/functional.md#func-audit-004) | C2 check — precision and testability | `audit-coherence` |
+| [FUNC-AUDIT-005](../requirements/functional.md#func-audit-005) | C3 check — dependency validity | `audit-coherence` |
+| [FUNC-AUDIT-006](../requirements/functional.md#func-audit-006) | C4 check — circular dependency detection | `audit-coherence` |
+| [FUNC-AUDIT-007](../requirements/functional.md#func-audit-007) | C5 check — architecture coherence | `audit-coherence` |
+| [FUNC-AUDIT-008](../requirements/functional.md#func-audit-008) | T1 check — test coverage per requirement | `audit-traceability` |
+| [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009) | T2 check — tag validity in tests | `audit-traceability` |
+| [FUNC-AUDIT-010](../requirements/functional.md#func-audit-010) | T3 check — implementation coverage | `audit-traceability` |
+| [FUNC-AUDIT-011](../requirements/functional.md#func-audit-011) | T4 check — plan file coverage | `audit-traceability` |
+| [FUNC-AUDIT-012](../requirements/functional.md#func-audit-012) | T5 check — architecture document currency | `audit-traceability` |
+| [FUNC-AUDIT-013](../requirements/functional.md#func-audit-013) | T6 check — test structure conventions | `audit-traceability` |
+| [FUNC-AUDIT-014](../requirements/functional.md#func-audit-014) | Timestamped audit report generation | `rbd-audit` |
+| [FUNC-AUDIT-015](../requirements/functional.md#func-audit-015) | Finding resolution with the user | `rbd-audit` |
+| [FUNC-REVIEW-001](../requirements/functional.md#func-review-001) | Manual review trigger by MR number or URL | `rbd-review` |
+| [FUNC-REVIEW-003](../requirements/functional.md#func-review-003) | R1 check — requirement coverage in commits | `rbd-review` |
+| [FUNC-REVIEW-004](../requirements/functional.md#func-review-004) | R2 check — uncovered behaviors via inference | `rbd-review` |
+| [FUNC-REVIEW-005](../requirements/functional.md#func-review-005) | R3 check — commit prefix consistency | `rbd-review` |
+| [FUNC-REVIEW-006](../requirements/functional.md#func-review-006) | R4 check — test presence for each impl commit | `rbd-review` |
+| [FUNC-REVIEW-007](../requirements/functional.md#func-review-007) | Review report generation | `rbd-review` |
+| [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if open audit findings exist | `pre-push hook` |
+| [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
+| [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `pre-push hook` |
+| [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
+| [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
+| [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
+| [TECH-SEP-002](../requirements/technical.md#tech-sep-002) | code-builder must not modify test files | `code-builder` |
+| [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate | `test-builder` |
+| [TECH-FMT-001](../requirements/technical.md#tech-fmt-001) | Non-plan commits must follow prefix(ID): format | `pre-push hook`, `test-builder`, `code-builder` |
+| [TECH-AUDIT-001](../requirements/technical.md#tech-audit-001) | Audit agents are strictly read-only | `audit-coherence`, `audit-traceability` |
+| [TECH-AGENT-001](../requirements/technical.md#tech-agent-001) | Each phase is delegated to a dedicated agent | `rbd` |
+| [CONF-IDLVL-001](../requirements/configuration.md#conf-idlvl-001) | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
+| [CONF-TAG-001](../requirements/configuration.md#conf-tag-001) | Configurable test tagging convention | `init-agent`, `test-builder` |
+| [CONF-LINT-001](../requirements/configuration.md#conf-lint-001) | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
 | [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst` |
