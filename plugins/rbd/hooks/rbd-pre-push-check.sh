@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
-# RBD pre-push gate — type: "command" hook
-# Input: tool JSON on stdin. Exit 0 = allow, Exit 2 = block.
-# Safety: any internal failure allows the command through.
+# RBD pre-push gate — type: "command" PreToolUse hook
+#
+# Protocol: read JSON from stdin, output JSON to stdout, exit 0 (allow) or 2 (block).
+# An empty stdout is invalid — always output at least {}.
 
 set +e
 
 INPUT=$(cat 2>/dev/null || true)
 
-# Fast path: if the raw JSON doesn't mention git push, allow immediately
+allow() { printf '{}'; exit 0; }
+block() { printf '{"decision":"block","reason":"%s"}' "$1"; exit 2; }
+
+# Fast path: only act on git push commands
 if ! printf '%s' "$INPUT" | grep -q '"git push' 2>/dev/null; then
-  exit 0
+  allow
 fi
 
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
-[ -z "$REPO_ROOT" ] && exit 0
+[ -z "$REPO_ROOT" ] && allow
 
 CACHE_FILE="$REPO_ROOT/.rbd/.push-validated"
 CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null || true)
@@ -23,8 +27,7 @@ if [ -f "$CACHE_FILE" ] && [ -n "$CURRENT_HEAD" ]; then
   CACHED_HEAD=$(cat "$CACHE_FILE" 2>/dev/null || true)
   if [ "$CACHED_HEAD" = "$CURRENT_HEAD" ]; then
     rm -f "$CACHE_FILE"
-    echo "Pre-push checks passed (cached)."
-    exit 0
+    printf '{"systemMessage":"Pre-push checks passed (cached)."}'; exit 0
   fi
 fi
 
@@ -36,8 +39,7 @@ if [ -d "$AUDITS_DIR" ]; then
     EXCLUSIONS="$AUDITS_DIR/exclusions.yml"
     BASENAME=$(basename "$LATEST")
     if [ ! -f "$EXCLUSIONS" ] || ! grep -q "$BASENAME" "$EXCLUSIONS" 2>/dev/null; then
-      printf 'RBD BLOCKED: open findings in %s — run /rbd-audit first.\n' "$BASENAME" >&2
-      exit 2
+      block "RBD: open findings in $BASENAME — run /rbd-audit first"
     fi
   fi
 fi
@@ -48,7 +50,7 @@ BASE=$(git rev-parse --verify origin/HEAD 2>/dev/null \
     || git rev-parse --verify main 2>/dev/null \
     || true)
 
-[ -z "$BASE" ] && { echo "Pre-push checks passed (no base ref)."; exit 0; }
+[ -z "$BASE" ] && { printf '{"systemMessage":"Pre-push checks passed (no base ref)."}'; exit 0; }
 
 VALID_PREFIX='^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor)\('
 NEEDS_REQ='^(feat|tech|perf|ui|conf|arch|test)\('
@@ -62,15 +64,13 @@ while IFS= read -r LINE; do
   MSG=$(printf '%s' "$LINE" | cut -d' ' -f2-)
 
   if ! printf '%s' "$MSG" | grep -qE "$VALID_PREFIX" 2>/dev/null; then
-    printf 'RBD BLOCKED: %s — invalid prefix: %s\n' "$HASH" "$MSG" >&2
-    exit 2
+    block "RBD: $HASH has invalid prefix — $MSG"
   fi
 
   if printf '%s' "$MSG" | grep -qE "$NEEDS_REQ" 2>/dev/null && [ -d "$REQS_DIR" ]; then
     REQ_ID=$(printf '%s' "$MSG" | grep -oE 'FUNC-[A-Z]+-[0-9]+' 2>/dev/null | head -1 || true)
     if [ -n "$REQ_ID" ] && ! grep -rl "$REQ_ID" "$REQS_DIR" 2>/dev/null | grep -q .; then
-      printf 'RBD BLOCKED: %s references %s not found in requirements/.\n' "$HASH" "$REQ_ID" >&2
-      exit 2
+      block "RBD: $HASH references $REQ_ID not found in requirements/"
     fi
   fi
 done < <(git log --oneline "$BASE"..HEAD 2>/dev/null || true)
@@ -81,5 +81,4 @@ if [ -n "$CURRENT_HEAD" ]; then
   printf '%s' "$CURRENT_HEAD" > "$CACHE_FILE" 2>/dev/null || true
 fi
 
-echo "Pre-push checks passed."
-exit 0
+printf '{"systemMessage":"Pre-push checks passed."}'; exit 0
