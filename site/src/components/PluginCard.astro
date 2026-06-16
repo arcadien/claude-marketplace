@@ -7,10 +7,68 @@ interface Props {
 const { name, version, description } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
-<article style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-  <h2 style="font-size: 1.1rem;">
-    <a href={`${base}plugins/${name}`}>{name}</a>
-    <span style="font-size: 0.85rem; color: #6b7280; font-weight: normal; margin-left: 0.5rem;">v{version}</span>
-  </h2>
-  <p style="color: #4b5563; margin-top: 0.25rem;">{description}</p>
+<article class="plugin-card">
+  <div class="card-header">
+    <a class="card-title" href={`${base}plugins/${name}`}>{name}</a>
+    <span class="badge">v{version}</span>
+  </div>
+  <p class="card-description">{description}</p>
+  <a class="card-link" href={`${base}plugins/${name}`}>Voir la documentation →</a>
 </article>
+
+<style>
+  .plugin-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .plugin-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+    border-color: #c4b5fd;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .card-title:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .card-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+
+  .card-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .card-link:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+  }
+</style>

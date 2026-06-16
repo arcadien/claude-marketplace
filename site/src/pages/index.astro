@@ -3,14 +3,66 @@ import Layout from '../layouts/Layout.astro';
 import PluginCard from '../components/PluginCard.astro';
 import registry from '../data/registry.json';
 ---
-<Layout title="Plugins">
-  <h1>Plugins disponibles ({registry.plugins.length})</h1>
-  {registry.plugins.length === 0 && <p>Aucun plugin pour l'instant.</p>}
-  {registry.plugins.map((plugin) => (
-    <PluginCard
-      name={plugin.name}
-      version={plugin.version}
-      description={plugin.description}
-    />
-  ))}
+<Layout title="Plugins" description="Personal Claude Code plugin marketplace by Aurelien">
+  <div class="hero">
+    <h1>Plugin Marketplace</h1>
+    <p class="hero-sub">
+      Plugins Claude Code développés par Aurelien — workflows RBD, délibération multi-agents, et plus.
+    </p>
+  </div>
+
+  <div class="plugins-header">
+    <h2 class="section-title">Plugins disponibles</h2>
+    <span class="badge">{registry.plugins.length}</span>
+  </div>
+
+  {registry.plugins.length === 0
+    ? <p>Aucun plugin pour l'instant.</p>
+    : registry.plugins.map((plugin) => (
+        <PluginCard
+          name={plugin.name}
+          version={plugin.version}
+          description={plugin.description}
+        />
+      ))
+  }
 </Layout>
+
+<style>
+  .hero {
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+
+  .hero h1 {
+    background: linear-gradient(135deg, #1e1b4b, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  .plugins-header {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+</style>
