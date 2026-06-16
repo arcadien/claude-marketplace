@@ -1,5 +1,5 @@
 id_format:
-  categories: [FUNC, TECH, PERF, UI, CONF]
+  categories: [FUNC, TECH, PERF, UI, CONF, PLAT]
   levels: ["component"]
   example: "FUNC-ORCH-001"
 

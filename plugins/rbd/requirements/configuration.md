@@ -19,3 +19,9 @@
 **Status:** validated
 **Dependencies:** none
 **Description:** The linting command is configurable per project and stored in `.rbd/config.yml`. It is used by both `test-builder` (before test commits) and `code-builder` (before implementation commits). The command is elicited during Phase 1.
+
+### CONF-PLAT-001
+**Title:** PLAT as a recognized requirement category in config
+**Status:** validated
+**Dependencies:** [CONF-IDLVL-001](configuration.md#conf-idlvl-001)
+**Description:** The `.rbd/config.yml` categories list must include `PLAT` alongside `FUNC`, `TECH`, `PERF`, `UI`, and `CONF`. The `PLAT` category designates Platform-Specific Model (PSM) requirements in MDA terms: behavioral requirements that specify HOW a PIM requirement (FUNC or TECH) is realized on a concrete technology target (protocol, library, runtime). PLAT requirements use the same domain-based intermediate level convention as other categories (e.g. `PLAT-COMM-001`). The `init-agent` must present `PLAT` as an available category during Phase 1 ID format negotiation.

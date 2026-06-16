@@ -399,3 +399,13 @@
 **Status:** validated
 **Dependencies:** [FUNC-ANALYZE-001](functional.md#func-analyze-001)
 **Description:** When source code files are present in the target project, the `arch-analyst` agent scans them to detect structural mismatches between the actual code and the declared architecture. It reports two categories of finding in `docs/analysis-YYYY-MM-DD.md`: (a) code elements (modules, classes, or top-level functions) that cannot be mapped to any component in `docs/architecture.md` or any validated requirement; (b) component dependencies declared in `docs/architecture.md` that are not reflected in any import, instantiation, or inheritance relationship found in the scanned files. This section is omitted if no source code files are found.
+
+---
+
+## Audit — PLAT traceability (AUDIT)
+
+### FUNC-AUDIT-016
+**Title:** T7 check — derives_from traceability for PLAT requirements
+**Status:** validated
+**Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002), [CONF-PLAT-001](configuration.md#conf-plat-001)
+**Description:** `audit-traceability` verifies that every `PLAT-*` requirement with status `validated` has a `derives_from:` frontmatter field referencing an existing FUNC or TECH requirement with status `validated`. Any PLAT requirement missing this field, or referencing a non-existent or deprecated ID, generates a T7 finding (traceability violation).
