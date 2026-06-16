@@ -366,6 +366,12 @@
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-REVIEW-001](functional.md#func-review-001)
 **Description:** If a remote MR/PR exists for the current branch at push time, the hook triggers `rbd-review` for analysis. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
 
+### FUNC-PUSH-004
+**Title:** Pre-push validation state caching via dotfile
+**Status:** validated
+**Dependencies:** [FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003), [TECH-HOOK-001](technical.md#tech-hook-001)
+**Description:** After completing all pre-push checks successfully ([FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003)), the orchestrator writes `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. When the pre-push hook fires, it reads this file first: if the file exists and its content matches the current HEAD hash, the hook allows the push and deletes the file; if the file is absent or the hash does not match, the hook proceeds with the full check sequence. The file `.rbd/.push-validated` must be listed in `.gitignore` — it is ephemeral state and must never be committed.
+
 ---
 
 ## Architecture Analysis (ANALYZE)
