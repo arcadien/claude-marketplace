@@ -59,6 +59,7 @@ _Last updated: 2026-06-15 — triggering requirement: TECH-ANALYST-001_
 │  Shared data (filesystem)                                          │
 │  ─────────────────────────                                         │
 │  .rbd/config.yml          .rbd/plan-files.yml                      │
+│  .rbd/.push-validated     (ephemeral; in .gitignore)               │
 │  requirements/*.md        docs/architecture.md                     │
 │  audits/*.md              audits/exclusions.yml                    │
 └────────────────────────────────────────────────────────────────────┘
@@ -156,6 +157,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if open audit findings exist | `pre-push hook` |
 | [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
 | [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `pre-push hook` |
+| [FUNC-PUSH-004](../requirements/functional.md#func-push-004) | Pre-push validation state caching via dotfile | `rbd`, `pre-push hook` |
 | [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
 | [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |

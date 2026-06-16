@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.wrangler/
+
+# Ephemeral RBD pre-push validation cache — must never be committed
+.rbd/.push-validated

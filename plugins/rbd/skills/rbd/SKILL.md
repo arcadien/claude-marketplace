@@ -107,6 +107,19 @@ In both cases, code-builder is gated: it must not be resumed until the selected 
 
 Run before any `git push`, automatically via the hook or manually.
 
+### Validation state cache (`.rbd/.push-validated`)
+
+Before running any check, read `.rbd/.push-validated`:
+
+- **File present and HEAD hash matches:** The push was already fully validated for this commit. Allow the push immediately, delete `.rbd/.push-validated` (it is ephemeral one-time-use state), and skip the checks below.
+- **File absent or HEAD hash does not match:** Proceed with the full check sequence below.
+
+After all checks in steps 1–3 pass, write `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. This caches the validated state so the next `git push` attempt for the same HEAD commit is instant.
+
+> Note: `.rbd/.push-validated` is ephemeral state and must never be committed. It is listed in `.gitignore`.
+
+### Full check sequence
+
 1. Read the latest report in `audits/`. If any finding has status `open` → block the push. Tell the user which findings must be resolved first.
 2. **Commit alignment check (mechanical):** List all commits on the current branch not present on the base branch. Verify:
    - Every `feat/tech/perf/ui/conf/arch/test` commit follows the `prefix(ID):` format.
@@ -116,7 +129,7 @@ Run before any `git push`, automatically via the hook or manually.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
    - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
-5. If all checks pass → confirm and allow the push.
+5. If all checks pass → write `.rbd/.push-validated` with the HEAD commit hash, confirm and allow the push.
 
 ---
 
