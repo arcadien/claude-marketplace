@@ -7,21 +7,33 @@
   "plugins": [
     {
       "name": "rbd",
-      "version": "0.1.0",
+      "version": "0.11.0",
       "description": "Requirement-Based Development workflow: guided requirements, TDD cycle, audit, and MR review.",
       "author": {
         "name": "Aurelien"
       },
-      "source": "./plugins/rbd"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/arcadien/claude-marketplace.git",
+        "path": "plugins/rbd",
+        "ref": "main",
+        "sha": "0fd10c7d9c1d79fbf02e98de079d98ab29783971"
+      }
     },
     {
-      "name": "magi-7",
-      "version": "1.0.0",
-      "description": "MAGI deliberation system — Gaspard (proceduralist), Melchior (yolo) and Balthazar (sage) vote on your technical and strategic decisions via /magi",
+      "name": "magi-8",
+      "version": "2.0.0",
+      "description": "MAGI deliberation system — Casper (proceduralist), Melchior (pragmatic) and Balthazar (sage) vote on your technical and strategic decisions via /magi",
       "author": {
-        "name": "Aurelien"
+        "name": "Aurelien Labrosse"
       },
-      "source": "./plugins/magi-7"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/arcadien/claude-marketplace.git",
+        "path": "plugins/magi",
+        "ref": "main",
+        "sha": "0fd10c7d9c1d79fbf02e98de079d98ab29783971"
+      }
     }
   ]
 }
