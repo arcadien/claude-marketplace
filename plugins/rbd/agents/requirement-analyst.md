@@ -83,6 +83,25 @@ Ask the user to explicitly validate the requirement text before committing.
 Append or update `requirements/<category>.md` using the format in `references/formats.md`.
 Commit: `req(<ID>): <short title>`
 
+#### PLAT requirement blocks
+
+When creating or updating a `PLAT-*` requirement block, you must
+include a `derives_from:` frontmatter field. The value must be a
+Markdown hyperlink pointing to the parent FUNC or TECH requirement
+it realizes. Use the `[ID](file.md#anchor)` format, where the anchor
+is the lowercase-hyphenated form of the ID:
+
+- For a FUNC parent:
+  `derives_from: [FUNC-DATA-001](functional.md#func-data-001)`
+- For a TECH parent:
+  `derives_from: [TECH-DB-001](technical.md#tech-db-001)`
+
+This Markdown hyperlink convention for `derives_from:` mirrors the
+hyperlink format established by UI-DOC-001 for all requirement ID
+references. A PLAT requirement without a valid `derives_from:`
+Markdown hyperlink linking to a validated FUNC or TECH requirement
+must not be committed.
+
 ---
 
 ## Phase 3 — Architecture

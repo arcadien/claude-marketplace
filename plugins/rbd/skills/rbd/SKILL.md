@@ -26,7 +26,7 @@ Run when `.rbd/config.yml` is missing, or on explicit `/rbd init`.
 1. Ask: "What intermediate classification levels do you want in your requirement IDs?"
    - Explain: "For example, with levels `domain` and `feature`, IDs look like `FUNC-AUTH-LOGIN-001`. What levels make sense for your project?"
    - Show the resulting example ID as the conversation progresses.
-2. Confirm the full format with the user. Show one example ID per category (FUNC, TECH, PERF, UI, CONF).
+2. Confirm the full format with the user. Show one example ID per category (FUNC, TECH, PERF, UI, CONF, PLAT).
 3. Ask: "What language and test framework will this project use?" (needed for test tagging). Offer to defer if the stack is not decided yet.
 4. Ask: "What is the linter command for this project?" (e.g. `ruff check .`, `eslint .`, `golangci-lint run`).
 5. Generate and write all files using schemas from `references/formats.md`.
