@@ -39,7 +39,7 @@ assert_contains() {
     pattern="$4"
   fi
 
-  if grep -q $grep_flag "$pattern" "$file" 2>/dev/null; then
+  if grep -q $grep_flag -- "$pattern" "$file" 2>/dev/null; then
     echo "  PASS: $description"
     PASS=$((PASS + 1))
   else
