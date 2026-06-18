@@ -24,7 +24,7 @@ Proceed with the same analysis regardless of mode.
 
 ### Check R1: Requirement Coverage
 
-- Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `test(ID):`, `req(ID):`).
+- Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):`, `arch(ID):`, `test(ID):`).
 - For each extracted ID: verify the requirement exists in `requirements/*.md` with status `validated`.
 - Flag commits referencing non-existent or non-validated requirements.
 
