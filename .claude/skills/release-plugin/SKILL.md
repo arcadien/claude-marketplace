@@ -89,13 +89,18 @@ Stage all four generated files and commit:
 conf: rebuild marketplace registry for vX.Y.Z
 ```
 
-## Step 6 — Push and verify
+## Step 6 — Open a PR and merge
+
+**Never push directly to `main`.** Direct pushes risk recording a local worktree
+SHA that does not exist on the remote, breaking `/plugin` with "not our ref".
 
 ```bash
-git push origin main
+git push -u origin <release-branch>
+gh pr create --title "conf: release <name> vX.Y.Z" --base main
 ```
 
-Then run `/plugin` — the installer should report the new version.
+Merge the PR on GitHub, then run `/plugin` — the installer should report the
+new version.
 
 ## Troubleshooting
 
