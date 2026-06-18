@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-15 — triggering requirement: TECH-ANALYST-001_
+_Last updated: 2026-06-16 — triggering requirement: CONF-PLAT-001_
 
 ---
 
@@ -78,11 +78,24 @@ _Last updated: 2026-06-15 — triggering requirement: TECH-ANALYST-001_
 | `code-builder` | Agent | Reads test contracts; proposes design alternatives; verifies architectural boundary before writing any file (emits `ARCH MISMATCH` if a planned file cannot be mapped to a declared component); implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
-| `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure) checks |
+| `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability) checks |
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by pre-push hook; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment; triggers `rbd-review` when remote MR exists |
 | `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
 | `arch-analyst` | Agent | Read-only; infers software components of the target project from requirement files and `docs/architecture.md`; produces `docs/analysis-YYYY-MM-DD.md` containing one global component partitioning diagram (`graph LR` or `classDiagram`) and one per-component diagram (`flowchart` or `stateDiagram`) for each identified software component |
+
+---
+
+## Requirement Categories
+
+| Category | MDA Level | Purpose | derives_from required |
+|---|---|---|---|
+| `FUNC` | PIM | Behavioral requirements (what the system does) | no |
+| `TECH` | PIM | Technical constraints and DI bindings | no |
+| `PERF` | PIM | Performance and scalability requirements | no |
+| `UI` | PIM | User-interface and documentation conventions | no |
+| `CONF` | PIM | Configuration structure and negotiation | no |
+| `PLAT` | PSM | Platform-specific realization of a FUNC or TECH requirement on a concrete technology target (protocol, library, runtime). Every validated PLAT requirement must carry a `derives_from:` field linking to the parent FUNC or TECH requirement it realizes. | yes |
 
 ---
 
@@ -175,3 +188,6 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-ANALYZE-003](../requirements/functional.md#func-analyze-003) | arch-analyst generates per-component Mermaid diagrams | `arch-analyst` |
 | [FUNC-ANALYZE-004](../requirements/functional.md#func-analyze-004) | arch-analyst performs a code-vs-architecture coherence scan | `arch-analyst` |
 | [TECH-ANALYST-001](../requirements/technical.md#tech-analyst-001) | arch-analyst write access limited to output document | `arch-analyst` |
+| [CONF-PLAT-001](../requirements/configuration.md#conf-plat-001) | PLAT as a recognized requirement category in config | `init-agent`, `rbd` |
+| [FUNC-AUDIT-016](../requirements/functional.md#func-audit-016) | T7 check — derives_from traceability for PLAT requirements | `audit-traceability` |
+| [UI-DOC-002](../requirements/ui.md#ui-doc-002) | Markdown hyperlinks for derives_from references in PLAT requirements | `requirement-analyst` |

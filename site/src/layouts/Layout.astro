@@ -1,8 +1,9 @@
 ---
 interface Props {
   title: string;
+  description?: string;
 }
-const { title } = Astro.props;
+const { title, description } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 <!doctype html>
@@ -10,19 +11,153 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description ?? 'Personal Claude Code plugin marketplace by Aurelien'} />
     <title>{title} — Claude Plugin Marketplace</title>
     <style>
+      :root {
+        --accent: #7c3aed;
+        --accent-light: #ede9fe;
+        --accent-dark: #5b21b6;
+        --text: #111827;
+        --text-muted: #6b7280;
+        --border: #e5e7eb;
+        --bg: #f9fafb;
+        --card-bg: #ffffff;
+        --code-bg: #f3f4f6;
+        --radius: 10px;
+        --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.05);
+        --shadow-hover: 0 4px 8px rgba(0,0,0,.12), 0 12px 24px rgba(0,0,0,.08);
+      }
+
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #1a1a1a; line-height: 1.6; }
-      a { color: #5b21b6; text-decoration: none; }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+        padding: 0 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      }
+
+      .header-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        height: 56px;
+      }
+
+      .header-logo {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .header-logo:hover { color: #c4b5fd; text-decoration: none; }
+
+      .header-logo::before {
+        content: '✦';
+        font-size: 0.9rem;
+        color: #a78bfa;
+      }
+
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      /* Typography */
+      h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; }
+      h2 { font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.75rem; }
+      h3 { font-size: 1.05rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+      p { color: var(--text-muted); margin-bottom: 0.75rem; }
+
+      a { color: var(--accent); text-decoration: none; }
       a:hover { text-decoration: underline; }
-      header { margin-bottom: 2rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 1rem; }
-      h1 { font-size: 1.5rem; margin-bottom: 1rem; }
+
+      /* Badge */
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: var(--accent-light);
+        color: var(--accent-dark);
+      }
+
+      /* Code blocks */
+      pre {
+        background: #1e1b4b;
+        color: #e9d5ff;
+        padding: 1rem 1.25rem;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        margin: 0.5rem 0 1.25rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+        font-size: 0.875em;
+      }
+
+      :not(pre) > code {
+        background: var(--code-bg);
+        color: var(--accent-dark);
+        padding: 0.15em 0.35em;
+        border-radius: 4px;
+      }
+
+      /* Prose (README content) */
+      .prose { color: var(--text); max-width: 72ch; }
+      .prose h1 { font-size: 1.5rem; margin: 1.5rem 0 0.75rem; }
+      .prose h2 { font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+      .prose h3 { font-size: 1rem; }
+      .prose p { color: var(--text); margin-bottom: 0.75rem; }
+      .prose ul, .prose ol { padding-left: 1.5rem; margin-bottom: 0.75rem; color: var(--text); }
+      .prose li { margin-bottom: 0.25rem; }
+      .prose table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; font-size: 0.9rem; }
+      .prose th { background: var(--code-bg); font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border: 1px solid var(--border); }
+      .prose td { padding: 0.4rem 0.75rem; border: 1px solid var(--border); }
+      .prose tr:nth-child(even) td { background: var(--bg); }
+      .prose strong { color: var(--text); }
+      .prose blockquote { border-left: 3px solid var(--accent); padding-left: 1rem; color: var(--text-muted); margin: 0.75rem 0; }
+      .prose hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+      /* Mermaid diagrams */
+      .mermaid-diagram {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin: 1rem 0 1.5rem;
+        overflow-x: auto;
+        text-align: center;
+      }
+
+      .mermaid-diagram svg { max-width: 100%; height: auto; }
     </style>
   </head>
   <body>
     <header>
-      <a href={base}>Claude Plugin Marketplace</a>
+      <div class="header-inner">
+        <a class="header-logo" href={base}>Claude Plugin Marketplace</a>
+      </div>
     </header>
     <main>
       <slot />

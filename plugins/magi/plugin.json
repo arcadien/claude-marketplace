@@ -1,0 +1,9 @@
+{
+  "name": "magi-8",
+  "version": "2.0.0",
+  "description": "MAGI deliberation system — Casper (proceduralist), Melchior (pragmatic) and Balthazar (sage) vote on your technical and strategic decisions via /magi",
+  "author": {
+    "name": "Aurelien Labrosse",
+    "email": "aurelien.labrosse@gmail.com"
+  }
+}

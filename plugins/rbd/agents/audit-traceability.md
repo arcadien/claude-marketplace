@@ -80,6 +80,23 @@ This is a hard check: untagged tests are a traceability break regardless of whet
 
 Note: T6a and T6b are enforced at commit time by the test-builder agent. This audit re-checks them as a backstop for any tests written outside the RBD workflow.
 
+### T7 — PLAT derives_from Traceability
+
+For every `PLAT-*` requirement with status `validated`:
+
+1. Read `requirements/platform.md` and all other `requirements/*.md`
+   files that may contain PLAT requirements.
+2. Check whether the requirement's frontmatter contains a
+   `derives_from:` field.
+   - If absent or empty → create a T7 finding (severity: error).
+     Example: "PLAT-XYZ-001 has no derives_from field."
+3. If `derives_from:` is present, extract the referenced ID and verify:
+   - The ID starts with `FUNC-` or `TECH-`. A PLAT deriving from
+     PLAT, PERF, UI, or CONF is a traceability violation → T7 finding.
+   - The ID exists in the requirements map with status `validated`.
+     If the target is non-existent, invalid, not found, or has status
+     `deprecated` → create a T7 finding (severity: error).
+
 ## Output
 
 Return ONLY a JSON array. No prose, no explanation — just the array.
@@ -145,6 +162,20 @@ Return `[]` if no issues found.
     "function": "test_login_valid",
     "issue": "test_login_valid is missing the '# When' section marker.",
     "severity": "warning"
+  },
+  {
+    "type": "traceability",
+    "check": "T7-derives-from-traceability",
+    "requirement_id": "PLAT-DB-001",
+    "issue": "PLAT-DB-001 has no derives_from field — traceability violation.",
+    "severity": "error"
+  },
+  {
+    "type": "traceability",
+    "check": "T7-derives-from-traceability",
+    "requirement_id": "PLAT-DB-002",
+    "issue": "PLAT-DB-002 derives_from FUNC-DATA-999 — target not found.",
+    "severity": "error"
   }
 ]
 ```
