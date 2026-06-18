@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-06-16 — triggering requirement: CONF-PLAT-001_
+_Last updated: 2026-06-18 — triggering requirement: FUNC-METRICS-001_
 
 ---
 
@@ -52,6 +52,11 @@ _Last updated: 2026-06-16 — triggering requirement: CONF-PLAT-001_
 │  └──────────────────┘                                              │
 │                                                                    │
 │  ┌──────────────────┐                                              │
+│  │  rbd-metrics     │  (coverage metrics, req-to-green latency)   │
+│  │  (METRICS skill) │  stdout only; --json and --latency flags     │
+│  └──────────────────┘                                              │
+│                                                                    │
+│  ┌──────────────────┐                                              │
 │  │  pre-push hook   │  (PreToolUse on Bash, git push intercept)   │
 │  │  (PUSH)          │──▶ invokes rbd-review when remote MR exists │
 │  └──────────────────┘                                              │
@@ -79,6 +84,7 @@ _Last updated: 2026-06-16 — triggering requirement: CONF-PLAT-001_
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
 | `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability) checks |
+| `rbd-metrics` | Skill | Reads all requirement files and git log; computes validated requirement counts and `test(ID):` commit coverage per category and subcategory; prints ASCII structured report to stdout; supports `--json` and `--latency` flags; strictly read-only |
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by pre-push hook; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment; triggers `rbd-review` when remote MR exists |
 | `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
@@ -191,3 +197,5 @@ If a future requirement introduces a component that depends on an external servi
 | [CONF-PLAT-001](../requirements/configuration.md#conf-plat-001) | PLAT as a recognized requirement category in config | `init-agent`, `rbd` |
 | [FUNC-AUDIT-016](../requirements/functional.md#func-audit-016) | T7 check — derives_from traceability for PLAT requirements | `audit-traceability` |
 | [UI-DOC-002](../requirements/ui.md#ui-doc-002) | Markdown hyperlinks for derives_from references in PLAT requirements | `requirement-analyst` |
+| [FUNC-METRICS-001](../requirements/functional.md#func-metrics-001) | Coverage metrics report per category and subcategory | `rbd-metrics` |
+| [FUNC-METRICS-002](../requirements/functional.md#func-metrics-002) | Opt-in req-to-green latency per requirement | `rbd-metrics` |
