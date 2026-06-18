@@ -2,6 +2,7 @@ import { globSync } from 'glob';
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 export interface PluginEntry {
   name: string;
@@ -17,12 +18,20 @@ export interface Registry {
   plugins: PluginEntry[];
 }
 
+export interface GitSubdirSource {
+  source: 'git-subdir';
+  url: string;
+  path: string;
+  ref: string;
+  sha: string;
+}
+
 export interface MarketplacePlugin {
   name: string;
   version: string;
   description: string;
   author: { name: string };
-  source: string;
+  source: string | GitSubdirSource;
 }
 
 export interface Marketplace {
@@ -38,18 +47,42 @@ function readAuthorName(author: unknown): string {
   return '';
 }
 
-export function buildMarketplace(rootDir: string, marketplaceName: string, ownerName: string): Marketplace {
+export function buildMarketplace(
+  rootDir: string,
+  marketplaceName: string,
+  ownerName: string,
+  repoUrl?: string,
+): Marketplace {
   const manifests = globSync('plugins/*/plugin.json', { cwd: rootDir });
+
+  let sha = '';
+  let ref = 'main';
+  if (repoUrl) {
+    try {
+      sha = execSync('git rev-parse HEAD', { cwd: rootDir }).toString().trim();
+      ref = execSync('git rev-parse --abbrev-ref HEAD', { cwd: rootDir }).toString().trim();
+      // Always pin to main for the published source (HEAD may be a feature branch)
+      if (ref !== 'main' && ref !== 'master') ref = 'main';
+    } catch {
+      // fall through — sha stays empty, will use string source
+    }
+  }
 
   const plugins: MarketplacePlugin[] = manifests.map((manifestPath) => {
     const raw = readFileSync(resolve(rootDir, manifestPath), 'utf-8');
     const plugin = JSON.parse(raw) as Record<string, unknown>;
+    const pluginPath = dirname(manifestPath).replace(/\\/g, '/');
+
+    const source: string | GitSubdirSource = repoUrl && sha
+      ? { source: 'git-subdir', url: repoUrl, path: pluginPath, ref, sha }
+      : './' + pluginPath;
+
     return {
       name: plugin.name as string,
       version: plugin.version as string,
       description: (plugin.description as string) ?? '',
       author: { name: readAuthorName(plugin.author) },
-      source: './' + dirname(manifestPath).replace(/\\/g, '/'),
+      source,
     };
   });
 
@@ -90,7 +123,8 @@ if (isMain) {
   writeFileSync(resolve(rootDir, 'site/src/data/registry.json'), json);
   writeFileSync(resolve(rootDir, 'site/public/registry.json'), json);
 
-  const marketplace = buildMarketplace(rootDir, 'arcadien-plugins', 'Aurelien');
+  const repoUrl = 'https://github.com/arcadien/claude-marketplace.git';
+  const marketplace = buildMarketplace(rootDir, 'arcadien-plugins', 'Aurelien', repoUrl);
   const marketplaceJson = JSON.stringify(marketplace, null, 2);
   writeFileSync(resolve(rootDir, 'marketplace.json'), marketplaceJson);
   writeFileSync(resolve(rootDir, 'site/public/marketplace.json'), marketplaceJson);

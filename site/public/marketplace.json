@@ -12,7 +12,13 @@
       "author": {
         "name": "Aurelien"
       },
-      "source": "./plugins/rbd"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/arcadien/claude-marketplace.git",
+        "path": "plugins/rbd",
+        "ref": "main",
+        "sha": "0fd10c7d9c1d79fbf02e98de079d98ab29783971"
+      }
     },
     {
       "name": "magi-8",
@@ -21,7 +27,13 @@
       "author": {
         "name": "Aurelien Labrosse"
       },
-      "source": "./plugins/magi"
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/arcadien/claude-marketplace.git",
+        "path": "plugins/magi",
+        "ref": "main",
+        "sha": "0fd10c7d9c1d79fbf02e98de079d98ab29783971"
+      }
     }
   ]
 }
