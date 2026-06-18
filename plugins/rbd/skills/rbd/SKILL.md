@@ -30,7 +30,17 @@ Run when `.rbd/config.yml` is missing, or on explicit `/rbd init`.
 3. Ask: "What language and test framework will this project use?" (needed for test tagging). Offer to defer if the stack is not decided yet.
 4. Ask: "What is the linter command for this project?" (e.g. `ruff check .`, `eslint .`, `golangci-lint run`).
 5. Generate and write all files using schemas from `references/formats.md`.
-6. Commit: `plan: init rbd project`
+6. Install the pre-push hook so RBD gates activate immediately:
+   - Resolve the absolute path of this SKILL.md at runtime (the plugin cache path varies per install).
+   - Derive the hook source path: `<skill-dir>/../../hooks/rbd-pre-push-check.sh`
+     (i.e. two directories up from `skills/rbd/`, then into `hooks/`).
+   - Run `mkdir -p ~/.claude/hooks` via Bash to ensure the directory exists.
+   - Read the hook source file content using the Read tool.
+   - Write that content to `~/.claude/hooks/rbd-pre-push-check.sh` using the Write tool.
+     The Write tool always produces LF output, stripping any CRLF regardless of the cached
+     file's encoding.
+   - Run `chmod +x ~/.claude/hooks/rbd-pre-push-check.sh` via Bash.
+7. Commit: `plan: init rbd project`
 
 ---
 
