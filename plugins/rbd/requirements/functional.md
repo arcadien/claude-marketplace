@@ -409,3 +409,30 @@
 **Status:** validated
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002), [CONF-PLAT-001](configuration.md#conf-plat-001)
 **Description:** `audit-traceability` verifies that every `PLAT-*` requirement with status `validated` has a `derives_from:` frontmatter field referencing an existing FUNC or TECH requirement with status `validated`. Any PLAT requirement missing this field, or referencing a non-existent or deprecated ID, generates a T7 finding (traceability violation).
+
+---
+
+## Coverage Metrics (METRICS)
+
+### FUNC-METRICS-001
+**Title:** Coverage metrics report per category and subcategory
+**Status:** validated
+**Dependencies:** [CONF-IDLVL-001](configuration.md#conf-idlvl-001)
+**Description:** The `rbd-metrics` skill reads all requirement files and counts, per main category (FUNC, TECH, PERF, UI, CONF, PLAT) and per subcategory, the total number of validated requirements and how many have at least one `test(ID):` commit. Output is an ASCII structured list printed to stdout:
+
+```
+FUNC  (12 validated)
+├── AUTH    3 / 3  ████████████  100%
+├── DATA    2 / 4  ██████░░░░░░   50%  ← 2 missing
+└── PUSH    1 / 1  ████████████  100%
+TECH  (4 validated)
+└── TAG     4 / 4  ████████████  100%
+```
+
+No file is written. An optional `--json` flag exports the same data as a JSON object to stdout.
+
+### FUNC-METRICS-002
+**Title:** Opt-in req-to-green latency per requirement
+**Status:** validated
+**Dependencies:** [FUNC-METRICS-001](functional.md#func-metrics-001)
+**Description:** When invoked with the `--latency` flag, `rbd-metrics` traverses the git log to compute, for each validated requirement, the elapsed time between the `req(ID):` commit timestamp and the first `test(ID):` commit timestamp. Requirements with no test commit are shown as `pending`. Results are displayed as a latency column appended to the ASCII structured list produced by FUNC-METRICS-001. The computation is strictly read-only.
