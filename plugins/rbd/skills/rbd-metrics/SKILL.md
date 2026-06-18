@@ -5,8 +5,7 @@ description: >
   Invoke when the user types /rbd-metrics, asks for "coverage metrics",
   "how many requirements are tested", or "show me the metrics".
   Reads all requirement files and git log, then prints an ASCII structured
-  report to stdout. Supports --json and --latency flags. Never writes any
-  file.
+  report to stdout. Supports --json flag. Never writes any file.
 ---
 
 # RBD Metrics
