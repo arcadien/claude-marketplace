@@ -1,6 +1,6 @@
 {
   "name": "rbd",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Requirement-Based Development workflow: guided requirements, TDD cycle, audit, and MR review.",
   "author": {
     "name": "Aurelien",
