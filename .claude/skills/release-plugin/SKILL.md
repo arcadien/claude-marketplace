@@ -47,10 +47,57 @@ Edit `plugins/<name>/plugin.json` and increment the version:
 - **MINOR** (`0.11.0` → `0.12.0`): new skill / agent / hook / command.
 - **MAJOR** (`0.11.0` → `1.0.0`): breaking behavior or hook protocol change.
 
-## Step 3 — Commit the version bump
+## Step 2b — Update CHANGELOG.md
+
+Before committing, prepend a new section to `plugins/<name>/CHANGELOG.md`.
+
+Find the SHA of the last version-bump commit:
+
+```bash
+PREV=$(git log --oneline --grep="bump <name> plugin version" -1 2>/dev/null | awk '{print $1}')
+```
+
+Extract commits since that SHA, scoped to this plugin — exclude merge commits and the bump commit itself:
+
+```bash
+git log --oneline ${PREV:+$PREV..}HEAD -- plugins/<name>/ \
+  | grep -v "^[a-f0-9]* Merge " \
+  | grep -v "^[a-f0-9]* conf: bump"
+```
+
+Group by prefix and prepend the following section to `plugins/<name>/CHANGELOG.md`:
+
+```markdown
+## [X.Y.Z] - YYYY-MM-DD
+
+### Features
+- <feat commit messages, one per line>
+
+### Fixes
+- <fix commit messages>
+
+### Tests
+- <test commit messages>
+
+### Configuration
+- <conf/chore commit messages>
+
+### Documentation
+- <docs commit messages>
+```
+
+Omit sections with no commits. If `CHANGELOG.md` does not exist yet, create it with a `# Changelog` title line first.
+
+## Step 3 — Commit the version bump and changelog
+
+Stage both files and commit:
 
 ```text
 conf: bump <name> plugin version to X.Y.Z
+```
+
+```bash
+git add plugins/<name>/plugin.json plugins/<name>/CHANGELOG.md
 ```
 
 Do NOT run `build-registry` yet — the SHA must point to this commit.
