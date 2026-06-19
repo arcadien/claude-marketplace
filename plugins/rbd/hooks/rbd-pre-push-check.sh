@@ -52,7 +52,7 @@ BASE=$(git rev-parse --verify origin/HEAD 2>/dev/null \
 
 [ -z "$BASE" ] && { printf '{"systemMessage":"Pre-push checks passed (no base ref)."}'; exit 0; }
 
-VALID_PREFIX='^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor)\('
+VALID_PREFIX='^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor)[:(]'
 NEEDS_REQ='^(feat|tech|perf|ui|conf|arch|test)\('
 
 REQS_DIR="$REPO_ROOT/plugins/rbd/requirements"
