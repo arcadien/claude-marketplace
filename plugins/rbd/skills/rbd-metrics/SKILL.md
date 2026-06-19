@@ -95,11 +95,38 @@ count, missing count, and percentage. Example structure:
 The JSON output and the ASCII report are always equivalent representations
 of the same data.
 
+## Step 6 — --latency Flag
+
+When the `--latency` flag is passed, append a latency column to the ASCII
+structured list produced by Steps 1–4.
+
+For each validated requirement, traverse the git log to find:
+
+- The `req(ID):` commit timestamp — when the requirement entered the codebase.
+- The first `test(ID):` commit timestamp — when the first test was committed
+  for that requirement.
+
+Compute the elapsed time between the two timestamps. Requirements with no
+`test(ID):` commit are shown as `pending` in the latency column.
+
+The latency column is appended inline after the percentage on each
+subcategory row, showing the per-requirement breakdown:
+
+```text
+FUNC  (12 validated)
+├── AUTH    3 / 3  ████████████  100%   FUNC-AUTH-001: 2h14m  FUNC-AUTH-002: 1d3h
+└── DATA    2 / 4  ██████░░░░░░   50%  ← 2 missing
+                                        FUNC-DATA-001: 4h07m  FUNC-DATA-002: pending
+```
+
+The computation is strictly read-only. No file is written.
+
 ## Invocation
 
 ```text
-/rbd-metrics           # ASCII structured list to stdout
-/rbd-metrics --json    # JSON object to stdout (same data, machine-readable)
+/rbd-metrics             # ASCII structured list to stdout
+/rbd-metrics --json      # JSON object to stdout (same data, machine-readable)
+/rbd-metrics --latency   # ASCII list with req-to-green latency column appended
 ```
 
 ## Constraints
