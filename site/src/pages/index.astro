@@ -7,17 +7,17 @@ import registry from '../data/registry.json';
   <div class="hero">
     <h1>Plugin Marketplace</h1>
     <p class="hero-sub">
-      Plugins Claude Code développés par Aurelien — workflows RBD, délibération multi-agents, et plus.
+      Claude Code plugins by Aurelien — RBD workflows, multi-agent deliberation, and more.
     </p>
   </div>
 
   <div class="plugins-header">
-    <h2 class="section-title">Plugins disponibles</h2>
+    <h2 class="section-title">Available plugins</h2>
     <span class="badge">{registry.plugins.length}</span>
   </div>
 
   {registry.plugins.length === 0
-    ? <p>Aucun plugin pour l'instant.</p>
+    ? <p>No plugins yet.</p>
     : registry.plugins.map((plugin) => (
         <PluginCard
           name={plugin.name}
