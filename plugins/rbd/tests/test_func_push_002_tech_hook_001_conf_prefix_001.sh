@@ -52,7 +52,6 @@ commit() { git -C "$1" commit -q --allow-empty -m "$2"; }
 run_hook() {
   local payload
   payload=$(printf '{"tool_name":"Bash","cwd":"%s","tool_input":{"command":"%s"}}' "$1" "$(printf '%s' "$2" | sed 's/"/\\"/g')")
-  find "$WORK" -name .push-validated -delete
   (cd "$1" && printf '%s' "$payload" | bash "$HOOK" >/dev/null 2>&1)
   printf '%s' "$?"
 }
