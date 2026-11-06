@@ -57,6 +57,21 @@ run_hook() {
   printf '%s' "$?"
 }
 
+# hook_stderr <session_dir> <command>: prints what the hook writes to stderr
+hook_stderr() {
+  local payload
+  payload=$(printf '{"tool_name":"Bash","cwd":"%s","tool_input":{"command":"%s"}}' "$1" "$2")
+  (cd "$1" && printf '%s' "$payload" | bash "$HOOK" 2>&1 >/dev/null)
+}
+
+assert_contains() {
+  local description="$1" needle="$2" haystack="$3"
+  case "$haystack" in
+    *"$needle"*) echo "  PASS: $description"; PASS=$((PASS + 1)) ;;
+    *) echo "  FAIL: $description (no '$needle' in '$haystack')"; FAIL=$((FAIL + 1)) ;;
+  esac
+}
+
 assert_rc() {
   local description="$1" expected="$2" actual="$3"
   if [ "$actual" = "$expected" ]; then
@@ -148,6 +163,18 @@ test_push_detected_after_other_commands() {
   assert_rc "git -C dir push" 2 "$(run_hook "$r" "git -C $r push origin HEAD")"
 }
 
+test_block_reason_on_stderr() {
+  echo "test_block_reason_on_stderr"
+  # @req: TECH-HOOK-001
+  # Given an unpushed commit with a bad prefix and quotes in its message
+  local r; r=$(new_repo reason)
+  git -C "$r" switch -q -c work
+  commit "$r" 'wip: the "quoted" change'
+  # When the hook blocks the push
+  # Then the reason, naming the commit, is on stderr
+  assert_contains "stderr names the bad commit" 'wip: the "quoted" change' "$(hook_stderr "$r" "$PUSH_CMD")"
+}
+
 test_push_text_not_detected() {
   echo "test_push_text_not_detected"
   # @req: TECH-HOOK-001
@@ -222,6 +249,7 @@ test_pushed_commits_not_rechecked
 test_branch_without_upstream_checked_against_base
 test_push_detected_after_other_commands
 test_push_text_not_detected
+test_block_reason_on_stderr
 
 echo
 echo "Results: $PASS passed, $FAIL failed"
