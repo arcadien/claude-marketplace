@@ -6,7 +6,7 @@
 **Title:** PreToolUse Bash hook for git push interception  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** The plugin registers a `PreToolUse` hook on Bash tool calls. The hook intercepts any command matching `git push` and runs the Phase 6 pre-push checks (audit findings, commit alignment, rbd-review safety net) before allowing or blocking the push.
+**Description:** The plugin registers a `PreToolUse` hook on Bash tool calls. The hook intercepts any command that runs `git push`, wherever it appears in the command line (for example after `cd dir &&` or `;`), and only those: text that merely contains the words, such as an `echo` argument or a commit message, does not trigger it. It runs the Phase 6 pre-push checks (audit findings, commit alignment, rbd-review safety net) before allowing or blocking the push.
 
 ### TECH-SEP-001
 **Title:** test-builder must not modify production code  

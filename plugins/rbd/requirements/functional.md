@@ -357,8 +357,8 @@
 ### FUNC-PUSH-002
 **Title:** Commit alignment validation  
 **Status:** validated  
-**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [TECH-FMT-001](technical.md#tech-fmt-001)  
-**Description:** The hook checks all commits on the current branch not present on the base branch: `prefix(ID):` format compliance, existence of the ID in requirements with status `validated`, and absence of code file modifications outside a properly prefixed commit.
+**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [TECH-FMT-001](technical.md#tech-fmt-001), [CONF-PREFIX-001](configuration.md#conf-prefix-001)  
+**Description:** The hook checks the commits about to be pushed: those not yet on the branch's remote tracking branch, or, when the branch has no upstream yet, those not present on the base branch. Commits already on the remote are never re-checked, since they cannot be fixed without rewriting published history. For each checked commit: `prefix(ID):` format compliance (prefixes of [TECH-FMT-001](technical.md#tech-fmt-001) plus the project's extra prefixes of [CONF-PREFIX-001](configuration.md#conf-prefix-001)), existence of the ID in requirements with status `validated`, and absence of code file modifications outside a properly prefixed commit.
 
 ### FUNC-PUSH-003
 **Title:** rbd-review safety net trigger when remote MR exists  
