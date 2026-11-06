@@ -132,6 +132,37 @@ test_pushed_commits_not_rechecked() {
   assert_rc "published bad commit ignored" 0 "$(run_hook "$r" "$PUSH_CMD")"
 }
 
+test_requirement_ids_checked() {
+  echo "test_requirement_ids_checked"
+  # @req: FUNC-PUSH-002
+  # Given requirements FUNC-A-001 and TECH-B-001 validated, FUNC-C-001 still draft
+  local r; r=$(new_repo ids)
+  mkdir -p "$r/requirements"
+  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' > "$r/requirements/functional.md"
+  printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
+  git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
+  git -C "$r" switch -q -c work
+  # When a branch carries one commit with this message, Then the hook exits with the expected code
+  local expected msg
+  while IFS='|' read -r expected msg; do
+    git -C "$r" reset -q --hard main
+    commit "$r" "$msg"
+    assert_rc "$msg" "$expected" "$(run_hook "$r" "$PUSH_CMD")"
+  done <<'CASES'
+0|feat(FUNC-A-001): validated FUNC id
+0|feat(TECH-B-001): validated TECH id
+0|test(FUNC-A-001,TECH-B-001): two validated ids
+2|feat(TECH-ZZZ-999): unknown TECH id
+2|feat(FUNC-A-001,TECH-ZZZ-999): unknown second id
+2|feat(FUNC-C-001): id not validated
+2|feat(foo): no id in scope
+2|feat: no id at all
+0|req(FUNC-NEW-001): new requirement, not looked up
+2|req: no id
+0|fix: no id needed
+CASES
+}
+
 test_merge_commits_not_checked() {
   echo "test_merge_commits_not_checked"
   # @req: FUNC-PUSH-002
@@ -277,6 +308,7 @@ test_extra_prefix_accepted_from_config
 test_pushed_commits_not_rechecked
 test_branch_without_upstream_checked_against_base
 test_merge_commits_not_checked
+test_requirement_ids_checked
 test_push_detected_after_other_commands
 test_push_text_not_detected
 test_block_reason_on_stderr
