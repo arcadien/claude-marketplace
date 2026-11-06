@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # RBD pre-push gate — type: "command" PreToolUse hook
 #
-# Protocol: read JSON from stdin, output JSON to stdout, exit 0 (allow) or 2 (block).
-# An empty stdout is invalid — always output at least {}.
+# Protocol: read JSON from stdin. Allow: exit 0 with JSON on stdout (at least {}).
+# Block: exit 2 with the reason on stderr — Claude Code ignores stdout on exit 2 (TECH-HOOK-001).
 
 set +e
 
 INPUT=$(cat 2>/dev/null || true)
 
 allow() { printf '{}'; exit 0; }
-block() { printf '{"decision":"block","reason":"%s"}' "$1"; exit 2; }
+block() { printf '%s\n' "$1" >&2; exit 2; }
 
 # Fast path: only act on commands that run git push (TECH-HOOK-001): at the start of the
 # command or after a shell separator, optionally as git -C <dir>; not when it is only text
