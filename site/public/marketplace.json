@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "rbd",
-      "version": "0.13.1",
+      "version": "0.14.0",
       "description": "Requirement-Based Development workflow: guided requirements, TDD cycle, audit, and MR review.",
       "author": {
         "name": "Aurelien"
@@ -17,7 +17,7 @@
         "url": "https://github.com/arcadien/claude-marketplace.git",
         "path": "plugins/rbd",
         "ref": "main",
-        "sha": "3d729824755483df8912b295a6a698fc7b8e4bb9"
+        "sha": "9b3bee74937f0396a62da432184ea1c3c1468fe2"
       }
     },
     {
@@ -32,7 +32,7 @@
         "url": "https://github.com/arcadien/claude-marketplace.git",
         "path": "plugins/magi",
         "ref": "main",
-        "sha": "3d729824755483df8912b295a6a698fc7b8e4bb9"
+        "sha": "9b3bee74937f0396a62da432184ea1c3c1468fe2"
       }
     }
   ]
