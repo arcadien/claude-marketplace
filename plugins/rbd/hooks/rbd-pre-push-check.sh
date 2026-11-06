@@ -19,10 +19,37 @@ if ! printf '%s' "$INPUT" | grep -qE "${CMD_START}${GIT_PUSH}" 2>/dev/null; then
   allow
 fi
 
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+# Repository being pushed (TECH-HOOK-002): the last cd <dir> or git -C <dir> before push,
+# resolved against the payload cwd, falling back to that cwd.
+# shortcut: paths with spaces or escaped quotes are not parsed; use jq if they show up.
+CWD=$(printf '%s' "$INPUT" | grep -oE '"cwd"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed -E 's/.*"([^"]*)"$/\1/')
+[ -z "$CWD" ] && CWD=$PWD
+CMD=$(printf '%s' "$INPUT" | grep -oE '"command"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' | head -1)
+BEFORE_PUSH=$(printf '%s' "$CMD" | sed -E 's/[[:space:]]+push([[:space:]]|\\|"|$).*//')
+TARGET=$(printf '%s' "$BEFORE_PUSH" \
+  | grep -oE '(^|[";&|(`[:space:]]|\\n)(cd|-C)[[:space:]]+(\\"|'"'"')?[^[:space:];&|)`\\"'"'"']+' \
+  | tail -1 | sed -E 's/.*(cd|-C)[[:space:]]+(\\"|'"'"')?//')
+case "$TARGET" in
+  "") TARGET=$CWD ;;
+  "~"*) TARGET="$HOME${TARGET#\~}" ;;
+  /*) ;;
+  *) TARGET="$CWD/$TARGET" ;;
+esac
+
+REPO_ROOT=$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)
 [ -z "$REPO_ROOT" ] && allow
 
-CACHE_FILE="$REPO_ROOT/.rbd/.push-validated"
+# RBD project: .rbd/config.yml at the root, else the first tracked one in a subdirectory (monorepo)
+if [ -f "$REPO_ROOT/.rbd/config.yml" ]; then
+  RBD_ROOT=$REPO_ROOT
+else
+  SUB_CONFIG=$(git -C "$REPO_ROOT" ls-files '*/.rbd/config.yml' 2>/dev/null | head -1)
+  [ -z "$SUB_CONFIG" ] && allow
+  RBD_ROOT="$REPO_ROOT/${SUB_CONFIG%/.rbd/config.yml}"
+fi
+git() { command git -C "$REPO_ROOT" "$@"; }
+
+CACHE_FILE="$RBD_ROOT/.rbd/.push-validated"
 CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null || true)
 
 # ── 0. Cache check (FUNC-PUSH-004) ───────────────────────────────────────────
@@ -35,7 +62,7 @@ if [ -f "$CACHE_FILE" ] && [ -n "$CURRENT_HEAD" ]; then
 fi
 
 # ── 1. Audit check ───────────────────────────────────────────────────────────
-AUDITS_DIR="$REPO_ROOT/audits"
+AUDITS_DIR="$RBD_ROOT/audits"
 if [ -d "$AUDITS_DIR" ]; then
   LATEST=$(ls -t "$AUDITS_DIR"/*.md 2>/dev/null | head -1 || true)
   if [ -n "$LATEST" ] && grep -qiE "status.{0,5}open" "$LATEST" 2>/dev/null; then
@@ -59,13 +86,12 @@ BASE=$(git rev-parse --verify origin/HEAD 2>/dev/null \
 RANGE=$(git rev-parse --verify -q "@{u}" 2>/dev/null || printf '%s' "$BASE")
 
 # extra_commit_prefixes: [hw, ...] in .rbd/config.yml (CONF-PREFIX-001)
-EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$REPO_ROOT/.rbd/config.yml" 2>/dev/null \
+EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
   | tr -d ' "'"'"'\r' | tr ',' '|')
 VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
 NEEDS_REQ='^(feat|tech|perf|ui|conf|arch|test)\('
 
-REQS_DIR="$REPO_ROOT/plugins/rbd/requirements"
-[ ! -d "$REQS_DIR" ] && REQS_DIR="$REPO_ROOT/requirements"
+REQS_DIR="$RBD_ROOT/requirements"
 
 while IFS= read -r LINE; do
   [ -z "$LINE" ] && continue
