@@ -135,10 +135,10 @@ test_pushed_commits_not_rechecked() {
 test_requirement_ids_checked() {
   echo "test_requirement_ids_checked"
   # @req: FUNC-PUSH-002
-  # Given requirements FUNC-A-001 and TECH-B-001 validated, FUNC-C-001 still draft
+  # Given requirements FUNC-A-001 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
   local r; r=$(new_repo ids)
   mkdir -p "$r/requirements"
-  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' > "$r/requirements/functional.md"
+  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
   printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
@@ -155,6 +155,7 @@ test_requirement_ids_checked() {
 2|feat(TECH-ZZZ-999): unknown TECH id
 2|feat(FUNC-A-001,TECH-ZZZ-999): unknown second id
 2|feat(FUNC-C-001): id not validated
+0|test(FUNC-D-001): remove tests of a deprecated requirement
 2|feat(foo): no id in scope
 2|feat: no id at all
 0|req(FUNC-NEW-001): new requirement, not looked up
