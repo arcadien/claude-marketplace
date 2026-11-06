@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Integration tests for FUNC-PUSH-002, TECH-HOOK-001, CONF-PREFIX-001
+# Integration tests for FUNC-PUSH-002, TECH-HOOK-001, TECH-HOOK-002, CONF-PREFIX-001
 # Requirements:
 #   FUNC-PUSH-002  — only commits not yet on the remote tracking branch are checked
 #                    (base branch when there is no upstream)
 #   TECH-HOOK-001  — `git push` is detected wherever it runs in the command line,
 #                    and not when it is only text (echo argument)
+#   TECH-HOOK-002  — the repository being pushed is checked, only when it holds an RBD project
 #   CONF-PREFIX-001 — `extra_commit_prefixes` in .rbd/config.yml are accepted
 #
 # Each case builds a throwaway repository with a bare remote and runs the real
@@ -23,16 +24,22 @@ PUSH_CMD="git push origin HEAD"
 # Helpers
 # ---------------------------------------------------------------------------
 
-# new_repo <name>: bare remote + clone with one pushed commit on main; prints the clone path
+# new_repo <name> [rbd_dir]: bare remote + clone with one pushed commit on main; prints the clone path.
+# The RBD project (.rbd/config.yml) sits in rbd_dir, relative to the root (default: root; "none": no RBD).
 new_repo() {
-  local d="$WORK/$1"
+  local d="$WORK/$1" rbd="${2:-.}"
   git init -q --bare "$d.git"
   git init -q -b main "$d"
   (
     cd "$d" || exit 1
     git config user.email t@t && git config user.name t
     git remote add origin "$d.git"
-    git commit -q --allow-empty -m "plan: init rbd project"
+    if [ "$rbd" != none ]; then
+      mkdir -p "$rbd/.rbd" && printf 'linter:\n  command: "true"\n' > "$rbd/.rbd/config.yml"
+      git add . && git commit -q -m "plan: init rbd project"
+    else
+      git commit -q --allow-empty -m "init"
+    fi
     git push -q -u origin main
   )
   printf '%s' "$d"
@@ -40,11 +47,12 @@ new_repo() {
 
 commit() { git -C "$1" commit -q --allow-empty -m "$2"; }
 
-# run_hook <repo> <command>: prints the hook exit code
+# run_hook <session_dir> <command>: runs the hook from the session directory (process cwd and
+# payload cwd), prints the hook exit code
 run_hook() {
   local payload
-  payload=$(printf '{"tool_name":"Bash","tool_input":{"command":"%s"}}' "$(printf '%s' "$2" | sed 's/"/\\"/g')")
-  rm -f "$1/.rbd/.push-validated"
+  payload=$(printf '{"tool_name":"Bash","cwd":"%s","tool_input":{"command":"%s"}}' "$1" "$(printf '%s' "$2" | sed 's/"/\\"/g')")
+  find "$WORK" -name .push-validated -delete
   (cd "$1" && printf '%s' "$payload" | bash "$HOOK" >/dev/null 2>&1)
   printf '%s' "$?"
 }
@@ -153,6 +161,61 @@ test_push_text_not_detected() {
   assert_rc "git status not intercepted" 0 "$(run_hook "$r" "git status")"
 }
 
+# ---------------------------------------------------------------------------
+# TECH-HOOK-002: the repository being pushed is the one checked
+# ---------------------------------------------------------------------------
+
+test_target_repo_checked_not_session_repo() {
+  echo "test_target_repo_checked_not_session_repo"
+  # @req: TECH-HOOK-002
+  # Given a session started in repo A, and another repo B
+  local a b; a=$(new_repo session_a); b=$(new_repo target_b)
+  git -C "$a" switch -q -c work; git -C "$b" switch -q -c work
+  commit "$b" "wip: bad commit in B"
+  # When the push goes to B through cd, a relative cd, or git -C
+  # Then B's bad commit blocks it
+  assert_rc "cd B && git push blocked by B" 2 "$(run_hook "$a" "cd $b && $PUSH_CMD")"
+  assert_rc "cd ../B && git push blocked by B" 2 "$(run_hook "$a" "cd ../target_b && $PUSH_CMD")"
+  assert_rc "git -C B push blocked by B" 2 "$(run_hook "$a" "git -C $b push origin HEAD")"
+  # Given now the bad commit is only in A, and B is clean
+  git -C "$b" reset -q --hard main
+  commit "$a" "wip: bad commit in A"
+  # Then pushing B is allowed, pushing from A still blocked
+  assert_rc "cd B && git push ignores A" 0 "$(run_hook "$a" "cd $b && $PUSH_CMD")"
+  assert_rc "plain git push checks A" 2 "$(run_hook "$a" "$PUSH_CMD")"
+}
+
+test_non_rbd_repo_not_checked() {
+  echo "test_non_rbd_repo_not_checked"
+  # @req: TECH-HOOK-002
+  # Given a repository without .rbd/config.yml and a bad commit
+  local r; r=$(new_repo plain none)
+  git -C "$r" switch -q -c work
+  commit "$r" "wip: not an rbd project"
+  # When the hook sees a push, Then it lets it through
+  assert_rc "non-RBD repo allowed" 0 "$(run_hook "$r" "$PUSH_CMD")"
+  # And a directory outside any git repository is allowed too
+  mkdir -p "$WORK/no_git"
+  assert_rc "outside git allowed" 0 "$(run_hook "$WORK/no_git" "$PUSH_CMD")"
+}
+
+test_rbd_project_in_subdirectory() {
+  echo "test_rbd_project_in_subdirectory"
+  # @req: TECH-HOOK-002
+  # Given a monorepo whose RBD project lives in plugins/p, declaring extra prefix hw
+  local r; r=$(new_repo mono plugins/p)
+  printf 'linter:\n  command: "true"\nextra_commit_prefixes: [hw]\n' > "$r/plugins/p/.rbd/config.yml"
+  git -C "$r" switch -q -c work
+  commit "$r" "hw: from the subproject config"
+  # When the hook sees a push, Then the subproject config applies
+  assert_rc "subproject extra prefix allowed" 0 "$(run_hook "$r" "$PUSH_CMD")"
+  commit "$r" "wip: bad"
+  assert_rc "bad commit in monorepo blocked" 2 "$(run_hook "$r" "$PUSH_CMD")"
+}
+
+test_target_repo_checked_not_session_repo
+test_non_rbd_repo_not_checked
+test_rbd_project_in_subdirectory
 test_extra_prefix_rejected_without_config
 test_extra_prefix_accepted_from_config
 test_pushed_commits_not_rechecked
