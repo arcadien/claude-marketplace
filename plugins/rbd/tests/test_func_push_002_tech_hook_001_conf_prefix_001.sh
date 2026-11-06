@@ -133,6 +133,22 @@ test_pushed_commits_not_rechecked() {
   assert_rc "published bad commit ignored" 0 "$(run_hook "$r" "$PUSH_CMD")"
 }
 
+test_merge_commits_not_checked() {
+  echo "test_merge_commits_not_checked"
+  # @req: FUNC-PUSH-002
+  # Given a work branch that merged main after main moved on
+  local r; r=$(new_repo merge)
+  git -C "$r" switch -q -c work
+  commit "$r" "docs: on work"
+  git -C "$r" switch -q main
+  commit "$r" "docs: on main"
+  git -C "$r" switch -q work
+  git -C "$r" merge -q --no-edit main
+  # When the hook sees a push
+  # Then the "Merge branch ..." commit is not checked: the push is allowed
+  assert_rc "merge commit allowed" 0 "$(run_hook "$r" "$PUSH_CMD")"
+}
+
 test_branch_without_upstream_checked_against_base() {
   echo "test_branch_without_upstream_checked_against_base"
   # @req: FUNC-PUSH-002
@@ -247,6 +263,7 @@ test_extra_prefix_rejected_without_config
 test_extra_prefix_accepted_from_config
 test_pushed_commits_not_rechecked
 test_branch_without_upstream_checked_against_base
+test_merge_commits_not_checked
 test_push_detected_after_other_commands
 test_push_text_not_detected
 test_block_reason_on_stderr
