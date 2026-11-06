@@ -352,7 +352,7 @@
 **Title:** Block push if open audit findings exist  
 **Status:** validated  
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** Before any `git push`, the hook checks the latest audit report. If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
+**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
 
 ### FUNC-PUSH-002
 **Title:** Commit alignment validation  
