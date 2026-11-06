@@ -105,14 +105,15 @@ In both cases, code-builder is gated: it must not be resumed until the selected 
 
 ## Phase 6 — Pre-Push Check
 
-Run before any `git push`, automatically via the hook or manually.
+Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on every push; run this whole phase via `/rbd` before pushing a branch that already has a remote MR, since step 3 needs Claude.
 
 ### Full check sequence
 
 1. Read the latest report in `audits/`. If any finding has status `open` → block the push. Tell the user which findings must be resolved first.
 2. **Commit alignment check (mechanical):** List all commits on the current branch not present on the base branch. Verify:
-   - Every `feat/tech/perf/ui/conf/arch/test` commit follows the `prefix(ID):` format.
-   - Every referenced ID exists in `requirements/*.md` with status `validated`.
+   - Every `req/test/feat/tech/perf/ui/conf/arch` commit follows the `prefix(ID):` format.
+   - Every referenced ID exists in `requirements/*.md` with status `validated` (or `deprecated`); `req` commits are not looked up.
+   - Merge commits are skipped.
    - No code file was modified outside of a properly prefixed commit.
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
