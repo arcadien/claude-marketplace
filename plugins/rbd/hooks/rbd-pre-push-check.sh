@@ -11,8 +11,11 @@ INPUT=$(cat 2>/dev/null || true)
 allow() { printf '{}'; exit 0; }
 block() { printf '{"decision":"block","reason":"%s"}' "$1"; exit 2; }
 
-# Fast path: only act on git push commands
-if ! printf '%s' "$INPUT" | grep -q '"git push' 2>/dev/null; then
+# Fast path: only act on commands that run git push (TECH-HOOK-001): at the start of the
+# command or after a shell separator, optionally as git -C <dir>; not when it is only text
+CMD_START='("command"[[:space:]]*:[[:space:]]*"|;|&&|[|]|\\n|[(`])'
+GIT_PUSH='[[:space:]]*git([[:space:]]+-C[[:space:]]+[^[:space:]]+)?[[:space:]]+push([[:space:]]|\\|"|$)'
+if ! printf '%s' "$INPUT" | grep -qE "${CMD_START}${GIT_PUSH}" 2>/dev/null; then
   allow
 fi
 
@@ -52,7 +55,13 @@ BASE=$(git rev-parse --verify origin/HEAD 2>/dev/null \
 
 [ -z "$BASE" ] && { printf '{"systemMessage":"Pre-push checks passed (no base ref)."}'; exit 0; }
 
-VALID_PREFIX='^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor)[:(]'
+# only commits about to be pushed (FUNC-PUSH-002): published history is never re-checked
+RANGE=$(git rev-parse --verify -q "@{u}" 2>/dev/null || printf '%s' "$BASE")
+
+# extra_commit_prefixes: [hw, ...] in .rbd/config.yml (CONF-PREFIX-001)
+EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$REPO_ROOT/.rbd/config.yml" 2>/dev/null \
+  | tr -d ' "'"'"'\r' | tr ',' '|')
+VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
 NEEDS_REQ='^(feat|tech|perf|ui|conf|arch|test)\('
 
 REQS_DIR="$REPO_ROOT/plugins/rbd/requirements"
@@ -73,7 +82,7 @@ while IFS= read -r LINE; do
       block "RBD: $HASH references $REQ_ID not found in requirements/"
     fi
   fi
-done < <(git log --oneline "$BASE"..HEAD 2>/dev/null || true)
+done < <(git log --oneline "$RANGE"..HEAD 2>/dev/null || true)
 
 # ── All checks passed: write cache ───────────────────────────────────────────
 if [ -n "$CURRENT_HEAD" ]; then
