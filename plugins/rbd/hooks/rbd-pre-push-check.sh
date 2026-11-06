@@ -78,9 +78,20 @@ RANGE=$(git rev-parse --verify -q "@{u}" 2>/dev/null || printf '%s' "$BASE")
 EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
   | tr -d ' "'"'"'\r' | tr ',' '|')
 VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
-NEEDS_REQ='^(feat|tech|perf|ui|conf|arch|test)\('
+NEEDS_REQ='^(req|test|feat|tech|perf|ui|conf|arch)[:(]'
+CATEGORIES=$(sed -n 's/^[[:space:]]*categories:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
+  | tr -d ' "'"'"'\r' | tr ',' '|')
+REQ_ID_PATTERN="(${CATEGORIES:-FUNC|TECH|PERF|UI|CONF|PLAT})(-[A-Z0-9]+)*-[0-9]+"
 
 REQS_DIR="$RBD_ROOT/requirements"
+
+# status of a requirement: the **Status:** line under its "### <ID>" heading, empty when absent
+req_status() {
+  awk -v id="$1" '$0 == "### " id { found = 1; next }
+    found && /^###/ { exit }
+    found && /^\*\*Status:\*\*/ { sub(/^\*\*Status:\*\*[[:space:]]*/, ""); sub(/[[:space:]]+$/, ""); print; exit }' \
+    "$REQS_DIR"/*.md 2>/dev/null
+}
 
 while IFS= read -r LINE; do
   [ -z "$LINE" ] && continue
@@ -91,11 +102,15 @@ while IFS= read -r LINE; do
     block "RBD: $HASH has invalid prefix — $MSG"
   fi
 
-  if printf '%s' "$MSG" | grep -qE "$NEEDS_REQ" 2>/dev/null && [ -d "$REQS_DIR" ]; then
-    REQ_ID=$(printf '%s' "$MSG" | grep -oE 'FUNC-[A-Z]+-[0-9]+' 2>/dev/null | head -1 || true)
-    if [ -n "$REQ_ID" ] && ! grep -rl "$REQ_ID" "$REQS_DIR" 2>/dev/null | grep -q .; then
-      block "RBD: $HASH references $REQ_ID not found in requirements/"
-    fi
+  if printf '%s' "$MSG" | grep -qE "$NEEDS_REQ" 2>/dev/null; then
+    IDS=$(printf '%s' "$MSG" | grep -oE "$REQ_ID_PATTERN" 2>/dev/null || true)
+    [ -z "$IDS" ] && block "RBD: $HASH needs a requirement ID — $MSG"
+    case "$MSG" in req*) continue ;; esac  # a req commit may create or delete its requirement
+    for REQ_ID in $IDS; do
+      STATUS=$(req_status "$REQ_ID")
+      [ -z "$STATUS" ] && block "RBD: $HASH references $REQ_ID not found in requirements/"
+      case "$STATUS" in validated|deprecated) ;; *) block "RBD: $HASH references $REQ_ID with status $STATUS, not validated" ;; esac
+    done
   fi
 done < <(git log --oneline --no-merges "$RANGE"..HEAD 2>/dev/null || true)
 
