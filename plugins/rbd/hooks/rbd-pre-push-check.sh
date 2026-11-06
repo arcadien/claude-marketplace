@@ -40,6 +40,7 @@ REPO_ROOT=$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || true)
 [ -z "$REPO_ROOT" ] && allow
 
 # RBD project: .rbd/config.yml at the root, else the first tracked one in a subdirectory (monorepo)
+# shortcut: one RBD project per repository; with several, map each commit to its project by changed paths.
 if [ -f "$REPO_ROOT/.rbd/config.yml" ]; then
   RBD_ROOT=$REPO_ROOT
 else
