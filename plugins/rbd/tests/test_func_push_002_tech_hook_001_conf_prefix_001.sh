@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Integration tests for FUNC-PUSH-002, TECH-HOOK-001, TECH-HOOK-002, CONF-PREFIX-001
+# Integration tests for FUNC-PUSH-001, FUNC-PUSH-002, TECH-HOOK-001, TECH-HOOK-002, CONF-PREFIX-001
 # Requirements:
+#   FUNC-PUSH-001  — open findings in the latest audit (by file name) block the push
 #   FUNC-PUSH-002  — only commits not yet on the remote tracking branch are checked
 #                    (base branch when there is no upstream)
 #   TECH-HOOK-001  — `git push` is detected wherever it runs in the command line,
@@ -164,6 +165,25 @@ test_requirement_ids_checked() {
 CASES
 }
 
+test_latest_audit_chosen_by_name() {
+  echo "test_latest_audit_chosen_by_name"
+  # @req: FUNC-PUSH-001
+  # Given a clean recent audit, and an older audit with open findings but a newer mtime
+  local r; r=$(new_repo audit)
+  mkdir -p "$r/audits"
+  printf '| F1 | x | **Status:** resolved |\n' > "$r/audits/2026-02-01-audit.md"
+  printf '| F1 | x | **Status:** open |\n' > "$r/audits/2026-01-01-audit.md"
+  touch -d '2026-01-01' "$r/audits/2026-02-01-audit.md"
+  git -C "$r" switch -q -c work
+  commit "$r" "docs: change"
+  # When the hook sees a push, Then only the latest by name counts
+  assert_rc "old open audit ignored" 0 "$(run_hook "$r" "$PUSH_CMD")"
+  # Given the latest audit by name has open findings, Then the push is blocked
+  printf '| F2 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit.md"
+  touch -d '2026-01-01' "$r/audits/2026-03-01-audit.md"
+  assert_rc "latest open audit blocks" 2 "$(run_hook "$r" "$PUSH_CMD")"
+}
+
 test_merge_commits_not_checked() {
   echo "test_merge_commits_not_checked"
   # @req: FUNC-PUSH-002
@@ -309,6 +329,7 @@ test_extra_prefix_accepted_from_config
 test_pushed_commits_not_rechecked
 test_branch_without_upstream_checked_against_base
 test_merge_commits_not_checked
+test_latest_audit_chosen_by_name
 test_requirement_ids_checked
 test_push_detected_after_other_commands
 test_push_text_not_detected
