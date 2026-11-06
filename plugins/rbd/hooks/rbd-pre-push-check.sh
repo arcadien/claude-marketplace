@@ -109,7 +109,7 @@ while IFS= read -r LINE; do
       block "RBD: $HASH references $REQ_ID not found in requirements/"
     fi
   fi
-done < <(git log --oneline "$RANGE"..HEAD 2>/dev/null || true)
+done < <(git log --oneline --no-merges "$RANGE"..HEAD 2>/dev/null || true)
 
 # ── All checks passed: write cache ───────────────────────────────────────────
 if [ -n "$CURRENT_HEAD" ]; then
