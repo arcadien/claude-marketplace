@@ -50,18 +50,6 @@ else
 fi
 git() { command git -C "$REPO_ROOT" "$@"; }
 
-CACHE_FILE="$RBD_ROOT/.rbd/.push-validated"
-CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null || true)
-
-# ── 0. Cache check (FUNC-PUSH-004) ───────────────────────────────────────────
-if [ -f "$CACHE_FILE" ] && [ -n "$CURRENT_HEAD" ]; then
-  CACHED_HEAD=$(cat "$CACHE_FILE" 2>/dev/null || true)
-  if [ "$CACHED_HEAD" = "$CURRENT_HEAD" ]; then
-    rm -f "$CACHE_FILE"
-    printf '{"systemMessage":"Pre-push checks passed (cached)."}'; exit 0
-  fi
-fi
-
 # ── 1. Audit check ───────────────────────────────────────────────────────────
 AUDITS_DIR="$RBD_ROOT/audits"
 if [ -d "$AUDITS_DIR" ]; then
@@ -110,11 +98,5 @@ while IFS= read -r LINE; do
     fi
   fi
 done < <(git log --oneline --no-merges "$RANGE"..HEAD 2>/dev/null || true)
-
-# ── All checks passed: write cache ───────────────────────────────────────────
-if [ -n "$CURRENT_HEAD" ]; then
-  mkdir -p "$(dirname "$CACHE_FILE")" 2>/dev/null || true
-  printf '%s' "$CURRENT_HEAD" > "$CACHE_FILE" 2>/dev/null || true
-fi
 
 printf '{"systemMessage":"Pre-push checks passed."}'; exit 0
