@@ -363,8 +363,8 @@
 ### FUNC-PUSH-003
 **Title:** rbd-review safety net trigger when remote MR exists  
 **Status:** validated  
-**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** If a remote MR/PR exists for the current branch at push time, the hook triggers `rbd-review` for analysis. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
+**Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
+**Description:** If a remote MR/PR exists for the current branch at push time, Phase 6 of the `rbd` skill triggers `rbd-review` for analysis. The pre-push hook does not: as a command script it cannot run a skill. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
 
 ### FUNC-PUSH-004
 **Title:** Pre-push validation state caching via dotfile  
