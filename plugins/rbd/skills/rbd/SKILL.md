@@ -30,17 +30,7 @@ Run when `.rbd/config.yml` is missing, or on explicit `/rbd init`.
 3. Ask: "What language and test framework will this project use?" (needed for test tagging). Offer to defer if the stack is not decided yet.
 4. Ask: "What is the linter command for this project?" (e.g. `ruff check .`, `eslint .`, `golangci-lint run`).
 5. Generate and write all files using schemas from `references/formats.md`.
-6. Install the pre-push hook so RBD gates activate immediately:
-   - Resolve the absolute path of this SKILL.md at runtime (the plugin cache path varies per install).
-   - Derive the hook source path: `<skill-dir>/../../hooks/rbd-pre-push-check.sh`
-     (i.e. two directories up from `skills/rbd/`, then into `hooks/`).
-   - Run `mkdir -p ~/.claude/hooks` via Bash to ensure the directory exists.
-   - Read the hook source file content using the Read tool.
-   - Write that content to `~/.claude/hooks/rbd-pre-push-check.sh` using the Write tool.
-     The Write tool always produces LF output, stripping any CRLF regardless of the cached
-     file's encoding.
-   - Run `chmod +x ~/.claude/hooks/rbd-pre-push-check.sh` via Bash.
-7. Commit: `plan: init rbd project`
+6. Commit: `plan: init rbd project`
 
 ---
 
@@ -115,31 +105,21 @@ In both cases, code-builder is gated: it must not be resumed until the selected 
 
 ## Phase 6 — Pre-Push Check
 
-Run before any `git push`, automatically via the hook or manually.
-
-### Validation state cache (`.rbd/.push-validated`)
-
-Before running any check, read `.rbd/.push-validated`:
-
-- **File present and HEAD hash matches:** The push was already fully validated for this commit. Allow the push immediately, delete `.rbd/.push-validated` (it is ephemeral one-time-use state), and skip the checks below.
-- **File absent or HEAD hash does not match:** Proceed with the full check sequence below.
-
-After all checks in steps 1–3 pass, write `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. This caches the validated state so the next `git push` attempt for the same HEAD commit is instant.
-
-> Note: `.rbd/.push-validated` is ephemeral state and must never be committed. It is listed in `.gitignore`.
+Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on every push; run this whole phase via `/rbd` before pushing a branch that already has a remote MR, since step 3 needs Claude.
 
 ### Full check sequence
 
 1. Read the latest report in `audits/`. If any finding has status `open` → block the push. Tell the user which findings must be resolved first.
 2. **Commit alignment check (mechanical):** List all commits on the current branch not present on the base branch. Verify:
-   - Every `feat/tech/perf/ui/conf/arch/test` commit follows the `prefix(ID):` format.
-   - Every referenced ID exists in `requirements/*.md` with status `validated`.
+   - Every `req/test/feat/tech/perf/ui/conf/arch` commit follows the `prefix(ID):` format.
+   - Every referenced ID exists in `requirements/*.md` with status `validated` (or `deprecated`); `req` commits are not looked up.
+   - Merge commits are skipped.
    - No code file was modified outside of a properly prefixed commit.
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
    - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
-5. If all checks pass → write `.rbd/.push-validated` with the HEAD commit hash, confirm and allow the push.
+5. If all checks pass → confirm and allow the push.
 
 ---
 

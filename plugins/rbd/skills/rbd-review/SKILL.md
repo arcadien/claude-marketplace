@@ -1,6 +1,6 @@
 ---
 name: rbd-review
-description: "Reviews a GitHub or GitLab merge request from a requirements perspective. Two modes: (1) manual — user invokes /rbd-review with a MR number or URL to review a specific MR; (2) automatic — triggered by the rbd pre-push hook when a remote MR already exists for the branch, acting as a safety net for code pushed outside the RBD workflow. Responds to /rbd-review, 'review the MR', 'check the PR against requirements', 'validate the branch before merging', 'requirements review'."
+description: "Reviews a GitHub or GitLab merge request from a requirements perspective. Two modes: (1) manual — user invokes /rbd-review with a MR number or URL to review a specific MR; (2) automatic — triggered by rbd Phase 6 (pre-push check) when a remote MR already exists for the branch, acting as a safety net for code pushed outside the RBD workflow. Responds to /rbd-review, 'review the MR', 'check the PR against requirements', 'validate the branch before merging', 'requirements review'."
 ---
 
 # RBD Review
@@ -13,7 +13,7 @@ This skill performs a requirements-focused review of a GitHub or GitLab merge re
 - Fetch the diff via `gh pr diff <number>` (GitHub CLI) or GitLab API.
 - This is the standard usage: review a MR before merging.
 
-**Automatic** — invoked by the rbd pre-push hook with no MR reference:
+**Automatic** — invoked by `rbd` Phase 6 (pre-push check) with no MR reference:
 - A remote MR already exists for the current branch, meaning code was likely pushed outside the RBD workflow.
 - Diff the current branch against its base branch locally.
 - Ask the user to confirm the base branch if ambiguous (default: `main` or `master`).
@@ -88,11 +88,11 @@ Present the summary to the user. Process each open finding together. Do not modi
 ## Outcome Signal
 
 After presenting the summary, emit one of the following outcome lines so the calling context
-(the `rbd` Phase 6 pre-push check, or the pre-push hook) can decide whether to block the push:
+(the `rbd` Phase 6 pre-push check) can decide whether to block the push:
 
 - **Zero open findings:** `REVIEW PASSED: no findings.`
 - **One or more open findings:** `REVIEW FAILED: N open finding(s). See audits/YYYY-MM-DD-review-<branch>.md.`
 
-When called from the pre-push hook, a `REVIEW FAILED` outcome blocks the push.
+When called from Phase 6, a `REVIEW FAILED` outcome blocks the push.
 The user must either resolve the findings or explicitly confirm they want to push anyway
-(which requires an OVERRIDE entry in `audits/exclusions.yml`, per the hook's OVERRIDE policy).
+(which requires an OVERRIDE entry in `audits/exclusions.yml`).

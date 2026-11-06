@@ -352,25 +352,25 @@
 **Title:** Block push if open audit findings exist  
 **Status:** validated  
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** Before any `git push`, the hook checks the latest audit report. If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
+**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
 
 ### FUNC-PUSH-002
 **Title:** Commit alignment validation  
 **Status:** validated  
-**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [TECH-FMT-001](technical.md#tech-fmt-001)  
-**Description:** The hook checks all commits on the current branch not present on the base branch: `prefix(ID):` format compliance, existence of the ID in requirements with status `validated`, and absence of code file modifications outside a properly prefixed commit.
+**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [TECH-FMT-001](technical.md#tech-fmt-001), [CONF-PREFIX-001](configuration.md#conf-prefix-001)  
+**Description:** The hook checks the commits about to be pushed: those not yet on the branch's remote tracking branch, or, when the branch has no upstream yet, those not present on the base branch. Commits already on the remote are never re-checked, since they cannot be fixed without rewriting published history. Merge commits are not checked either: git writes their message. For each checked commit: `prefix(ID):` format compliance (prefixes of [TECH-FMT-001](technical.md#tech-fmt-001) plus the project's extra prefixes of [CONF-PREFIX-001](configuration.md#conf-prefix-001)), existence of the ID in requirements with status `validated` (or `deprecated`, so the tests and code of a deprecated requirement can be removed), and absence of code file modifications outside a properly prefixed commit. A requirement ID is any `CATEGORY-...-NNN` whose category is one of `id_format.categories` in `.rbd/config.yml`. Commits with a prefix that needs an ID (`req`, `test`, `feat`, `tech`, `perf`, `ui`, `conf`, `arch`) must cite at least one, and every ID they cite is checked, not only the first. `req` commits are exempt from the existence check, since they create or delete requirements.
 
 ### FUNC-PUSH-003
 **Title:** rbd-review safety net trigger when remote MR exists  
 **Status:** validated  
-**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** If a remote MR/PR exists for the current branch at push time, the hook triggers `rbd-review` for analysis. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
+**Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
+**Description:** If a remote MR/PR exists for the current branch at push time, Phase 6 of the `rbd` skill triggers `rbd-review` for analysis. The pre-push hook does not: as a command script it cannot run a skill. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
 
 ### FUNC-PUSH-004
 **Title:** Pre-push validation state caching via dotfile  
-**Status:** validated  
+**Status:** deprecated  
 **Dependencies:** [FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003), [TECH-HOOK-001](technical.md#tech-hook-001)  
-**Description:** After completing all pre-push checks successfully ([FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003)), the orchestrator writes `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. When the pre-push hook fires, it reads this file first: if the file exists and its content matches the current HEAD hash, the hook allows the push and deletes the file; if the file is absent or the hash does not match, the hook proceeds with the full check sequence. The file `.rbd/.push-validated` must be listed in `.gitignore` — it is ephemeral state and must never be committed.
+**Description:** After completing all pre-push checks successfully ([FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003)), the orchestrator writes `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. When the pre-push hook fires, it reads this file first: if the file exists and its content matches the current HEAD hash, the hook allows the push and deletes the file; if the file is absent or the hash does not match, the hook proceeds with the full check sequence. The file `.rbd/.push-validated` must be listed in `.gitignore` — it is ephemeral state and must never be committed. Deprecated: since the hook became a command script it runs in milliseconds, so the cache saved no time and could skip checks that changed between two pushes.
 
 ---
 

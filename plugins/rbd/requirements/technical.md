@@ -6,7 +6,13 @@
 **Title:** PreToolUse Bash hook for git push interception  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** The plugin registers a `PreToolUse` hook on Bash tool calls. The hook intercepts any command matching `git push` and runs the Phase 6 pre-push checks (audit findings, commit alignment, rbd-review safety net) before allowing or blocking the push.
+**Description:** The plugin registers a `PreToolUse` hook on Bash tool calls in its `hooks/hooks.json`, running the script from the installed plugin (`${CLAUDE_PLUGIN_ROOT}/hooks/`), so it follows plugin updates and needs no copy at init. The hook intercepts any command that runs `git push`, wherever it appears in the command line (for example after `cd dir &&` or `;`), and only those: text that merely contains the words, such as an `echo` argument or a commit message, does not trigger it. It runs the mechanical Phase 6 checks (audit findings, commit alignment) before allowing or blocking the push; the rbd-review safety net needs Claude and stays in Phase 6 of the `rbd` skill. When it blocks, it exits with code 2 and writes the reason to stderr, the only channel Claude Code shows for a blocking hook.
+
+### TECH-HOOK-002
+**Title:** Pre-push hook checks the repository being pushed, only when it is an RBD project  
+**Status:** validated  
+**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001)  
+**Description:** The hook runs its checks on the repository the push targets, not on the session's starting directory. The target is the `<dir>` of `git -C <dir> push`, otherwise of the last `cd <dir>` before `git push`, otherwise the `cwd` of the PreToolUse payload; a relative `<dir>` is resolved against that `cwd`. The RBD project is the directory holding `.rbd/config.yml`: the repository root, or else the first subdirectory with a tracked `.rbd/config.yml` (monorepo, such as a marketplace of plugins); its `requirements/`, `audits/` and config are the ones used by the checks. When the target is not inside a git repository, or the repository holds no RBD project, the push is allowed without any check.
 
 ### TECH-SEP-001
 **Title:** test-builder must not modify production code  
