@@ -179,6 +179,20 @@ test_push_detected_after_other_commands() {
   assert_rc "git -C dir push" 2 "$(run_hook "$r" "git -C $r push origin HEAD")"
 }
 
+test_hook_runs_from_plugin() {
+  echo "test_hook_runs_from_plugin"
+  # @req: TECH-HOOK-001
+  # Given the plugin's hook registration and init instructions
+  # When they are read
+  # Then the hook runs from the plugin directory, and init copies nothing to ~/.claude/hooks
+  assert_contains "hooks.json uses CLAUDE_PLUGIN_ROOT" '${CLAUDE_PLUGIN_ROOT}/hooks/rbd-pre-push-check.sh' "$(cat "$REPO_ROOT/hooks/hooks.json")"
+  if grep -q "claude/hooks" "$REPO_ROOT/skills/rbd/SKILL.md"; then
+    echo "  FAIL: init still installs a copy in ~/.claude/hooks"; FAIL=$((FAIL + 1))
+  else
+    echo "  PASS: init installs no copy"; PASS=$((PASS + 1))
+  fi
+}
+
 test_block_reason_on_stderr() {
   echo "test_block_reason_on_stderr"
   # @req: TECH-HOOK-001
@@ -267,6 +281,7 @@ test_merge_commits_not_checked
 test_push_detected_after_other_commands
 test_push_text_not_detected
 test_block_reason_on_stderr
+test_hook_runs_from_plugin
 
 echo
 echo "Results: $PASS passed, $FAIL failed"
