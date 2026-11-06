@@ -58,7 +58,7 @@ _Last updated: 2026-06-18 — triggering requirement: FUNC-METRICS-001_
 │                                                                    │
 │  ┌──────────────────┐                                              │
 │  │  pre-push hook   │  (PreToolUse on Bash, git push intercept)   │
-│  │  (PUSH)          │──▶ invokes rbd-review when remote MR exists │
+│  │  (PUSH)          │  audit + commit checks (command script)      │
 │  └──────────────────┘                                              │
 │                                                                    │
 │  Shared data (filesystem)                                          │
@@ -84,8 +84,8 @@ _Last updated: 2026-06-18 — triggering requirement: FUNC-METRICS-001_
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
 | `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability) checks |
 | `rbd-metrics` | Skill | Reads all requirement files and git log; computes validated requirement counts and `test(ID):` commit coverage per category and subcategory; prints ASCII structured report to stdout; supports `--json` and `--latency` flags; strictly read-only |
-| `rbd-review` | Skill | Triggered manually by MR/PR number or by pre-push hook; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
-| `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment; triggers `rbd-review` when remote MR exists |
+| `rbd-review` | Skill | Triggered manually by MR/PR number or by `rbd` Phase 6; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
+| `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment |
 | `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
 | `arch-analyst` | Agent | Read-only; infers software components of the target project from requirement files and `docs/architecture.md`; produces `docs/analysis-YYYY-MM-DD.md` containing one global component partitioning diagram (`graph LR` or `classDiagram`) and one per-component diagram (`flowchart` or `stateDiagram`) for each identified software component |
 
@@ -110,7 +110,7 @@ No runtime DI bindings are required at this stage. The RBD plugin is a Claude Co
 
 1. **Skill → Agent dispatch**: the orchestrator skill invokes agents by name with a context payload. No interface abstraction is needed at this layer — agent names are stable string identifiers in the plugin manifest.
 2. **Agent → Filesystem**: all agents read/write shared state through the filesystem (requirement files, config, architecture doc). No injectable repository interface is needed.
-3. **Hook → Skill invocation**: the pre-push hook invokes `rbd-review` by name. Same pattern as skill → agent.
+3. **Skill → Skill invocation**: `rbd` Phase 6 invokes `rbd-review` by name when a remote MR exists. The pre-push hook is a command script and invokes nothing.
 
 If a future requirement introduces a component that depends on an external service (e.g. a GitHub/GitLab API client injected into `rbd-review`), a corresponding `TECH-*` DI constraint requirement will be created at that point.
 
@@ -174,7 +174,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-REVIEW-007](../requirements/functional.md#func-review-007) | Review report generation | `rbd-review` |
 | [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if open audit findings exist | `pre-push hook` |
 | [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
-| [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `pre-push hook` |
+| [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `rbd`, `rbd-review` |
 | [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
 | [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
