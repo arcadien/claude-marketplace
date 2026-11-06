@@ -12,7 +12,7 @@
 **Title:** Pre-push hook checks the repository being pushed, only when it is an RBD project  
 **Status:** validated  
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001)  
-**Description:** The hook runs its checks on the repository the push targets, not on the session's starting directory. The target is the `<dir>` of `git -C <dir> push`, otherwise of the last `cd <dir>` before `git push`, otherwise the `cwd` of the PreToolUse payload; a relative `<dir>` is resolved against that `cwd`. When the target is not inside a git repository, or that repository is not an RBD project (no `.rbd/config.yml` at its root), the push is allowed without any check.
+**Description:** The hook runs its checks on the repository the push targets, not on the session's starting directory. The target is the `<dir>` of `git -C <dir> push`, otherwise of the last `cd <dir>` before `git push`, otherwise the `cwd` of the PreToolUse payload; a relative `<dir>` is resolved against that `cwd`. The RBD project is the directory holding `.rbd/config.yml`: the repository root, or else the first subdirectory with a tracked `.rbd/config.yml` (monorepo, such as a marketplace of plugins); its `requirements/`, `audits/` and config are the ones used by the checks. When the target is not inside a git repository, or the repository holds no RBD project, the push is allowed without any check.
 
 ### TECH-SEP-001
 **Title:** test-builder must not modify production code  
