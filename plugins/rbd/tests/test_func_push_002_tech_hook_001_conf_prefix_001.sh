@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Integration tests for FUNC-PUSH-001, FUNC-PUSH-002, TECH-HOOK-001, TECH-HOOK-002, CONF-PREFIX-001
+# Integration tests for FUNC-PUSH-001, FUNC-PUSH-002, TECH-HOOK-001, TECH-HOOK-002, CONF-PREFIX-001, CONF-DRAFT-001
 # Requirements:
 #   FUNC-PUSH-001  — open findings in the latest audit (by file name) block the push
 #   FUNC-PUSH-002  — only commits not yet on the remote tracking branch are checked
@@ -8,6 +8,7 @@
 #                    and not when it is only text (echo argument)
 #   TECH-HOOK-002  — the repository being pushed is checked, only when it holds an RBD project
 #   CONF-PREFIX-001 — `extra_commit_prefixes` in .rbd/config.yml are accepted
+#   CONF-DRAFT-001  — prefixes in `draft_ok_prefixes` may cite draft requirements
 #
 # Each case builds a throwaway repository with a bare remote and runs the real
 # hook script on a PreToolUse JSON payload. Exit code 0 = allowed, 2 = blocked.
@@ -157,11 +158,41 @@ test_requirement_ids_checked() {
 2|feat(FUNC-A-001,TECH-ZZZ-999): unknown second id
 2|feat(FUNC-C-001): id not validated
 0|test(FUNC-D-001): remove tests of a deprecated requirement
+2|test(FUNC-C-001): draft id without draft_ok_prefixes
 2|feat(foo): no id in scope
 2|feat: no id at all
 0|req(FUNC-NEW-001): new requirement, not looked up
 2|req: no id
 0|fix: no id needed
+CASES
+}
+
+test_draft_ok_prefixes() {
+  echo "test_draft_ok_prefixes"
+  # @req: CONF-DRAFT-001
+  # Given FUNC-A-001 validated, FUNC-C-001 draft, and draft_ok_prefixes: [test]
+  local r; r=$(new_repo draftok)
+  mkdir -p "$r/requirements"
+  printf '%s
+' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' > "$r/requirements/functional.md"
+  printf 'linter:
+  command: "true"
+draft_ok_prefixes: [test]
+' > "$r/.rbd/config.yml"
+  git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
+  git -C "$r" switch -q -c work
+  # When a branch carries one commit with this message, Then the hook exits with the expected code
+  local expected msg
+  while IFS='|' read -r expected msg; do
+    git -C "$r" reset -q --hard main
+    commit "$r" "$msg"
+    assert_rc "$msg" "$expected" "$(run_hook "$r" "$PUSH_CMD")"
+  done <<'CASES'
+0|test(FUNC-C-001): bench sheet of a draft requirement
+0|test(FUNC-A-001,FUNC-C-001): validated and draft ids
+2|feat(FUNC-C-001): feat still needs a validated requirement
+2|test(FUNC-ZZZ-999): unknown id still blocked
+2|test: no id still blocked
 CASES
 }
 
@@ -331,6 +362,7 @@ test_branch_without_upstream_checked_against_base
 test_merge_commits_not_checked
 test_latest_audit_chosen_by_name
 test_requirement_ids_checked
+test_draft_ok_prefixes
 test_push_detected_after_other_commands
 test_push_text_not_detected
 test_block_reason_on_stderr
