@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0] - 2026-11-12
+
+### Features
+- req(CONF-DRAFT-001,FUNC-PUSH-002): prefixes listed in `draft_ok_prefixes` (`.rbd/config.yml`) may cite draft requirements
+- fix(CONF-DRAFT-001): pre-push hook accepts draft requirements for those prefixes; without the key, nothing changes
+
+### Tests
+- test(CONF-DRAFT-001): `test(draft)` blocked without the key, accepted with `draft_ok_prefixes: [test]`; `feat(draft)`, unknown IDs and missing IDs still blocked
+
+### Docs
+- README lists the `draft_ok_prefixes` key; the Design section points to the requirements and architecture (spec file removed)
+
 ## [0.14.0] - 2026-11-06
 
 ### Breaking
