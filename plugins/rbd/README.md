@@ -90,6 +90,7 @@ flowchart TD
 .rbd/
   config.yml          # ID format, test tagging convention, linter command,
                       # optional extra_commit_prefixes: [hw] (accepted by the pre-push hook)
+                      # optional draft_ok_prefixes: [test] (may cite draft requirements)
   plan-files.yml      # workflow files monitored for plan: commit discipline
 
 requirements/
