@@ -79,6 +79,9 @@ EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_RO
   | tr -d ' "'"'"'\r' | tr ',' '|')
 VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
 NEEDS_REQ='^(req|test|feat|tech|perf|ui|conf|arch)[:(]'
+# draft_ok_prefixes: [test, ...] in .rbd/config.yml: these prefixes may also cite draft requirements (CONF-DRAFT-001)
+DRAFT_OK=$(sed -n 's/^draft_ok_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
+  | tr -d ' "'"'"'\r' | tr ',' '|')
 CATEGORIES=$(sed -n 's/^[[:space:]]*categories:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
   | tr -d ' "'"'"'\r' | tr ',' '|')
 REQ_ID_PATTERN="(${CATEGORIES:-FUNC|TECH|PERF|UI|CONF|PLAT})(-[A-Z0-9]+)*-[0-9]+"
@@ -106,10 +109,12 @@ while IFS= read -r LINE; do
     IDS=$(printf '%s' "$MSG" | grep -oE "$REQ_ID_PATTERN" 2>/dev/null || true)
     [ -z "$IDS" ] && block "RBD: $HASH needs a requirement ID — $MSG"
     case "$MSG" in req*) continue ;; esac  # a req commit may create or delete its requirement
+    ALLOWED='validated|deprecated'
+    [ -n "$DRAFT_OK" ] && printf '%s' "$MSG" | grep -qE "^($DRAFT_OK)[:(]" && ALLOWED='validated|deprecated|draft'
     for REQ_ID in $IDS; do
       STATUS=$(req_status "$REQ_ID")
       [ -z "$STATUS" ] && block "RBD: $HASH references $REQ_ID not found in requirements/"
-      case "$STATUS" in validated|deprecated) ;; *) block "RBD: $HASH references $REQ_ID with status $STATUS, not validated" ;; esac
+      printf '%s' "$STATUS" | grep -qxE "$ALLOWED" || block "RBD: $HASH references $REQ_ID with status $STATUS, not validated"
     done
   fi
 done < <(git log --oneline --no-merges "$RANGE"..HEAD 2>/dev/null || true)
