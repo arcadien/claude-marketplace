@@ -146,6 +146,10 @@ Phase 5: Implement    → agent implements, full suite green, linted, commit: fe
 Phase 6: Pre-push     → audit check + branch alignment + rbd-review if MR exists
 ```
 
-## Design Spec
+## Design
 
-`docs/superpowers/specs/2026-05-27-rbd-workflow-design.md`
+The original design spec was removed; the plugin is now described by its own requirements and architecture:
+
+- [requirements/](requirements/): functional, technical, performance, UI, configuration and platform requirements
+- [docs/architecture.md](docs/architecture.md): components, hooks and agents
+- [CHANGELOG.md](CHANGELOG.md): changes per version
