@@ -31,3 +31,9 @@
 **Status:** validated  
 **Dependencies:** [TECH-FMT-001](technical.md#tech-fmt-001)  
 **Description:** A project may declare extra commit prefixes for changes outside the RBD code cycle (for example `hw` for hardware files) in `.rbd/config.yml`, as `extra_commit_prefixes: [hw, ...]`. The pre-push hook accepts `prefix:` and `prefix(...)` for each of them in addition to the built-in list. They never require a requirement ID. Without the key, only the built-in prefixes are accepted.
+
+### CONF-DRAFT-001
+**Title:** Commit prefixes allowed to cite draft requirements  
+**Status:** validated  
+**Dependencies:** [CONF-PREFIX-001](configuration.md#conf-prefix-001), [FUNC-PUSH-002](functional.md#func-push-002)  
+**Description:** A project may list, in `.rbd/config.yml` as `draft_ok_prefixes: [test, ...]`, commit prefixes whose cited requirements may also have status `draft` (for example bench test sheets written before the measurement that validates their requirement). For these prefixes the pre-push hook accepts `validated`, `deprecated` or `draft`; the existence check and the at-least-one-ID rule still apply. Without the key, only `validated` and `deprecated` are accepted, as before.
