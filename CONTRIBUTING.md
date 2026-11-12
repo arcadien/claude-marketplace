@@ -59,16 +59,20 @@ doc updates, or wording-only edits that don't affect runtime behavior.
    { "version": "X.Y.Z" }
    ```
 
+   and the `Version` row of the plugin in the root `README.md` (the home page; `build-registry` does not touch it), and
+   add the version's section to `plugins/<name>/CHANGELOG.md`.
+
 3. **Commit** the version bump:
 
    ```text
-   conf: bump <name> plugin version to X.Y.Z
+   chore: bump <name> plugin version to X.Y.Z
    ```
 
 4. **Rebuild the registry** from the repo root:
 
    ```bash
-   npx ts-node scripts/build-registry.ts
+   npm ci                    # once, or after package-lock.json changes
+   npm run build:registry    # tsx scripts/build-registry.ts
    ```
 
    This updates:
@@ -85,7 +89,7 @@ doc updates, or wording-only edits that don't affect runtime behavior.
 5. **Commit** the registry output:
 
    ```text
-   conf: rebuild marketplace registry for vX.Y.Z
+   chore: rebuild marketplace registry for vX.Y.Z
    ```
 
 6. **Push / merge to `main`**.

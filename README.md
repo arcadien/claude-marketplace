@@ -19,7 +19,7 @@ Guided workflow that enforces traceability between requirements, tests, and code
 
 | | |
 |---|---|
-| Version | `0.13.1` |
+| Version | `0.15.0` |
 | Documentation | [plugins/rbd/README.md](plugins/rbd/README.md) |
 | Architecture | [plugins/rbd/docs/architecture.md](plugins/rbd/docs/architecture.md) |
 | Changelog | [plugins/rbd/CHANGELOG.md](plugins/rbd/CHANGELOG.md) |
