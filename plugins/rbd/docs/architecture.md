@@ -80,7 +80,7 @@ _Last updated: 2026-11-17 — triggering requirement: FUNC-LINKS-001_
 
 | Component | Type | Responsibilities |
 |---|---|---|
-| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH` (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic (TECH-AGENT-001) |
+| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH` (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
 | `init-agent` | Agent | Negotiates ID format, language/framework, linter; generates all initial project files; performs initial commit |
 | `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
 | `test-builder` | Agent | Generates integration tests in GWT structure; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |

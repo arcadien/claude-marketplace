@@ -12,4 +12,4 @@
 **Title:** Markdown hyperlinks for derives_from references in PLAT requirements  
 **Status:** validated  
 **Dependencies:** [UI-DOC-001](ui.md#ui-doc-001), [CONF-PLAT-001](configuration.md#conf-plat-001)  
-**Description:** In every PLAT requirement block produced by `requirement-analyst`, the `derives_from:` field value must be a Markdown hyperlink pointing to the parent requirement's anchor in the appropriate requirements file (e.g. `[FUNC-DATA-001](functional.md#func-data-001)`). This extends the hyperlink convention of UI-DOC-001 to cover the PLAT-specific derivation link.
+**Description:** In every PLAT requirement block produced by `requirement-analyst`, the `derives_from:` field value must be a Markdown hyperlink pointing to the parent requirement's anchor in the appropriate requirements file (e.g. `[FUNC-DATA-001](functional.md#func-data-001)`). This extends the hyperlink convention of [UI-DOC-001](ui.md#ui-doc-001) to cover the PLAT-specific derivation link.

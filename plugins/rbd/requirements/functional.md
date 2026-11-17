@@ -493,4 +493,4 @@ No file is written. An optional `--json` flag exports the same data as a JSON ob
 **Title:** Opt-in req-to-green latency per requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-METRICS-001](functional.md#func-metrics-001)  
-**Description:** When invoked with the `--latency` flag, `rbd-metrics` traverses the git log to compute, for each validated requirement, the elapsed time between the `req(ID):` commit timestamp and the first `test(ID):` commit timestamp. Requirements with no test commit are shown as `pending`. Results are displayed as a latency column appended to the ASCII structured list produced by FUNC-METRICS-001. The computation is strictly read-only.
+**Description:** When invoked with the `--latency` flag, `rbd-metrics` traverses the git log to compute, for each validated requirement, the elapsed time between the `req(ID):` commit timestamp and the first `test(ID):` commit timestamp. Requirements with no test commit are shown as `pending`. Results are displayed as a latency column appended to the ASCII structured list produced by [FUNC-METRICS-001](functional.md#func-metrics-001). The computation is strictly read-only.
