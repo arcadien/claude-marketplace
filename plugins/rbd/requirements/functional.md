@@ -310,6 +310,12 @@
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
 **Description:** `/rbd-audit since-last` reads the `Audited commit:` hash of the latest report and gives both agents `git log <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`. The agents focus their checks on what changed; `audits/exclusions.yml` still applies to the whole history. When the latest report has no `Audited commit:` line, the skill runs a full audit and says so in the report header.
 
+### FUNC-AUDIT-018
+**Title:** Audit of a fixed commit  
+**Status:** validated  
+**Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
+**Description:** The audit agents read the audited commit, not the working tree: `rbd-audit` creates a temporary detached `git worktree` at the recorded hash, gives its path to both agents as the project root, and removes it once both agents have returned. Git history commands of the agents run on that commit (`git log <hash>`), not on `--all`. Switching branches or editing files during the audit does not change what the agents read. The report is written to the `audits/` directory of the working tree.
+
 ---
 
 ## MR Review (REVIEW)
