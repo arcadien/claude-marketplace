@@ -81,6 +81,8 @@ FUNC-AUDIT-008|agents/audit-traceability.md|Verification:.* is not .test.
 FUNC-AUDIT-008|agents/audit-traceability.md|bench \(pending\)
 FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|Verification:.* is not .test.
 FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
+FUNC-AUDIT-010|agents/audit-traceability.md|tag-only
+FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|tag-only
 FUNC-AUDIT-009|agents/audit-traceability.md|tag citing a .draft. requirement
 FUNC-AUDIT-005|agents/audit-coherence.md|depends on a .draft.
 FUNC-AUDIT-011|agents/audit-traceability.md|accepted_prefixes
