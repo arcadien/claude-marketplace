@@ -73,6 +73,8 @@ test_audit_checks() {
   # @req: FUNC-AUDIT-010
   # @req: FUNC-AUDIT-011
   # @req: FUNC-AUDIT-012
+  # @req: FUNC-AUDIT-021
+  # @req: CONF-RULES-001
   # @req: FUNC-PUSH-002
   # Given the traceability agent and the audit checklist
   # When they are searched for each rule of the traceability checks
@@ -89,6 +91,11 @@ FUNC-AUDIT-005|agents/audit-coherence.md|depends on a .draft.
 FUNC-AUDIT-011|agents/audit-traceability.md|accepted_prefixes
 FUNC-AUDIT-011|skills/rbd/references/formats.md|accepted_prefixes:
 FUNC-AUDIT-007|agents/audit-coherence.md|restates the requirement differently
+FUNC-AUDIT-021|agents/audit-traceability.md|### T8
+FUNC-AUDIT-021|agents/audit-traceability.md|rbd_links\.py --check
+CONF-RULES-001|agents/audit-coherence.md|non_technical_without_code
+CONF-RULES-001|skills/rbd/references/formats.md|non_technical_without_code
+FUNC-LINKS-001|skills/rbd-links/SKILL.md|rbd_links\.py
 FUNC-AUDIT-012|agents/audit-traceability.md|docs/architecture.md.* in .accepted_prefixes
 FUNC-PUSH-002|agents/audit-traceability.md|FUNC-X-001\.\.015
 FUNC-PUSH-002|skills/rbd-review/SKILL.md|Expand ID ranges
