@@ -29,6 +29,7 @@ test_audit_reports() {
   # @req: FUNC-AUDIT-014
   # @req: FUNC-REVIEW-007
   # @req: FUNC-AUDIT-017
+  # @req: FUNC-AUDIT-018
   # Given the audit and review instruction files
   # When they are searched for each behaviour of the audit reports
   # Then every behaviour is stated
@@ -40,6 +41,10 @@ FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|/rbd-audit since-last
 FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|git diff <hash>\.\.<audited>
 FUNC-AUDIT-017|agents/audit-traceability.md|since-last
 FUNC-AUDIT-017|agents/audit-coherence.md|since-last
+FUNC-AUDIT-018|skills/rbd-audit/SKILL.md|git worktree add --detach
+FUNC-AUDIT-018|skills/rbd-audit/SKILL.md|git worktree remove
+FUNC-AUDIT-018|agents/audit-traceability.md|git log <hash>
+FUNC-AUDIT-018|agents/audit-coherence.md|audited tree
 CASES
 }
 
