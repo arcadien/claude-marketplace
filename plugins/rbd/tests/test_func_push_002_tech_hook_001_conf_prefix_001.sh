@@ -137,10 +137,10 @@ test_pushed_commits_not_rechecked() {
 test_requirement_ids_checked() {
   echo "test_requirement_ids_checked"
   # @req: FUNC-PUSH-002
-  # Given requirements FUNC-A-001 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
+  # Given requirements FUNC-A-001, FUNC-A-002 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
   local r; r=$(new_repo ids)
   mkdir -p "$r/requirements"
-  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
+  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-A-002' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
   printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
@@ -156,6 +156,9 @@ test_requirement_ids_checked() {
 0|test(FUNC-A-001,TECH-B-001): two validated ids
 2|feat(TECH-ZZZ-999): unknown TECH id
 2|feat(FUNC-A-001,TECH-ZZZ-999): unknown second id
+0|feat(FUNC-A-001..002): range of validated ids
+2|feat(FUNC-A-001..003): range reaching an unknown id
+2|feat(TECH-B-001,FUNC-A-002..003): range after another id
 2|feat(FUNC-C-001): id not validated
 0|test(FUNC-D-001): remove tests of a deprecated requirement
 2|test(FUNC-C-001): draft id without draft_ok_prefixes
@@ -213,6 +216,12 @@ test_latest_audit_chosen_by_name() {
   printf '| F2 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit.md"
   touch -d '2026-01-01' "$r/audits/2026-03-01-audit.md"
   assert_rc "latest open audit blocks" 2 "$(run_hook "$r" "$PUSH_CMD")"
+  # Given a second report the same day, clean, Then it is the latest: the push is allowed
+  printf '| F2 | x | **Status:** fixed |\n' > "$r/audits/2026-03-01-audit-2.md"
+  assert_rc "same-day -audit-2 comes after -audit" 0 "$(run_hook "$r" "$PUSH_CMD")"
+  # Given -audit-10 has open findings, Then it comes after -audit-2: the push is blocked
+  printf '| F3 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit-10.md"
+  assert_rc "same-day -audit-10 comes after -audit-2" 2 "$(run_hook "$r" "$PUSH_CMD")"
 }
 
 test_merge_commits_not_checked() {

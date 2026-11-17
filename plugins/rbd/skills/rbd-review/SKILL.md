@@ -10,21 +10,32 @@ This skill performs a requirements-focused review of a GitHub or GitLab merge re
 ## Two Modes
 
 **Manual** — user provides a MR/PR number or URL:
+
 - Fetch the diff via `gh pr diff <number>` (GitHub CLI) or GitLab API.
 - This is the standard usage: review a MR before merging.
 
 **Automatic** — invoked by `rbd` Phase 6 (pre-push check) with no MR reference:
+
 - A remote MR already exists for the current branch, meaning code was likely pushed outside the RBD workflow.
 - Diff the current branch against its base branch locally.
 - Ask the user to confirm the base branch if ambiguous (default: `main` or `master`).
 
 Proceed with the same analysis regardless of mode.
+Before analysing, record the reviewed commit: `git rev-parse HEAD` in automatic mode, the PR head (`gh pr view <n> --json headRefOid`) in manual mode.
+
+**Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
+branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
+to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
+
+For a merged PR, check that its head commit reached the default branch:
+`git merge-base --is-ancestor <head> origin/<default>`. If it did not, report it as a finding.
 
 ## Analysis
 
 ### Check R1: Requirement Coverage
 
 - Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):`, `arch(ID):`, `test(ID):`).
+- Expand ID ranges: `FUNC-X-001..015` cites every ID from `FUNC-X-001` to `FUNC-X-015` (same digit count).
 - For each extracted ID: verify the requirement exists in `requirements/*.md` with status `validated`.
 - Flag commits referencing non-existent or non-validated requirements.
 
@@ -60,6 +71,8 @@ Sanitize the branch name for the filename: replace every `/` with `-`
 
 ```markdown
 # MR Review — <branch-name> — YYYY-MM-DD
+
+Reviewed commit: <full hash> — branch `<branch>` — PR #<n>
 
 ## Summary
 

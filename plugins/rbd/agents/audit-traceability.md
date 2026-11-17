@@ -18,48 +18,73 @@ You never modify any file. Your sole output is a JSON array of findings.
 
 ## Setup
 
+0. The dispatch prompt gives the audited tree (a worktree at the audited commit) and its hash `<hash>`.
+   Read every file from that tree and run git as `git -C <audited tree>`, never in the session's working tree.
+   History commands run on the audited commit: `git log <hash>`, not `--all`.
 1. Read `.rbd/config.yml` to get the test tagging convention (pattern and language).
 2. Read `.rbd/plan-files.yml` to get the list of monitored plan files.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
 4. Read all `requirements/*.md` files (functional, technical, performance, ui, configuration). Build a map of `{ ID → status }` for all requirements.
+
+## Since-last mode
+
+When the dispatch prompt says `since-last`, it also gives a `git log` and a `git diff` of what changed since the
+previous audit. Run every check, but report only findings about requirements, tests, code or commits in that range.
 
 ## Execute Traceability Checks
 
 ### T1 — Test Coverage per Requirement
 
 For each requirement with status `validated`:
+
 - Search all test files for the tag pattern from config (use Grep with the ID).
-- If no match → create a finding.
+- If no match → create a finding, unless the requirement's `**Verification:**` line is not `test`:
+  then create an `info` entry instead ("verified by inspection, no test required").
+- List every requirement whose verification is `bench (pending)` in one `info` entry.
 
 Note: `deprecated` and `draft` requirements are excluded — deprecated ones may have been intentionally decommissioned, draft ones have not yet reached the test phase.
 
 ### T2 — Tag Validity
 
 Search all test files for all occurrences of the tagging pattern.
+
 - Extract each ID found.
 - If the ID is not in the requirements map → create a finding.
+- For a tag citing a `draft` requirement (a test kept after its requirement went back to draft) → create a
+  `warning`: re-validate the requirement, or remove the tests or their tag.
 
 ### T3 — Implementation Coverage
 
+A commit header may cite an ID range: `FUNC-X-001..015` cites every ID from `FUNC-X-001` to `FUNC-X-015`
+(same prefix, same digit count). Expand ranges before matching IDs, in T3 and in T5.
+
 For each requirement with status `validated`:
-- Run `git log --oneline --all` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
-- Run `git log --oneline --all` and grep for `test(ID):`.
+
+- Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
+- Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
+- A requirement whose `**Verification:**` is not `test` needs only the implementation commit.
+- A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
+  line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Do not flag it.
 
 ### T4 — Plan File Coverage
 
 For each file in `.rbd/plan-files.yml`:
-- Run `git log --oneline -- <file>` to get commits that modified it.
-- For each such commit, check whether it starts with `plan:`.
-- If a modification commit does not start with `plan:` → create a finding.
+
+- Run `git log --oneline <hash> -- <file>` to get commits that modified it.
+- For each such commit, check whether it starts with `plan:`, or with a prefix that the optional `accepted_prefixes:`
+  map of `.rbd/plan-files.yml` lists for this file (keys are paths or globs).
+- If a modification commit has neither → create a finding.
 
 ### T5 — Architecture Document Currency
 
 1. Check that `docs/architecture.md` exists. If absent → create a finding (severity: error).
 2. Read the "Requirement → Component Traceability" table. For each validated requirement: verify it has a row.
 3. Read the "Dependency Injection Map". For each entry: verify a corresponding TECH requirement exists with status `validated`.
-4. Run `git log --oneline -- docs/architecture.md`. For each commit that modified the file:
-   - Verify the commit message starts with `arch(` and contains a valid requirement ID.
+4. Run `git log --oneline <hash> -- docs/architecture.md`. For each commit that modified the file:
+   - Verify the commit message starts with `arch(` and contains a valid requirement ID, or starts with a prefix
+     listed for `docs/architecture.md` in `accepted_prefixes:` of `.rbd/plan-files.yml` (for example `plan` for a
+     format-only pass).
    - If not → create a finding.
 
 ### T6 — Test Structure Conventions
@@ -67,6 +92,7 @@ For each file in `.rbd/plan-files.yml`:
 For every test file detected in the project:
 
 **T6a — Tag coverage (error):**
+
 1. List all test functions using the naming convention for the project language (e.g. `def test_`, `it(`, `test(`).
 2. For each function: check whether the tag pattern from `.rbd/config.yml` is present in the function body or decorator.
 3. If a function has no tag → create a finding (severity: error).
@@ -74,6 +100,7 @@ For every test file detected in the project:
 This is a hard check: untagged tests are a traceability break regardless of whether their requirement has coverage from other tests.
 
 **T6b — Given/When/Then structure (warning):**
+
 1. For each test function found in T6a:
 2. Check whether the function body contains the three structural markers: `# Given`, `# When`, `# Then` (or language-equivalent: `// Given`, `// When`, `// Then`).
 3. If any marker is missing → create a finding (severity: warning).
@@ -96,6 +123,14 @@ For every `PLAT-*` requirement with status `validated`:
    - The ID exists in the requirements map with status `validated`.
      If the target is non-existent, invalid, not found, or has status
      `deprecated` → create a T7 finding (severity: error).
+
+### T8 — Requirement ID Links
+
+Run `python3 <plugin root>/skills/rbd-links/rbd_links.py --check <audited tree>` (the plugin root is two directories
+above this agent file's `agents/`). It is read-only.
+
+- Each `broken link` line → a T8 finding (severity: error).
+- Each `is not linked` line → a T8 finding (severity: warning). Report one entry per ID; rbd-audit groups them.
 
 ## Output
 

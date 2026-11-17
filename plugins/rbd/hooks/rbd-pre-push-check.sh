@@ -53,7 +53,10 @@ git() { command git -C "$REPO_ROOT" "$@"; }
 # ── 1. Audit check ───────────────────────────────────────────────────────────
 AUDITS_DIR="$RBD_ROOT/audits"
 if [ -d "$AUDITS_DIR" ]; then
-  LATEST=$(ls "$AUDITS_DIR"/*.md 2>/dev/null | sort | tail -1)  # audits are named YYYY-MM-DD-audit.md
+  # audits are named YYYY-MM-DD-audit.md, then -audit-2.md, -audit-3.md... the same day: sort -audit.md as -audit-1.md
+  LATEST=$(ls "$AUDITS_DIR"/*.md 2>/dev/null \
+    | awk '{ key = $0; sub(/-audit\.md$/, "-audit-1.md", key); print key "\t" $0 }' \
+    | sort -V | tail -1 | cut -f2)
   if [ -n "$LATEST" ] && grep -qiE "status.{0,5}open" "$LATEST" 2>/dev/null; then
     EXCLUSIONS="$AUDITS_DIR/exclusions.yml"
     BASENAME=$(basename "$LATEST")
@@ -88,6 +91,19 @@ REQ_ID_PATTERN="(${CATEGORIES:-FUNC|TECH|PERF|UI|CONF|PLAT})(-[A-Z0-9]+)*-[0-9]+
 
 REQS_DIR="$RBD_ROOT/requirements"
 
+# expand_ids: one ID per line on stdin; a range FUNC-X-001..015 becomes FUNC-X-001 to FUNC-X-015, same digit count
+expand_ids() {
+  local id prefix first last n
+  while IFS= read -r id; do
+    case "$id" in
+      *..*)
+        last=${id##*..}; id=${id%..*}; prefix=${id%-*}; first=${id##*-}
+        for n in $(seq "$((10#$first))" "$((10#$last))"); do printf '%s-%0*d\n' "$prefix" "${#first}" "$n"; done ;;
+      *) printf '%s\n' "$id" ;;
+    esac
+  done
+}
+
 # status of a requirement: the **Status:** line under its "### <ID>" heading, empty when absent
 req_status() {
   awk -v id="$1" '$0 == "### " id { found = 1; next }
@@ -106,7 +122,7 @@ while IFS= read -r LINE; do
   fi
 
   if printf '%s' "$MSG" | grep -qE "$NEEDS_REQ" 2>/dev/null; then
-    IDS=$(printf '%s' "$MSG" | grep -oE "$REQ_ID_PATTERN" 2>/dev/null || true)
+    IDS=$(printf '%s' "$MSG" | grep -oE "${REQ_ID_PATTERN}(\.\.[0-9]+)?" 2>/dev/null | expand_ids || true)
     [ -z "$IDS" ] && block "RBD: $HASH needs a requirement ID — $MSG"
     case "$MSG" in req*) continue ;; esac  # a req commit may create or delete its requirement
     ALLOWED='validated|deprecated'

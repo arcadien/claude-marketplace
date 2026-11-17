@@ -17,3 +17,12 @@ plan_files:
   - agents/code-builder.md
   - agents/audit-coherence.md
   - agents/audit-traceability.md
+
+# prefixes this plugin uses for its own plan files (T4/T5), besides plan:
+accepted_prefixes:
+  requirements/*.md: [req, plan]
+  docs/architecture.md: [arch, plan]
+  skills/**/SKILL.md: [feat, fix, docs, plan]
+  agents/*.md: [feat, fix, docs, plan]
+  hooks/hooks.json: [fix, feat, plan]
+  plugin.json: [chore, plan]

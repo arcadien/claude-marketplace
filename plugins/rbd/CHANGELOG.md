@@ -3,23 +3,28 @@
 ## [0.15.0] - 2026-11-12
 
 ### Features
+
 - req(CONF-DRAFT-001,FUNC-PUSH-002): prefixes listed in `draft_ok_prefixes` (`.rbd/config.yml`) may cite draft requirements
 - fix(CONF-DRAFT-001): pre-push hook accepts draft requirements for those prefixes; without the key, nothing changes
 
 ### Tests
+
 - test(CONF-DRAFT-001): `test(draft)` blocked without the key, accepted with `draft_ok_prefixes: [test]`; `feat(draft)`, unknown IDs and missing IDs still blocked
 
 ### Docs
+
 - README lists the `draft_ok_prefixes` key; the Design section points to the requirements and architecture (spec file removed)
 
 ## [0.14.0] - 2026-11-06
 
 ### Breaking
+
 - `req`, `test`, `feat`, `tech`, `perf`, `ui`, `conf`, `arch` commits without a requirement ID now block the push.
 - The hook runs from the plugin (`${CLAUDE_PLUGIN_ROOT}`): delete the old copy `~/.claude/hooks/rbd-pre-push-check.sh`.
 - Repositories without `.rbd/config.yml` are no longer checked.
 
 ### Fixes
+
 - fix(FUNC-PUSH-001): pre-push hook picks the latest audit by file name
 - fix(FUNC-PUSH-002): pre-push hook checks every cited ID of any category, with validated or deprecated status
 - fix(FUNC-PUSH-004): remove the validation cache from hook, skill and gitignore
@@ -30,6 +35,7 @@
 - fix(FUNC-PUSH-002,TECH-HOOK-001,CONF-PREFIX-001): pre-push hook checks only unpushed commits, detects git push anywhere, reads extra prefixes
 
 ### Tests
+
 - test(FUNC-PUSH-001): latest audit is chosen by file name, not mtime
 - test(FUNC-PUSH-002): deprecated requirement may be referenced
 - test(FUNC-PUSH-002): requirement IDs of every category are checked
@@ -41,6 +47,7 @@
 - test(FUNC-PUSH-002,TECH-HOOK-001,CONF-PREFIX-001): hook behaviour on throwaway repos
 
 ### Requirements and architecture
+
 - arch(FUNC-PUSH-003): rbd-review is invoked by rbd Phase 6, the hook invokes nothing
 - req(FUNC-PUSH-003,TECH-HOOK-001): rbd-review safety net belongs to Phase 6, not to the command hook
 - req(FUNC-PUSH-001): latest audit is the last by file name
@@ -57,6 +64,7 @@
 - req(FUNC-PUSH-002,TECH-HOOK-001,CONF-PREFIX-001): push gate checks only unpushed commits, detects git push anywhere, accepts project prefixes
 
 ### Documentation
+
 - docs(FUNC-PUSH-003): skills say Phase 6 runs rbd-review, the hook runs the mechanical checks
 - docs(TECH-HOOK-002): mark the single RBD project per repository as a shortcut
 - docs(rbd): extra_commit_prefixes in .rbd/config.yml
@@ -64,8 +72,9 @@
 ## [0.13.1] - 2026-06-19
 
 ### Fixes
+
 - fix(rbd): accept prefix: and prefix(ID): in VALID_PREFIX regex
 
 ### Documentation
-- docs(rbd): fix markdown line breaks in requirement files
 
+- docs(rbd): fix markdown line breaks in requirement files

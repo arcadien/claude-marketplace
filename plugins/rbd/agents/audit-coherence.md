@@ -16,15 +16,23 @@ You never modify any file. Your sole output is a JSON array of findings.
 
 ## Setup
 
-1. Read all `requirements/*.md` files.
+0. The dispatch prompt gives the audited tree, a worktree at the audited commit. Read every file from that tree,
+   never from the session's working tree.
+1. Read `.rbd/config.yml` for optional `rules:`. Read all `requirements/*.md` files.
 2. Build a complete list of requirements with their IDs, descriptions, statuses, and dependencies.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
+
+## Since-last mode
+
+When the dispatch prompt says `since-last`, it also gives a `git log` and a `git diff` of what changed since the
+previous audit. Run every check, but report only findings about requirements, and architecture rows in that range.
 
 ## Execute Coherence Checks
 
 ### C1 — Semantic Overlap
 
 Compare all pairs of requirements using inference.
+
 - Flag pairs where the two requirements describe the same behavior, or where the boundary between them is unclear or ambiguous.
 - Do NOT flag intentional parent/child relationships where the distinction is explicit.
 - Focus on requirements within the same category first, then cross-category pairs.
@@ -32,17 +40,24 @@ Compare all pairs of requirements using inference.
 ### C2 — Precision and Testability
 
 For each requirement, evaluate:
+
 - Is the description precise enough to write unambiguous integration tests?
 - Does it use vague language without measurable criteria ("fast", "user-friendly", "reasonable", "as needed", "appropriate")?
 - Could two developers write substantially different implementations from this description alone?
 - If any answer is yes → flag it.
 
+**Optional rule — `rules: { non_technical_without_code: true }` in `.rbd/config.yml`:** for each FUNC, UI, CONF and
+PLAT requirement, flag under C2 any class, method, function or variable name, file path or memory layout in its text.
+These requirements state observable behaviour or hardware use; code names belong to TECH. Without the key, skip it.
+
 ### C3 — Dependency Validity
 
 For each requirement with a `Dependencies:` field:
+
 - Parse the listed dependency IDs.
 - Verify each ID exists in the requirements map.
 - Flag any ID that does not exist.
+- Flag a `validated` requirement that depends on a `draft` one: it rests on behaviour nobody has validated.
 
 ### C4 — Circular Dependencies
 
@@ -56,6 +71,7 @@ If a cycle is found → flag all requirements in the cycle.
 2. For each validated requirement and its assigned component (from the traceability table):
    - Use inference: does the requirement describe behavior that belongs in that component's responsibility?
    - Flag responsibility mismatches.
+   - Flag a row that restates the requirement differently from its current text (old limits, missing behaviours).
 3. For each row in the Dependency Injection Map:
    - If the "Interface" column is blank or identical to the concrete implementation → flag as a missing abstraction.
 

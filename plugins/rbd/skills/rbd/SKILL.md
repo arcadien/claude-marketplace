@@ -12,6 +12,7 @@ This skill is the **orchestrator**. It does not perform requirement analysis, te
 ## Entry Point
 
 On invocation:
+
 1. Check whether `.rbd/config.yml` exists in the project root.
 2. If absent → run **Phase 1: Init** immediately (handled inline below).
 3. If present → determine the current phase from context (last commit, pending files, user's stated intent) and resume from the right phase.
@@ -39,8 +40,20 @@ Run when `.rbd/config.yml` is missing, or on explicit `/rbd init`.
 **Dispatch the `requirement-analyst` agent.**
 
 Provide the agent with:
+
 - The user's stated intent: new requirement, update to an existing requirement, or deletion.
 - Full project context: all existing `requirements/*.md` files, current `docs/architecture.md`.
+
+When the user already validated the exact requirement text in this session, add to the dispatch prompt:
+
+```text
+User validation:
+  words: "<the user's verbatim words>"
+  text: |
+    <the exact requirement block they validated>
+```
+
+The agent then commits it without a second round trip. Relay only a validation of that exact text; never paraphrase.
 
 The agent handles everything: elicitation, challenge (size/overlap/consistency), user validation, commit, architecture coherence check, DI constraint capture, and architecture update.
 
@@ -59,6 +72,7 @@ The agent handles everything: elicitation, challenge (size/overlap/consistency),
 **Dispatch the `test-builder` agent.**
 
 Provide the agent with:
+
 - The validated requirement ID and its full description.
 - The path to `.rbd/config.yml`.
 
@@ -69,6 +83,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 | Signal | Next action |
 |--------|-------------|
 | `TESTS COMMITTED: test(<ID>): ...` | Proceed to Phase 5. |
+| `NO NATIVE TEST: <reason>` | The requirement's verification is not `test`. Proceed to Phase 5 and give code-builder the reason. |
 | `TOO_LARGE: <reason>` | The requirement is too large to test coherently. Re-dispatch requirement-analyst for splitting. Provide the `TOO_LARGE` reason as context so the agent knows where to split. |
 
 ---
@@ -78,6 +93,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 **Dispatch the `code-builder` agent.**
 
 Provide the agent with:
+
 - The validated requirement ID and its full description.
 - The committed test files for this requirement.
 - The linter command from `.rbd/config.yml`.
@@ -91,6 +107,16 @@ The agent handles everything: design pattern analysis (proposes alternatives to 
 | `IMPLEMENTATION COMMITTED: <prefix>(<ID>): ...` | Proceed to Phase 6. |
 | `SCOPE TOO WIDE: <reason>` | Ask the user: split the requirement (re-dispatch requirement-analyst) or proceed with a justified exception? |
 | `ARCH MISMATCH: <reason>` | Present two options to the user (see below). code-builder is blocked until the chosen option completes. |
+
+### Resume after an interrupted Phase 5
+
+If code-builder ends without a return signal (API error, interruption), read `git log -1` and `git status`:
+
+- The last commit is `<prefix>(<ID>):` for this requirement → the implementation is committed; proceed to Phase 6.
+- Production files are modified but not committed → re-dispatch code-builder in resume mode, listing those files.
+- Nothing changed → re-dispatch code-builder normally.
+
+Never commit the partial work yourself: code-builder runs the gates (lint, full suite) before committing.
 
 ### ARCH MISMATCH — two-option routing
 
@@ -118,6 +144,9 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
    - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
+   - **Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
+     branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
+     to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
 5. If all checks pass → confirm and allow the push.
 

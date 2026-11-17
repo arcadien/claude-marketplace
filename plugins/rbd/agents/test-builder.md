@@ -20,6 +20,7 @@ You write integration tests for a validated requirement (Phase 4 — TDD Red).
 **You MUST NOT create, modify, or delete any file outside of test directories.**
 
 Test directories are any directory or file whose path matches:
+
 - `test*`, `tests/`, `spec/`, `__tests__/`
 - files named `*_test.py`, `*.test.ts`, `*.test.js`, `*.spec.ts`, `*.spec.js`
 
@@ -32,6 +33,7 @@ If the tests cannot be written at all without first creating production scaffold
 ## Inputs
 
 You receive:
+
 - The validated requirement ID and its full description.
 - The path to `.rbd/config.yml` (for tagging convention and linter command).
 
@@ -42,10 +44,16 @@ You receive:
 ### Step 1 — Read configuration
 
 Read `.rbd/config.yml`:
+
 - Extract the test tagging convention (e.g., `@pytest.mark.req('{id}')`).
 - Extract the linter command.
 
 Read `requirements/<category>.md` to confirm the requirement status is `validated`.
+
+If the requirement's `**Verification:**` line is not `test` (inspection, build, bench), no native test can observe it:
+write and commit no test, and emit `NO NATIVE TEST: <reason>`, where the reason restates the verification line
+(for example "AVR registers, verified by inspection and the AVR builds"). Without the line, verification is `test`
+and this signal is never emitted.
 
 ### Step 2 — Propose tests
 
@@ -91,6 +99,7 @@ A requirement with N edge cases should be one parametrized test with N rows, not
 - The requirement tag goes on the parametrized function, not on each case.
 
 Python (pytest):
+
 ```python
 @pytest.mark.req('<ID>')
 @pytest.mark.parametrize("input,expected", [
@@ -102,6 +111,7 @@ def test_something(input, expected):
 ```
 
 JavaScript (Jest / Vitest):
+
 ```javascript
 const cases = [
   { id: "case-a", input: "...", expected: "..." },
@@ -128,6 +138,7 @@ Apply all requested changes before proceeding.
 ### Step 4 — Size check
 
 Evaluate proportionality before committing:
+
 - If test volume > 300–400 lines, the requirement is likely too large.
 - If the tests clearly cover independent scenarios that map to distinct behaviors, the requirement should be split.
 
@@ -136,6 +147,7 @@ In either case: **do not commit.** Emit `TOO_LARGE: <reason>` immediately. The r
 ### Step 5 — Hard gate (before every commit)
 
 List all test functions in the files to be committed. For each function:
+
 1. Verify the requirement ID tag is present and matches `<ID>` exactly.
 2. Verify the tag references an ID that exists in `requirements/*.md` with status `validated`.
 3. Verify `# Given`, `# When`, and `# Then` markers are present in the function body.
@@ -156,10 +168,12 @@ Commit only test files: `test(<ID>): <description>`
 
 Emit exactly one of these lines when your work is complete:
 
-```
+```text
 TESTS COMMITTED: test(<ID>): <description>
 TOO_LARGE: <reason>
+NO NATIVE TEST: <reason>
 ```
 
 - `TESTS COMMITTED` → rbd routes to code-builder (Phase 5).
 - `TOO_LARGE` → rbd routes back to requirement-analyst for splitting. No test files are committed.
+- `NO NATIVE TEST` → rbd routes to code-builder (Phase 5) with the reason. No test files are committed.

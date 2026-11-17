@@ -28,6 +28,7 @@ If any link in that chain is missing, you know exactly where the gap is — and 
 This plugin implements the RBD workflow for Claude Code. It enforces the invariants through a structured cycle: requirement elicitation and challenge, architecture update, TDD red phase, implementation, and pre-push verification. Each phase is guided — you are never left wondering what to do next.
 
 The workflow is intentionally structured but lightweight:
+
 - Requirements are challenged *before* tests are written, so splitting a bloated requirement never forces rework.
 - The `plan:` commit type covers workflow-level changes without dragging them into the TDD cycle.
 - Audit findings block new audits until resolved — technical debt stays visible and actionable.
@@ -72,8 +73,9 @@ flowchart TD
 | Skill | Invoke | Purpose |
 |-------|--------|---------|
 | `rbd` | `/rbd` | Guided workflow: init, requirement discussion, TDD cycle, pre-push checks |
-| `rbd-audit` | `/rbd-audit` | Full read-only audit with two parallel agents |
+| `rbd-audit` | `/rbd-audit` | Read-only audit with two parallel agents: changes since the last report, or `--full` |
 | `rbd-review` | `/rbd-review` | MR/PR review from a requirements perspective |
+| `rbd-links` | `/rbd-links` | Link every cited requirement ID to its heading; `--check` lists broken or missing links |
 
 ## Quick Start
 
@@ -81,16 +83,17 @@ flowchart TD
 2. In your project, invoke `/rbd` — it detects a missing config and guides you through initialization.
 3. Whenever you want to add a feature or constraint: `/rbd` to start the workflow.
 4. Before pushing: the pre-push hook runs automatically, or run Phase 6 (pre-push check) manually via `/rbd`.
-5. For a periodic full audit: `/rbd-audit`.
+5. For an audit: `/rbd-audit` checks what changed since the last report; `/rbd-audit --full` checks the whole repository.
 6. Before merging a branch: `/rbd-review`.
 
 ## Project Structure Created on Init
 
-```
+```text
 .rbd/
   config.yml          # ID format, test tagging convention, linter command,
                       # optional extra_commit_prefixes: [hw] (accepted by the pre-push hook)
                       # optional draft_ok_prefixes: [test] (may cite draft requirements)
+                      # optional rules: { non_technical_without_code: true } (audit C2)
   plan-files.yml      # workflow files monitored for plan: commit discipline
 
 requirements/
@@ -103,12 +106,22 @@ requirements/
 audits/
   exclusions.yml                     # justified audit exclusions
   YYYY-MM-DD-audit.md                # timestamped full audit reports
+  YYYY-MM-DD-audit-2.md              # second audit of the same day (then -3, ...)
   YYYY-MM-DD-review-<branch>.md      # MR review reports
 ```
 
+## Pre-push Hook
+
+- The hook reads the commit log **before** the Bash command runs. A command that rewrites a message
+  (`git commit --amend`, `git filter-branch --msg-filter …`) and pushes in the same line is checked on the old
+  message: run the rewrite and the push as two separate commands.
+- Commits citing a `draft` requirement are blocked, except for the prefixes in `draft_ok_prefixes`.
+- Tests still tagged with a `draft` ID are a T2 warning of `/rbd-audit`; a `validated` requirement depending on a
+  `draft` one is a C3 finding. Re-validate the draft requirement, or remove the tests, their tag or the dependency.
+
 ## Commit Convention
 
-```
+```text
 req(ID):   requirement validated and committed
 test(ID):  integration tests committed (TDD red)
 feat(ID):  functional requirement implemented
@@ -137,7 +150,7 @@ Requirements: ID-001, ID-002
 
 ## Workflow Summary
 
-```
+```text
 Phase 1: Init         → .rbd/config.yml created, commit: plan: init rbd project
 Phase 2: Requirement  → requirements/*.md updated, commit: req(ID): title
 Phase 3: Architecture → docs/architecture.md updated, TECH reqs for DI,

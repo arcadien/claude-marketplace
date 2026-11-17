@@ -14,6 +14,9 @@ test_tagging:
 
 linter:
   command: "ruff check ."
+
+rules:                                 # optional audit rules, off by default
+  non_technical_without_code: true     # C2: FUNC, UI, CONF, PLAT name no class, method, variable, file path
 ```
 
 ## .rbd/plan-files.yml
@@ -44,9 +47,19 @@ plan_files:
   #   - .claude/agents/code-builder.md
 ```
 
+Optional: commit prefixes accepted instead of `plan:` (T4), or instead of `arch(ID):` for `docs/architecture.md` (T5).
+Keys are paths or globs; files not listed keep the default.
+
+```yaml
+accepted_prefixes:
+  docs/architecture.md: [arch, plan]   # plan = format-only pass, no single requirement behind it
+  audits/exclusions.yml: [plan]
+  requirements/*.md: [req, plan]
+```
+
 Update this file whenever a new workflow file is added to the project. The update itself is a `plan:` commit.
 
-## requirements/<category>.md
+## `requirements/<category>.md`
 
 Each category file has a header and one entry per requirement:
 
@@ -57,10 +70,17 @@ Each category file has a header and one entry per requirement:
 **Title:** User can log in with email and password
 **Status:** draft | validated | deprecated
 **Dependencies:** TECH-DB-001
+**Verification:** test
 **Description:** The system must allow a user to authenticate using a valid email address and
 password combination. On success, a session token is returned. On failure, a clear error message
 is displayed without revealing whether the email or password was wrong.
 ```
+
+`**Verification:**` is optional; without it, verification is `test`. Values: `test`, `inspection`, `build`, `bench`,
+`bench (pending)`, optionally followed by `—` and details. Use a value other than `test` only when no native test can
+observe the behaviour (registers, sleep modes, wiring, measurements), for example
+`**Verification:** inspection — AVR registers, checked in the disassembly and the AVR builds`.
+The audit does not require a test for such requirements and lists the `bench (pending)` ones.
 
 `deprecated` is used only when a requirement was historically validated and implemented, then later
 superseded. Requirements split before any commit are deleted without trace — they have no history.
@@ -77,7 +97,7 @@ exclusions:
 
 ## Commit Format
 
-```
+```text
 # Standard — one requirement
 req(FUNC-AUTH-LOGIN-001): add login requirement
 test(FUNC-AUTH-LOGIN-001): integration test for email/password login
@@ -88,6 +108,9 @@ ui(UI-FORM-001): implement login form
 conf(CONF-HTTP-TIMEOUT-001): set HTTP request timeout to 30s
 arch(FUNC-AUTH-001): add AuthService and IUserRepository to component diagram
 plan: add Jest/TypeScript tagging support to rbd config
+
+# Range — cites every ID from FUNC-OREGON-001 to FUNC-OREGON-015
+req(FUNC-OREGON-001..015): Oregon protocol requirements
 
 # Multi-requirement (avoid — suggest splitting instead)
 feat: shared authentication middleware
@@ -137,6 +160,7 @@ Use a parameter table when the requirement has multiple input/output cases.
 The tag goes on the parametrized function, not on individual cases.
 
 **Python (pytest):**
+
 ```python
 @pytest.mark.req('FUNC-AUTH-LOGIN-001')
 @pytest.mark.parametrize("email,password,expected_error", [
@@ -156,6 +180,7 @@ def test_login_error_cases(email, password, expected_error):
 ```
 
 **JavaScript (Jest/Vitest):**
+
 ```javascript
 const cases = [
   { id: "wrong-password",  email: "alice@example.com",  password: "wrong",  error: "invalid_credentials" },
@@ -183,7 +208,7 @@ Created during Phase 3 (first requirement). Updated after every requirement chan
 ```markdown
 # Architecture
 
-_Last updated: YYYY-MM-DD — requirement: ID_
+Last updated: YYYY-MM-DD — requirement: ID
 
 ## Component Diagram
 
@@ -210,6 +235,7 @@ graph TD
 | Requirement | Component(s) | Notes |
 |-------------|-------------|-------|
 | FUNC-AUTH-001 | AuthService | entry point for login flow |
-```
+
+```text
 
 `docs/architecture.md` is tracked separately from `plan-files.yml`. Every modification must have an `arch(ID):` commit where `ID` is the triggering requirement. The traceability agent checks this via T5.
