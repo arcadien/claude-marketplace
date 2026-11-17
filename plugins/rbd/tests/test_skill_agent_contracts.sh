@@ -67,6 +67,8 @@ CASES
 test_audit_checks() {
   echo "test_audit_checks"
   # @req: FUNC-AUDIT-008
+  # @req: FUNC-AUDIT-005
+  # @req: FUNC-AUDIT-009
   # @req: FUNC-AUDIT-010
   # @req: FUNC-PUSH-002
   # Given the traceability agent and the audit checklist
@@ -77,6 +79,8 @@ FUNC-AUDIT-008|agents/audit-traceability.md|Verification:.* is not .test.
 FUNC-AUDIT-008|agents/audit-traceability.md|bench \(pending\)
 FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|Verification:.* is not .test.
 FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
+FUNC-AUDIT-009|agents/audit-traceability.md|tag citing a .draft. requirement
+FUNC-AUDIT-005|agents/audit-coherence.md|depends on a .draft.
 FUNC-PUSH-002|agents/audit-traceability.md|FUNC-X-001\.\.015
 FUNC-PUSH-002|skills/rbd-review/SKILL.md|Expand ID ranges
 CASES
