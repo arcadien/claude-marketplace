@@ -105,6 +105,7 @@ CASES
 test_requirement_lifecycle() {
   echo "test_requirement_lifecycle"
   # @req: FUNC-ARCH-001
+  # @req: FUNC-REQ-005
   # @req: FUNC-REQ-008
   # @req: FUNC-TEST-006
   # Given the workflow agents and the format reference
@@ -112,6 +113,9 @@ test_requirement_lifecycle() {
   # Then every rule is stated
   check_cases <<'CASES'
 FUNC-ARCH-001|agents/requirement-analyst.md|re-read its row
+FUNC-REQ-005|agents/requirement-analyst.md|User validation:
+FUNC-REQ-005|agents/requirement-analyst.md|identical to the validated text
+FUNC-REQ-005|skills/rbd/SKILL.md|User validation:
 FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* test
 FUNC-REQ-008|skills/rbd/references/formats.md|bench \(pending\)
 FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\*
