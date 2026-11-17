@@ -44,6 +44,16 @@ plan_files:
   #   - .claude/agents/code-builder.md
 ```
 
+Optional: commit prefixes accepted instead of `plan:` (T4), or instead of `arch(ID):` for `docs/architecture.md` (T5).
+Keys are paths or globs; files not listed keep the default.
+
+```yaml
+accepted_prefixes:
+  docs/architecture.md: [arch, plan]   # plan = format-only pass, no single requirement behind it
+  audits/exclusions.yml: [plan]
+  requirements/*.md: [req, plan]
+```
+
 Update this file whenever a new workflow file is added to the project. The update itself is a `plan:` commit.
 
 ## requirements/<category>.md

@@ -66,8 +66,9 @@ For each requirement with status `validated`:
 
 For each file in `.rbd/plan-files.yml`:
 - Run `git log --oneline <hash> -- <file>` to get commits that modified it.
-- For each such commit, check whether it starts with `plan:`.
-- If a modification commit does not start with `plan:` → create a finding.
+- For each such commit, check whether it starts with `plan:`, or with a prefix that the optional `accepted_prefixes:`
+  map of `.rbd/plan-files.yml` lists for this file (keys are paths or globs).
+- If a modification commit has neither → create a finding.
 
 ### T5 — Architecture Document Currency
 
@@ -75,7 +76,9 @@ For each file in `.rbd/plan-files.yml`:
 2. Read the "Requirement → Component Traceability" table. For each validated requirement: verify it has a row.
 3. Read the "Dependency Injection Map". For each entry: verify a corresponding TECH requirement exists with status `validated`.
 4. Run `git log --oneline <hash> -- docs/architecture.md`. For each commit that modified the file:
-   - Verify the commit message starts with `arch(` and contains a valid requirement ID.
+   - Verify the commit message starts with `arch(` and contains a valid requirement ID, or starts with a prefix
+     listed for `docs/architecture.md` in `accepted_prefixes:` of `.rbd/plan-files.yml` (for example `plan` for a
+     format-only pass).
    - If not → create a finding.
 
 ### T6 — Test Structure Conventions

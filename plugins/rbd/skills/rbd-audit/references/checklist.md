@@ -72,7 +72,8 @@ Note: for `CONF-*` requirements, the implementation commit is `conf(ID):` and te
 
 Read `.rbd/plan-files.yml`. For each listed file:
 - Check git log for any commit that modified this file.
-- Verify that a `plan:` commit exists covering that modification.
+- Verify that a `plan:` commit exists covering that modification, or a commit with a prefix listed for this file
+  in the optional `accepted_prefixes:` map of `.rbd/plan-files.yml`.
 - If a plan file was modified without a `plan:` commit → flag.
 
 ```json
@@ -102,7 +103,8 @@ For each entry in the "Dependency Injection Map":
 **T5c — Architecture commit coverage:**
 - Run `git log --oneline -- docs/architecture.md` to get all commits that modified the file.
 - For each such commit: verify it starts with `arch(` followed by a valid requirement ID and `)`.
-- If a modification commit does not use the `arch(ID):` format → flag as finding.
+- A prefix listed for `docs/architecture.md` in `accepted_prefixes:` is also accepted (for example `plan`).
+- If a modification commit does not use the `arch(ID):` format or an accepted prefix → flag as finding.
 
 ```json
 {
