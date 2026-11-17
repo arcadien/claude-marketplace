@@ -218,7 +218,7 @@
 **Title:** Block audit if open findings exist  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** At the start of an audit (`/rbd-audit`), the system checks whether the last audit report contains findings with status `open`. If so, it blocks and informs the user that existing findings must be resolved or excluded before launching a new audit.
+**Description:** At the start of an audit (`/rbd-audit`), the system checks whether the latest audit report (ordered as in [FUNC-PUSH-001](functional.md#func-push-001)) contains findings with status `open`. If so, it blocks and informs the user that existing findings must be resolved or excluded before launching a new audit.
 
 ### FUNC-AUDIT-002
 **Title:** Parallel dispatch of coherence and traceability agents  
@@ -296,7 +296,7 @@
 **Title:** Timestamped audit report generation  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-003](functional.md#func-audit-003), [FUNC-AUDIT-013](functional.md#func-audit-013)  
-**Description:** After merging and deduplicating findings from both agents, `rbd-audit` generates a report `audits/YYYY-MM-DD-audit.md` containing a summary table and the detail of each finding with its status (open/excluded). Before dispatching its agents, `rbd-audit` records `git rev-parse HEAD`: the first line under the report title is `Audited commit: <full hash>`, followed by the branch and, when one exists, the PR/MR, so `git diff <hash>..HEAD` shows what changed since.
+**Description:** After merging and deduplicating findings from both agents, `rbd-audit` generates a report `audits/YYYY-MM-DD-audit.md` (a second report on the same day is `YYYY-MM-DD-audit-2.md`, then `-audit-3.md`, and so on) containing a summary table and the detail of each finding with its status (open/excluded). Before dispatching its agents, `rbd-audit` records `git rev-parse HEAD`: the first line under the report title is `Audited commit: <full hash>`, followed by the branch and, when one exists, the PR/MR, so `git diff <hash>..HEAD` shows what changed since.
 
 ### FUNC-AUDIT-015
 **Title:** Finding resolution with the user  
@@ -376,7 +376,7 @@
 **Title:** Block push if open audit findings exist  
 **Status:** validated  
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
+**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). Names are ordered by date, then by same-day suffix: `-audit.md` before `-audit-2.md`, and `-audit-2.md` before `-audit-10.md`. If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
 
 ### FUNC-PUSH-002
 **Title:** Commit alignment validation  
