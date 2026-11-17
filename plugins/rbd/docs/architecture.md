@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-LINKS-001_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-ORCH-006_
 
 ---
 
@@ -131,6 +131,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-ORCH-003](../requirements/functional.md#func-orch-003) | Inter-phase routing via agent return signals | `rbd` |
 | [FUNC-ORCH-004](../requirements/functional.md#func-orch-004) | Exclusive delegation to specialized agents | `rbd` |
 | [FUNC-ORCH-005](../requirements/functional.md#func-orch-005) | Orchestrator handles ARCH MISMATCH signal | `rbd` |
+| [FUNC-ORCH-006](../requirements/functional.md#func-orch-006) | Resume after an interrupted Phase 5 | `rbd`, `code-builder` |
 | [FUNC-INIT-001](../requirements/functional.md#func-init-001) | Interactive ID format negotiation | `init-agent` |
 | [FUNC-INIT-002](../requirements/functional.md#func-init-002) | Test framework and language elicitation | `init-agent` |
 | [FUNC-INIT-003](../requirements/functional.md#func-init-003) | Linter command elicitation | `init-agent` |
