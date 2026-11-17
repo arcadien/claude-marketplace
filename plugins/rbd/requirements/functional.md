@@ -284,7 +284,7 @@
 **Title:** T3 check — implementation coverage  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-008](functional.md#func-audit-008)  
-**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is not `test` needs only the implementation commit.
+**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is not `test` needs only the implementation commit. A tag-only `test(ID):` commit, whose diff only adds lines carrying the tagging convention and removes none (tags backfilled on existing tests), is not a test commit awaiting implementation: T3 does not flag it.
 
 ### FUNC-AUDIT-011
 **Title:** T4 check — plan file coverage  
