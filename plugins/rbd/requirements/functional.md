@@ -20,7 +20,7 @@
 **Title:** Inter-phase routing via agent return signals  
 **Status:** validated  
 **Dependencies:** [FUNC-ORCH-001](functional.md#func-orch-001)  
-**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
+**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
 
 ### FUNC-ORCH-004
 **Title:** Exclusive delegation to specialized agents  
@@ -175,6 +175,12 @@
 **Status:** validated  
 **Dependencies:** [FUNC-TEST-001](functional.md#func-test-001), [CONF-LINT-001](configuration.md#conf-lint-001)  
 **Description:** Before committing tests, `test-builder` runs the configured linting command. The commit is blocked if the linter fails.
+
+### FUNC-TEST-006
+**Title:** NO NATIVE TEST route for requirements no test can observe  
+**Status:** validated  
+**Dependencies:** [FUNC-REQ-008](functional.md#func-req-008), [FUNC-ORCH-003](functional.md#func-orch-003)  
+**Description:** When the requirement's `**Verification:**` is not `test`, `test-builder` writes and commits no test and emits `NO NATIVE TEST: <reason>`. The orchestrator then dispatches `code-builder` (Phase 5) with the reason, and the implementation commit body carries it as `No test: <reason>` (for example "No test: AVR registers, verified by inspection and the AVR builds"). When verification is `test`, `test-builder` never emits this signal.
 
 ---
 
