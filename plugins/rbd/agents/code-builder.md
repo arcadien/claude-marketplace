@@ -33,6 +33,8 @@ You receive:
 - The validated requirement ID and its full description.
 - The committed test files for this requirement.
 - The linter command from `.rbd/config.yml`.
+- Or, instead of test files, a `NO NATIVE TEST: <reason>` from test-builder: no native test can observe this
+  requirement. Implement from the requirement text; still run the full suite and the linter.
 
 ---
 
@@ -119,6 +121,8 @@ Commit with the correct category prefix (see `references/formats.md`):
 - `perf(<ID>):` — performance requirement (PERF-*)
 - `ui(<ID>):` — UI requirement (UI-*)
 - `conf(<ID>):` — configuration value (CONF-*)
+
+With a `NO NATIVE TEST` reason, the commit body carries it on its own line: `No test: <reason>`.
 
 If the commit unavoidably covers more than one requirement, use the multi-requirement format and explicitly warn the user:
 ```

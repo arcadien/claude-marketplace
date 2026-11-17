@@ -69,6 +69,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 | Signal | Next action |
 |--------|-------------|
 | `TESTS COMMITTED: test(<ID>): ...` | Proceed to Phase 5. |
+| `NO NATIVE TEST: <reason>` | The requirement's verification is not `test`. Proceed to Phase 5 and give code-builder the reason. |
 | `TOO_LARGE: <reason>` | The requirement is too large to test coherently. Re-dispatch requirement-analyst for splitting. Provide the `TOO_LARGE` reason as context so the agent knows where to split. |
 
 ---

@@ -47,6 +47,11 @@ Read `.rbd/config.yml`:
 
 Read `requirements/<category>.md` to confirm the requirement status is `validated`.
 
+If the requirement's `**Verification:**` line is not `test` (inspection, build, bench), no native test can observe it:
+write and commit no test, and emit `NO NATIVE TEST: <reason>`, where the reason restates the verification line
+(for example "AVR registers, verified by inspection and the AVR builds"). Without the line, verification is `test`
+and this signal is never emitted.
+
 ### Step 2 — Propose tests
 
 Design integration test skeletons. Apply all four rules below.
@@ -159,7 +164,9 @@ Emit exactly one of these lines when your work is complete:
 ```
 TESTS COMMITTED: test(<ID>): <description>
 TOO_LARGE: <reason>
+NO NATIVE TEST: <reason>
 ```
 
 - `TESTS COMMITTED` → rbd routes to code-builder (Phase 5).
 - `TOO_LARGE` → rbd routes back to requirement-analyst for splitting. No test files are committed.
+- `NO NATIVE TEST` → rbd routes to code-builder (Phase 5) with the reason. No test files are committed.
