@@ -323,10 +323,10 @@
 **Description:** After report generation, `rbd-audit` works through each open finding with the user: direct fix or addition of a justified entry in `audits/exclusions.yml`.
 
 ### FUNC-AUDIT-017
-**Title:** Since-last-audit mode  
+**Title:** Since-last-audit mode by default, --full for the whole repository  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** `/rbd-audit since-last` reads the `Audited commit:` hash of the latest report and gives both agents `git log <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`. The agents focus their checks on what changed; `audits/exclusions.yml` still applies to the whole history. When the latest report has no `Audited commit:` line, the skill runs a full audit and says so in the report header.
+**Description:** By default, `/rbd-audit` audits what changed since the latest report: it reads the `Audited commit:` hash of the latest report and gives both agents `git log <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`. The agents focus their checks on what changed; `audits/exclusions.yml` still applies to the whole history. `/rbd-audit --full` audits the whole repository instead. When there is no previous report, or the latest one has no `Audited commit:` line, the skill runs a full audit. The report header states the mode: `Mode: since <hash>` or `Mode: full`.
 
 ### FUNC-AUDIT-018
 **Title:** Audit of a fixed commit  
