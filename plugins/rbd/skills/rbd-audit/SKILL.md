@@ -11,7 +11,8 @@ It produces a Markdown report. The user processes each finding together with Cla
 ## Pre-Flight Check
 
 Before running a new audit:
-1. List all files in `audits/` and find the most recent report (highest date in filename).
+1. List all files in `audits/` and find the most recent report: highest date in the filename, then highest same-day
+   suffix (`-audit.md`, then `-audit-2.md`, `-audit-3.md`…; `-audit-10.md` comes after `-audit-2.md`).
 2. Check that the summary table and the details agree on every finding's status. A mismatched finding counts as `open`.
    If the latest report contains any finding with status `open` → **block the audit**.
    - Tell the user: "The previous audit from [date] has [N] open finding(s). Resolve them before running a new audit."
@@ -64,7 +65,8 @@ to the report header: "Agent <name> failed to return valid output."
 
 ## Write the Report
 
-Save to `audits/YYYY-MM-DD-audit.md` using today's date.
+Save to `audits/YYYY-MM-DD-audit.md` using today's date. If that file exists, use the next free suffix:
+`YYYY-MM-DD-audit-2.md`, then `-audit-3.md`, and so on.
 
 ```markdown
 # Audit Report — YYYY-MM-DD

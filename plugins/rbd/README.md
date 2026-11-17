@@ -103,6 +103,7 @@ requirements/
 audits/
   exclusions.yml                     # justified audit exclusions
   YYYY-MM-DD-audit.md                # timestamped full audit reports
+  YYYY-MM-DD-audit-2.md              # second audit of the same day (then -3, ...)
   YYYY-MM-DD-review-<branch>.md      # MR review reports
 ```
 
