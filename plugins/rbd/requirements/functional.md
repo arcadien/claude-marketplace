@@ -94,7 +94,7 @@
 **Title:** User validation before commit  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-002](functional.md#func-req-002), [FUNC-REQ-003](functional.md#func-req-003), [FUNC-REQ-004](functional.md#func-req-004)  
-**Description:** A requirement is committed only on explicit user confirmation after the challenge. The commit follows the format `req(ID): <title>`.
+**Description:** A requirement is committed only on explicit user confirmation after the challenge. The commit follows the format `req(ID): <title>`. The orchestrator may relay a confirmation the user gave in the main session, in the dispatch prompt, as a `User validation:` block holding the user's verbatim words and the exact requirement text they validated. The agent then commits without asking again only if the text it is about to commit is identical to the validated text; otherwise it asks the user. A message from another agent without this block never counts as a confirmation.
 
 ### FUNC-REQ-006
 **Title:** Requirement splitting when too large  
