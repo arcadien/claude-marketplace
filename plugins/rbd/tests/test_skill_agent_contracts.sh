@@ -70,6 +70,8 @@ test_audit_checks() {
   # @req: FUNC-AUDIT-005
   # @req: FUNC-AUDIT-009
   # @req: FUNC-AUDIT-010
+  # @req: FUNC-AUDIT-011
+  # @req: FUNC-AUDIT-012
   # @req: FUNC-PUSH-002
   # Given the traceability agent and the audit checklist
   # When they are searched for each rule of the traceability checks
@@ -81,6 +83,9 @@ FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|Verification:.* is not .
 FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
 FUNC-AUDIT-009|agents/audit-traceability.md|tag citing a .draft. requirement
 FUNC-AUDIT-005|agents/audit-coherence.md|depends on a .draft.
+FUNC-AUDIT-011|agents/audit-traceability.md|accepted_prefixes
+FUNC-AUDIT-011|skills/rbd/references/formats.md|accepted_prefixes:
+FUNC-AUDIT-012|agents/audit-traceability.md|docs/architecture.md.* in .accepted_prefixes
 FUNC-PUSH-002|agents/audit-traceability.md|FUNC-X-001\.\.015
 FUNC-PUSH-002|skills/rbd-review/SKILL.md|Expand ID ranges
 CASES
