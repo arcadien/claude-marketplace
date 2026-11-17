@@ -42,6 +42,17 @@ Provide the agent with:
 - The user's stated intent: new requirement, update to an existing requirement, or deletion.
 - Full project context: all existing `requirements/*.md` files, current `docs/architecture.md`.
 
+When the user already validated the exact requirement text in this session, add to the dispatch prompt:
+
+```text
+User validation:
+  words: "<the user's verbatim words>"
+  text: |
+    <the exact requirement block they validated>
+```
+
+The agent then commits it without a second round trip. Relay only a validation of that exact text; never paraphrase.
+
 The agent handles everything: elicitation, challenge (size/overlap/consistency), user validation, commit, architecture coherence check, DI constraint capture, and architecture update.
 
 **Route based on the agent's return signal:**
