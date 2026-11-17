@@ -278,7 +278,7 @@
 **Title:** T2 check — tag validity in tests  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every ID referenced in test tags exists in the requirement files with status `validated`. Any orphan tag generates a T2 finding.
+**Description:** `audit-traceability` verifies that every ID referenced in test tags exists in the requirement files with status `validated`. Any orphan tag generates a T2 finding (error). A tag citing a `draft` requirement (for example a test kept after its requirement went back to draft) generates a T2 warning: re-validate the requirement, or remove the tests or their tag.
 
 ### FUNC-AUDIT-010
 **Title:** T3 check — implementation coverage  
