@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-PUSH-005_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-LINKS-001_
 
 ---
 
@@ -35,7 +35,7 @@ _Last updated: 2026-11-17 — triggering requirement: FUNC-PUSH-005_
 │  │                  │────┘      └─────────────────────────┘        │
 │  │  - merge findings│           ┌─────────────────────────┐        │
 │  │  - report gen    │──────────▶│  audit-traceability     │        │
-│  │  - resolution    │           │  (read-only, T1–T6)     │        │
+│  │  - resolution    │           │  (read-only, T1–T8)     │        │
 │  └──────────────────┘           └─────────────────────────┘        │
 │                                                                    │
 │  ┌──────────────────┐                                              │
@@ -54,6 +54,11 @@ _Last updated: 2026-11-17 — triggering requirement: FUNC-PUSH-005_
 │  ┌──────────────────┐                                              │
 │  │  rbd-metrics     │  (coverage metrics, req-to-green latency)   │
 │  │  (METRICS skill) │  stdout only; --json and --latency flags     │
+│  └──────────────────┘                                              │
+│                                                                    │
+│  ┌──────────────────┐                                              │
+│  │  rbd-links       │  (rbd_links.py: link requirement IDs,        │
+│  │  (LINKS skill)   │  --check for broken or missing links)        │
 │  └──────────────────┘                                              │
 │                                                                    │
 │  ┌──────────────────┐                                              │
@@ -82,9 +87,10 @@ _Last updated: 2026-11-17 — triggering requirement: FUNC-PUSH-005_
 | `code-builder` | Agent | Reads test contracts; proposes design alternatives; verifies architectural boundary before writing any file (emits `ARCH MISMATCH` if a planned file cannot be mapped to a declared component); implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
-| `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability) checks |
+| `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability), T8 (requirement ID links, via `rbd_links.py --check`) checks |
 | `rbd-metrics` | Skill | Reads all requirement files and git log; computes validated requirement counts and `test(ID):` commit coverage per category and subcategory; prints ASCII structured report to stdout; supports `--json` and `--latency` flags; strictly read-only |
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by `rbd` Phase 6; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
+| `rbd-links` | Skill + script | Runs `rbd_links.py`: links every cited requirement ID in `requirements/*.md` and `docs/architecture.md` to its heading; `--check` lists broken or missing links without writing |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment |
 | `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
 | `arch-analyst` | Agent | Read-only; infers software components of the target project from requirement files and `docs/architecture.md`; produces `docs/analysis-YYYY-MM-DD.md` containing one global component partitioning diagram (`graph LR` or `classDiagram`) and one per-component diagram (`flowchart` or `stateDiagram`) for each identified software component |
@@ -204,3 +210,6 @@ If a future requirement introduces a component that depends on an external servi
 | [UI-DOC-002](../requirements/ui.md#ui-doc-002) | Markdown hyperlinks for derives_from references in PLAT requirements | `requirement-analyst` |
 | [FUNC-METRICS-001](../requirements/functional.md#func-metrics-001) | Coverage metrics report per category and subcategory | `rbd-metrics` |
 | [FUNC-METRICS-002](../requirements/functional.md#func-metrics-002) | Opt-in req-to-green latency per requirement | `rbd-metrics` |
+| [FUNC-LINKS-001](../requirements/functional.md#func-links-001) | rbd-links skill links every cited requirement ID | `rbd-links` |
+| [FUNC-AUDIT-021](../requirements/functional.md#func-audit-021) | T8 check — requirement ID links | `audit-traceability`, `rbd-links` |
+| [CONF-RULES-001](../requirements/configuration.md#conf-rules-001) | Optional rule: no code names in non-technical requirements | `audit-coherence` |
