@@ -1,6 +1,6 @@
 ---
 name: rbd-audit
-description: Runs a full read-only audit of the requirement-based development state. Invoke when the user types /rbd-audit, asks to "audit the codebase", "check requirements coverage", "run rbd audit", or "is everything aligned". Dispatches two parallel agents — one for traceability (requirements vs tests and code), one for requirement coherence (overlaps, precision, dependencies). Produces a timestamped report in audits/.
+description: Runs a read-only audit of the requirement-based development state: by default what changed since the last report, the whole repository with --full. Invoke when the user types /rbd-audit, asks to "audit the codebase", "check requirements coverage", "run rbd audit", or "is everything aligned". Dispatches two parallel agents — one for traceability (requirements vs tests and code), one for requirement coherence (overlaps, precision, dependencies). Produces a timestamped report in audits/.
 ---
 
 # RBD Audit
@@ -20,16 +20,18 @@ Before running a new audit:
 3. Load `audits/exclusions.yml`. Keep this in context for the merge step.
 4. Record the audited commit: `git rev-parse HEAD`, the current branch, and its PR/MR if one exists (`gh pr view --json number,url`).
 
-## Since-Last-Audit Mode
+## Audit Scope
 
-`/rbd-audit since-last` audits what changed since the latest report:
+By default, `/rbd-audit` audits what changed since the latest report. `/rbd-audit --full` audits the whole
+repository: skip steps 1–3 below and dispatch the agents without a range.
 
-1. Read the `Audited commit:` hash from the latest report. If there is none, run a full audit and write
-   "No audited commit in the previous report: full audit." in the report header.
+1. Read the `Audited commit:` hash from the latest report. If there is no previous report or no hash, run a full
+   audit instead.
 2. Compute `git log --oneline <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`,
    where `<audited>` is the commit recorded in step 4 above.
 3. Pass both to the agents with the instruction `since-last`. They focus their checks on the changed requirements,
    tests, code and commits; `audits/exclusions.yml` still applies to the whole history.
+4. Write the mode in the report header: `Mode: since <hash>` or `Mode: full`.
 
 ## Dispatch Parallel Agents
 
@@ -72,6 +74,8 @@ Save to `audits/YYYY-MM-DD-audit.md` using today's date. If that file exists, us
 # Audit Report — YYYY-MM-DD
 
 Audited commit: <full hash> — branch `<branch>` — PR #<n> (omit the PR when there is none)
+
+Mode: since <hash> (or: Mode: full)
 
 <N> raw entries merged into <M> findings.
 

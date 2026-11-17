@@ -72,7 +72,7 @@ flowchart TD
 | Skill | Invoke | Purpose |
 |-------|--------|---------|
 | `rbd` | `/rbd` | Guided workflow: init, requirement discussion, TDD cycle, pre-push checks |
-| `rbd-audit` | `/rbd-audit` | Full read-only audit with two parallel agents |
+| `rbd-audit` | `/rbd-audit` | Read-only audit with two parallel agents: changes since the last report, or `--full` |
 | `rbd-review` | `/rbd-review` | MR/PR review from a requirements perspective |
 | `rbd-links` | `/rbd-links` | Link every cited requirement ID to its heading; `--check` lists broken or missing links |
 
@@ -82,7 +82,7 @@ flowchart TD
 2. In your project, invoke `/rbd` — it detects a missing config and guides you through initialization.
 3. Whenever you want to add a feature or constraint: `/rbd` to start the workflow.
 4. Before pushing: the pre-push hook runs automatically, or run Phase 6 (pre-push check) manually via `/rbd`.
-5. For a periodic full audit: `/rbd-audit`.
+5. For an audit: `/rbd-audit` checks what changed since the last report; `/rbd-audit --full` checks the whole repository.
 6. Before merging a branch: `/rbd-review`.
 
 ## Project Structure Created on Init
