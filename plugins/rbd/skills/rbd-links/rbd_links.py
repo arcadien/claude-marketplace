@@ -24,7 +24,8 @@ def categories(root):
 
 
 def id_pattern(cats):
-    return r"\b(?:" + "|".join(map(re.escape, cats)) + r")(?:-[A-Z0-9]+)*-[0-9]+\b"
+    # not \b: "_" is a word character, and _FUNC-X-001_ (italic) must still match
+    return r"(?<![A-Za-z0-9-])(?:" + "|".join(map(re.escape, cats)) + r")(?:-[A-Z0-9]+)*-[0-9]+(?![A-Za-z0-9])"
 
 
 class Project:
