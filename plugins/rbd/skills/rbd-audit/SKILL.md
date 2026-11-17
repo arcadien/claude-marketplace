@@ -12,7 +12,8 @@ It produces a Markdown report. The user processes each finding together with Cla
 
 Before running a new audit:
 1. List all files in `audits/` and find the most recent report (highest date in filename).
-2. If the latest report contains any finding with status `open` → **block the audit**.
+2. Check that the summary table and the details agree on every finding's status. A mismatched finding counts as `open`.
+   If the latest report contains any finding with status `open` → **block the audit**.
    - Tell the user: "The previous audit from [date] has [N] open finding(s). Resolve them before running a new audit."
    - List the open findings from the previous report.
 3. Load `audits/exclusions.yml`. Keep this in context for the merge step.
@@ -105,10 +106,19 @@ Present the summary table. For each `open` finding:
 1. Explain the issue in plain language.
 2. Offer two options:
    - **Fix** — work on the issue together (add missing tests, clarify requirement, etc.).
-     Once the fix is confirmed, update the finding's `**Status:**` field in the report file
-     from `open` to `fixed`, and update its row in the summary table accordingly.
+     Once the fix is confirmed, run `/rbd-audit status <n> fixed`.
    - **Exclude** — add an entry to `audits/exclusions.yml` with a required justification,
-     then update the finding's status to `excluded` in the report file.
+     then run `/rbd-audit status <n> excluded --ref <EXCLUSION-ID>`.
 3. Never modify code, tests, or requirements autonomously. Act only with explicit user direction.
 
 All findings must reach `fixed` or `excluded` status before this audit is considered complete.
+
+## Status Command
+
+`/rbd-audit status <n>[,<n>…] fixed|excluded [--ref <EXCLUSION-ID>]` updates the latest report:
+
+1. For each listed finding, set the status in both places: its row in the summary table and its `**Status:**` line.
+2. For `excluded`, `--ref` is required and its ID must exist in `audits/exclusions.yml`;
+   add `**Exclusion ref:** <EXCLUSION-ID>` under the `**Status:**` line.
+3. Re-read the report and check that the table and the details agree for every finding.
+   List any mismatch to the user and fix it before going on.
