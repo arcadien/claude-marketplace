@@ -78,6 +78,7 @@ CASES
 test_requirement_lifecycle() {
   echo "test_requirement_lifecycle"
   # @req: FUNC-REQ-008
+  # @req: FUNC-TEST-006
   # Given the workflow agents and the format reference
   # When they are searched for each rule of the requirement lifecycle
   # Then every rule is stated
@@ -85,6 +86,9 @@ test_requirement_lifecycle() {
 FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* test
 FUNC-REQ-008|skills/rbd/references/formats.md|bench \(pending\)
 FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\*
+FUNC-TEST-006|agents/test-builder.md|NO NATIVE TEST: <reason>
+FUNC-TEST-006|skills/rbd/SKILL.md|NO NATIVE TEST: <reason>
+FUNC-TEST-006|agents/code-builder.md|No test: <reason>
 CASES
 }
 
