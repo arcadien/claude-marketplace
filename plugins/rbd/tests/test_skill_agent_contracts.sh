@@ -43,7 +43,9 @@ FUNC-AUDIT-014|skills/rbd-audit/SKILL.md|Audited commit: <full hash>
 FUNC-AUDIT-014|skills/rbd-audit/SKILL.md|YYYY-MM-DD-audit-2\.md
 FUNC-AUDIT-001|skills/rbd-audit/SKILL.md|-audit-10\.md. comes after .-audit-2\.md
 FUNC-REVIEW-007|skills/rbd-review/SKILL.md|Reviewed commit: <full hash>
-FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|/rbd-audit since-last
+FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|By default, .?/rbd-audit.? audits what changed since the latest report
+FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|/rbd-audit --full
+FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|Mode: since <hash>
 FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|git diff <hash>\.\.<audited>
 FUNC-AUDIT-017|agents/audit-traceability.md|since-last
 FUNC-AUDIT-017|agents/audit-coherence.md|since-last
