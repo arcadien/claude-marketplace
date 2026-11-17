@@ -34,6 +34,12 @@
 **Dependencies:** [FUNC-IMPL-006](functional.md#func-impl-006), [FUNC-ORCH-003](functional.md#func-orch-003)  
 **Description:** On receiving an `ARCH MISMATCH` signal from `code-builder`, the orchestrator informs the user that implementation cannot proceed as-is and presents two options: (a) update the architecture — the orchestrator re-dispatches `requirement-analyst` to revise `docs/architecture.md`, after which `code-builder` may be resumed; (b) revise the requirement — the orchestrator re-dispatches `requirement-analyst` for a requirement update or split. `code-builder` is not resumed until option (a) completes.
 
+### FUNC-ORCH-006
+**Title:** Resume after an interrupted Phase 5  
+**Status:** validated  
+**Dependencies:** [FUNC-ORCH-003](functional.md#func-orch-003), [FUNC-IMPL-003](functional.md#func-impl-003)  
+**Description:** When a `code-builder` run ends without a return signal (API error, interruption), the orchestrator reads `git log` and `git status`. If the last commit is the requirement's implementation commit, it proceeds to Phase 6. If production files are modified but not committed, it re-dispatches `code-builder` in resume mode with the list of those files: the agent keeps the changes, checks them against the tests, runs the linter and the full test suite, and commits. If nothing changed, it re-dispatches `code-builder` normally. The implementation commit body lists the checks that passed (lint, build, test suite), so a later reader knows what was verified.
+
 ---
 
 ## Initialization (INIT)
