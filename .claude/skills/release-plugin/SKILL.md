@@ -23,6 +23,9 @@ from `git rev-parse HEAD` at build time — order is critical.
    git pull origin main
    ```
 
+> **Commit prefix: `chore:`, never `conf:`.** The rbd pre-push hook requires a requirement ID on `conf` commits
+> since rbd 0.14, so a `conf: bump …` commit blocks the push.
+
 ## Step 1 — Identify what changed
 
 List plugins with unreleased changes since the last version bump:
@@ -41,7 +44,8 @@ cat plugins/<name>/plugin.json
 
 ## Step 2 — Bump version in plugin.json
 
-Edit `plugins/<name>/plugin.json` and increment the version:
+Edit `plugins/<name>/plugin.json` and increment the version. Update the plugin's `Version` row in the root
+`README.md` too (`build-registry` does not touch it).
 
 - **PATCH** (`0.11.0` → `0.11.1`): bug fix, no new components.
 - **MINOR** (`0.11.0` → `0.12.0`): new skill / agent / hook / command.
@@ -62,7 +66,7 @@ Extract commits since that SHA, scoped to this plugin — exclude merge commits 
 ```bash
 git log --oneline ${PREV:+$PREV..}HEAD -- plugins/<name>/ \
   | grep -v "^[a-f0-9]* Merge " \
-  | grep -v "^[a-f0-9]* conf: bump"
+  | grep -vE "^[a-f0-9]* (chore|conf): (bump|rebuild)"
 ```
 
 Group by prefix and prepend the following section to `plugins/<name>/CHANGELOG.md`:
@@ -80,7 +84,7 @@ Group by prefix and prepend the following section to `plugins/<name>/CHANGELOG.m
 - <test commit messages>
 
 ### Configuration
-- <conf/chore commit messages>
+- <chore commit messages>
 
 ### Documentation
 - <docs commit messages>
@@ -90,14 +94,14 @@ Omit sections with no commits. If `CHANGELOG.md` does not exist yet, create it w
 
 ## Step 3 — Commit the version bump and changelog
 
-Stage both files and commit:
+Stage the three files and commit:
 
 ```text
-conf: bump <name> plugin version to X.Y.Z
+chore: bump <name> plugin version to X.Y.Z
 ```
 
 ```bash
-git add plugins/<name>/plugin.json plugins/<name>/CHANGELOG.md
+git add plugins/<name>/plugin.json plugins/<name>/CHANGELOG.md README.md
 ```
 
 Do NOT run `build-registry` yet — the SHA must point to this commit.
@@ -107,10 +111,11 @@ Do NOT run `build-registry` yet — the SHA must point to this commit.
 From the repository root:
 
 ```bash
-npx ts-node scripts/build-registry.ts
+npm ci                    # once, or after package-lock.json changes
+npm run build:registry    # tsx scripts/build-registry.ts
 ```
 
-This regenerates:
+This regenerates (in practice usually only `site/public/marketplace.json` changes):
 
 - `site/public/marketplace.json` — read by the `/plugin` installer
 - `site/src/data/registry.json`
@@ -130,10 +135,10 @@ d.plugins.forEach(p =>
 
 ## Step 5 — Commit the registry output
 
-Stage all four generated files and commit:
+Stage the generated files that changed (`git status`) and commit:
 
 ```text
-conf: rebuild marketplace registry for vX.Y.Z
+chore: rebuild marketplace registry for vX.Y.Z
 ```
 
 ## Step 6 — Open a PR and merge
@@ -143,7 +148,7 @@ SHA that does not exist on the remote, breaking `/plugin` with "not our ref".
 
 ```bash
 git push -u origin <release-branch>
-gh pr create --title "conf: release <name> vX.Y.Z" --base main
+gh pr create --title "chore: release <name> vX.Y.Z" --base main
 ```
 
 Merge the PR on GitHub, then run `/plugin` — the installer should report the
