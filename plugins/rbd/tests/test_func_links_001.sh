@@ -23,6 +23,7 @@ new_project() {
 Code `FUNC-A-002` stays, unknown FUNC-Z-999 stays, range FUNC-A-001..002 stays.
 <!-- FUNC-A-002 in a comment stays -->
 Already linked: [FUNC-A-002](functional.md#func-a-002).
+Example in code: `[FUNC-A-001](nowhere.md#x)` is not checked.
 
 ### FUNC-A-002
 **Description:** Done.
