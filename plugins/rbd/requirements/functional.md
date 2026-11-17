@@ -122,7 +122,7 @@
 **Title:** Component assignment for each requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-005](functional.md#func-req-005)  
-**Description:** For every validated requirement, the `requirement-analyst` agent identifies the responsible architectural component(s) and updates the traceability table in `docs/architecture.md`.
+**Description:** For every validated requirement, the `requirement-analyst` agent identifies the responsible architectural component(s) and updates the traceability table in `docs/architecture.md`. When a requirement's text changes, even with the same components, the agent re-reads its row and updates it in an `arch(ID):` commit if the row restates something that changed (a limit, a behaviour, a title).
 
 ### FUNC-ARCH-002
 **Title:** DI constraint identification -> TECH requirement creation  
@@ -266,7 +266,7 @@
 **Title:** C5 check — architecture coherence  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-coherence` verifies that each requirement is assigned to an existing component in `docs/architecture.md`. Any requirement without a valid component generates a C5 finding.
+**Description:** `audit-coherence` verifies that each requirement is assigned to an existing component in `docs/architecture.md`. Any requirement without a valid component generates a C5 finding, and so does a traceability row that restates the requirement differently from its current text.
 
 ### FUNC-AUDIT-008
 **Title:** T1 check — test coverage per requirement  
