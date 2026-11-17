@@ -316,6 +316,12 @@
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
 **Description:** The audit agents read the audited commit, not the working tree: `rbd-audit` creates a temporary detached `git worktree` at the recorded hash, gives its path to both agents as the project root, and removes it once both agents have returned. Git history commands of the agents run on that commit (`git log <hash>`), not on `--all`. Switching branches or editing files during the audit does not change what the agents read. The report is written to the `audits/` directory of the working tree.
 
+### FUNC-AUDIT-019
+**Title:** Findings grouped by cause, info items apart  
+**Status:** validated  
+**Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
+**Description:** In its merge step, `rbd-audit` groups the agent entries that share a check and a cause into one finding that lists all their requirement IDs. Entries of severity `info` need no action: they go to an `Info (no action required)` section, unnumbered and without a status, and never block the next audit or a push. The report header states `N raw entries merged into M findings`.
+
 ---
 
 ## MR Review (REVIEW)
