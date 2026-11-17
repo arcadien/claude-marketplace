@@ -48,6 +48,8 @@ Note: `deprecated` and `draft` requirements are excluded — deprecated ones may
 Search all test files for all occurrences of the tagging pattern.
 - Extract each ID found.
 - If the ID is not in the requirements map → create a finding.
+- For a tag citing a `draft` requirement (a test kept after its requirement went back to draft) → create a
+  `warning`: re-validate the requirement, or remove the tests or their tag.
 
 ### T3 — Implementation Coverage
 

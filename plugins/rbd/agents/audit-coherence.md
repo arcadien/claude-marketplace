@@ -50,6 +50,7 @@ For each requirement with a `Dependencies:` field:
 - Parse the listed dependency IDs.
 - Verify each ID exists in the requirements map.
 - Flag any ID that does not exist.
+- Flag a `validated` requirement that depends on a `draft` one: it rests on behaviour nobody has validated.
 
 ### C4 — Circular Dependencies
 

@@ -107,6 +107,15 @@ audits/
   YYYY-MM-DD-review-<branch>.md      # MR review reports
 ```
 
+## Pre-push Hook
+
+- The hook reads the commit log **before** the Bash command runs. A command that rewrites a message
+  (`git commit --amend`, `git filter-branch --msg-filter …`) and pushes in the same line is checked on the old
+  message: run the rewrite and the push as two separate commands.
+- Commits citing a `draft` requirement are blocked, except for the prefixes in `draft_ok_prefixes`.
+- Tests still tagged with a `draft` ID are a T2 warning of `/rbd-audit`; a `validated` requirement depending on a
+  `draft` one is a C3 finding. Re-validate the draft requirement, or remove the tests, their tag or the dependency.
+
 ## Commit Convention
 
 ```
