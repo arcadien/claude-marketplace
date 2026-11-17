@@ -53,7 +53,10 @@ git() { command git -C "$REPO_ROOT" "$@"; }
 # ── 1. Audit check ───────────────────────────────────────────────────────────
 AUDITS_DIR="$RBD_ROOT/audits"
 if [ -d "$AUDITS_DIR" ]; then
-  LATEST=$(ls "$AUDITS_DIR"/*.md 2>/dev/null | sort | tail -1)  # audits are named YYYY-MM-DD-audit.md
+  # audits are named YYYY-MM-DD-audit.md, then -audit-2.md, -audit-3.md... the same day: sort -audit.md as -audit-1.md
+  LATEST=$(ls "$AUDITS_DIR"/*.md 2>/dev/null \
+    | awk '{ key = $0; sub(/-audit\.md$/, "-audit-1.md", key); print key "\t" $0 }' \
+    | sort -V | tail -1 | cut -f2)
   if [ -n "$LATEST" ] && grep -qiE "status.{0,5}open" "$LATEST" 2>/dev/null; then
     EXCLUSIONS="$AUDITS_DIR/exclusions.yml"
     BASENAME=$(basename "$LATEST")
