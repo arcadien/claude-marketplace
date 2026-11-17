@@ -408,6 +408,12 @@
 **Dependencies:** [FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003), [TECH-HOOK-001](technical.md#tech-hook-001)  
 **Description:** After completing all pre-push checks successfully ([FUNC-PUSH-001](functional.md#func-push-001), [FUNC-PUSH-002](functional.md#func-push-002), [FUNC-PUSH-003](functional.md#func-push-003)), the orchestrator writes `.rbd/.push-validated` containing the output of `git rev-parse HEAD`. When the pre-push hook fires, it reads this file first: if the file exists and its content matches the current HEAD hash, the hook allows the push and deletes the file; if the file is absent or the hash does not match, the hook proceeds with the full check sequence. The file `.rbd/.push-validated` must be listed in `.gitignore` — it is ephemeral state and must never be committed. Deprecated: since the hook became a command script it runs in milliseconds, so the cache saved no time and could skip checks that changed between two pushes.
 
+### FUNC-PUSH-005
+**Title:** Warning for stacked PRs whose base is not the default branch  
+**Status:** validated  
+**Dependencies:** [FUNC-PUSH-003](functional.md#func-push-003), [FUNC-REVIEW-001](functional.md#func-review-001)  
+**Description:** In Phase 6 of the `rbd` skill and in `/rbd-review`, when the PR/MR of the branch has a base that is not the repository's default branch, the user is warned: once the base PR is merged, this PR must be retargeted to the default branch, or its base branch deleted so the forge retargets it; otherwise it merges into a stale branch. The warning does not block. For a merged PR, `/rbd-review` also checks that its head commit is reachable from the default branch (`git merge-base --is-ancestor`) and reports it when it is not.
+
 ---
 
 ## Architecture Analysis (ANALYZE)
