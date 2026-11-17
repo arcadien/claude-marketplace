@@ -175,7 +175,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-AUDIT-013](../requirements/functional.md#func-audit-013) | T6 check — test structure conventions | `audit-traceability` |
 | [FUNC-AUDIT-014](../requirements/functional.md#func-audit-014) | Timestamped audit report generation | `rbd-audit` |
 | [FUNC-AUDIT-015](../requirements/functional.md#func-audit-015) | Finding resolution with the user | `rbd-audit` |
-| [FUNC-AUDIT-017](../requirements/functional.md#func-audit-017) | Since-last-audit mode | `rbd-audit`, `audit-coherence`, `audit-traceability` |
+| [FUNC-AUDIT-017](../requirements/functional.md#func-audit-017) | Since-last-audit mode by default, `--full` | `rbd-audit`, `audit-coherence`, `audit-traceability` |
 | [FUNC-AUDIT-018](../requirements/functional.md#func-audit-018) | Audit of a fixed commit | `rbd-audit`, `audit-coherence`, `audit-traceability` |
 | [FUNC-AUDIT-019](../requirements/functional.md#func-audit-019) | Findings grouped by cause, info items apart | `rbd-audit` |
 | [FUNC-AUDIT-020](../requirements/functional.md#func-audit-020) | Finding status command | `rbd-audit` |
