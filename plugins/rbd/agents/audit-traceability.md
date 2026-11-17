@@ -61,6 +61,8 @@ For each requirement with status `validated`:
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
 - A requirement whose `**Verification:**` is not `test` needs only the implementation commit.
+- A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
+  line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Do not flag it.
 
 ### T4 — Plan File Coverage
 

@@ -54,6 +54,8 @@ For each validated requirement (status: `validated`):
   - `test(ID):` commit exists but no implementation commit → "tests committed, implementation missing"
   - Implementation commit exists but no `test(ID):` commit → "implementation committed, tests missing"
     (not flagged when the requirement's verification is not `test`)
+  - A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
+    line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Not flagged.
 
 Note: for `CONF-*` requirements, the implementation commit is `conf(ID):` and tests verify the actual configured value is applied (e.g., assert timeout == 30).
   - Neither exists (but requirement is validated) → "no test and no implementation"
