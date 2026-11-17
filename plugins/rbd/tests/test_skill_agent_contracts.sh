@@ -68,6 +68,7 @@ test_audit_checks() {
   echo "test_audit_checks"
   # @req: FUNC-AUDIT-008
   # @req: FUNC-AUDIT-005
+  # @req: FUNC-AUDIT-007
   # @req: FUNC-AUDIT-009
   # @req: FUNC-AUDIT-010
   # @req: FUNC-AUDIT-011
@@ -87,6 +88,7 @@ FUNC-AUDIT-009|agents/audit-traceability.md|tag citing a .draft. requirement
 FUNC-AUDIT-005|agents/audit-coherence.md|depends on a .draft.
 FUNC-AUDIT-011|agents/audit-traceability.md|accepted_prefixes
 FUNC-AUDIT-011|skills/rbd/references/formats.md|accepted_prefixes:
+FUNC-AUDIT-007|agents/audit-coherence.md|restates the requirement differently
 FUNC-AUDIT-012|agents/audit-traceability.md|docs/architecture.md.* in .accepted_prefixes
 FUNC-PUSH-002|agents/audit-traceability.md|FUNC-X-001\.\.015
 FUNC-PUSH-002|skills/rbd-review/SKILL.md|Expand ID ranges
@@ -95,12 +97,14 @@ CASES
 
 test_requirement_lifecycle() {
   echo "test_requirement_lifecycle"
+  # @req: FUNC-ARCH-001
   # @req: FUNC-REQ-008
   # @req: FUNC-TEST-006
   # Given the workflow agents and the format reference
   # When they are searched for each rule of the requirement lifecycle
   # Then every rule is stated
   check_cases <<'CASES'
+FUNC-ARCH-001|agents/requirement-analyst.md|re-read its row
 FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* test
 FUNC-REQ-008|skills/rbd/references/formats.md|bench \(pending\)
 FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\*
