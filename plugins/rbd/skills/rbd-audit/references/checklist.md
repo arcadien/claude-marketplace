@@ -241,7 +241,10 @@ Each agent returns a JSON array. Return `[]` if no issues are found.
     "requirement_id": "...",          // single requirement (omit if not applicable)
     "requirement_ids": ["...", "..."],// multiple requirements (omit if not applicable)
     "issue": "Plain English description of the problem.",
-    "severity": "error" | "warning"
+    "severity": "error" | "warning" | "info"
   }
 ]
 ```
+
+Severity `info` is for facts that need no action (for example a requirement verified on the bench, not by a test).
+Report one entry per requirement ID; `rbd-audit` groups entries that share a check and a cause.
