@@ -108,6 +108,12 @@
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
 **Description:** The `requirement-analyst` agent handles deletion of an existing requirement. It emits the signal `REQUIREMENT DELETED: <ID>`. The workflow cycle ends and the user is informed.
 
+### FUNC-REQ-008
+**Title:** Verification field for requirements without native tests  
+**Status:** validated  
+**Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
+**Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `inspection`, `build`, `bench` or `bench (pending)`, optionally followed by ` — <details>`. Without the line, verification is `test`. The `requirement-analyst` sets it when no native test can observe the behaviour (registers, sleep modes, wiring, measurements) and states why in the details.
+
 ---
 
 ## Architecture (ARCH)
@@ -260,7 +266,7 @@
 **Title:** T1 check — test coverage per requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every `validated` requirement has at least one corresponding test commit in the format `test(ID):`. Any requirement without tests generates a T1 finding.
+**Description:** `audit-traceability` verifies that every `validated` requirement has at least one corresponding test commit in the format `test(ID):`. Any requirement without tests generates a T1 finding, unless its `**Verification:**` ([FUNC-REQ-008](functional.md#func-req-008)) is not `test`: such requirements are reported as `info`, and the report lists every `bench (pending)` requirement.
 
 ### FUNC-AUDIT-009
 **Title:** T2 check — tag validity in tests  
@@ -272,7 +278,7 @@
 **Title:** T3 check — implementation coverage  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-008](functional.md#func-audit-008)  
-**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding.
+**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is not `test` needs only the implementation commit.
 
 ### FUNC-AUDIT-011
 **Title:** T4 check — plan file coverage  
