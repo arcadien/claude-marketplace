@@ -21,6 +21,13 @@ This skill performs a requirements-focused review of a GitHub or GitLab merge re
 Proceed with the same analysis regardless of mode.
 Before analysing, record the reviewed commit: `git rev-parse HEAD` in automatic mode, the PR head (`gh pr view <n> --json headRefOid`) in manual mode.
 
+**Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
+branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
+to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
+
+For a merged PR, check that its head commit reached the default branch:
+`git merge-base --is-ancestor <head> origin/<default>`. If it did not, report it as a finding.
+
 ## Analysis
 
 ### Check R1: Requirement Coverage

@@ -119,6 +119,9 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
    - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
+   - **Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
+     branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
+     to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
 5. If all checks pass → confirm and allow the push.
 
