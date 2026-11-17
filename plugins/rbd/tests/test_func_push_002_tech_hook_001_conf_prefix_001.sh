@@ -213,6 +213,12 @@ test_latest_audit_chosen_by_name() {
   printf '| F2 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit.md"
   touch -d '2026-01-01' "$r/audits/2026-03-01-audit.md"
   assert_rc "latest open audit blocks" 2 "$(run_hook "$r" "$PUSH_CMD")"
+  # Given a second report the same day, clean, Then it is the latest: the push is allowed
+  printf '| F2 | x | **Status:** fixed |\n' > "$r/audits/2026-03-01-audit-2.md"
+  assert_rc "same-day -audit-2 comes after -audit" 0 "$(run_hook "$r" "$PUSH_CMD")"
+  # Given -audit-10 has open findings, Then it comes after -audit-2: the push is blocked
+  printf '| F3 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit-10.md"
+  assert_rc "same-day -audit-10 comes after -audit-2" 2 "$(run_hook "$r" "$PUSH_CMD")"
 }
 
 test_merge_commits_not_checked() {
