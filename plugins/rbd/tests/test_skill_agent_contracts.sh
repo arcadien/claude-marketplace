@@ -26,6 +26,7 @@ check_cases() {
 
 test_audit_reports() {
   echo "test_audit_reports"
+  # @req: FUNC-AUDIT-001
   # @req: FUNC-AUDIT-014
   # @req: FUNC-REVIEW-007
   # @req: FUNC-AUDIT-017
@@ -38,6 +39,8 @@ test_audit_reports() {
   check_cases <<'CASES'
 FUNC-AUDIT-014|skills/rbd-audit/SKILL.md|git rev-parse HEAD
 FUNC-AUDIT-014|skills/rbd-audit/SKILL.md|Audited commit: <full hash>
+FUNC-AUDIT-014|skills/rbd-audit/SKILL.md|YYYY-MM-DD-audit-2\.md
+FUNC-AUDIT-001|skills/rbd-audit/SKILL.md|-audit-10\.md. comes after .-audit-2\.md
 FUNC-REVIEW-007|skills/rbd-review/SKILL.md|Reviewed commit: <full hash>
 FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|/rbd-audit since-last
 FUNC-AUDIT-017|skills/rbd-audit/SKILL.md|git diff <hash>\.\.<audited>
