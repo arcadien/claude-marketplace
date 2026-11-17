@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-AUDIT-019_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-AUDIT-020_
 
 ---
 
@@ -169,6 +169,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-AUDIT-017](../requirements/functional.md#func-audit-017) | Since-last-audit mode | `rbd-audit`, `audit-coherence`, `audit-traceability` |
 | [FUNC-AUDIT-018](../requirements/functional.md#func-audit-018) | Audit of a fixed commit | `rbd-audit`, `audit-coherence`, `audit-traceability` |
 | [FUNC-AUDIT-019](../requirements/functional.md#func-audit-019) | Findings grouped by cause, info items apart | `rbd-audit` |
+| [FUNC-AUDIT-020](../requirements/functional.md#func-audit-020) | Finding status command | `rbd-audit` |
 | [FUNC-REVIEW-001](../requirements/functional.md#func-review-001) | Manual review trigger by MR number or URL | `rbd-review` |
 | [FUNC-REVIEW-003](../requirements/functional.md#func-review-003) | R1 check — requirement coverage in commits | `rbd-review` |
 | [FUNC-REVIEW-004](../requirements/functional.md#func-review-004) | R2 check — uncovered behaviors via inference | `rbd-review` |
