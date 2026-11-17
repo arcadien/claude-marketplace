@@ -137,10 +137,10 @@ test_pushed_commits_not_rechecked() {
 test_requirement_ids_checked() {
   echo "test_requirement_ids_checked"
   # @req: FUNC-PUSH-002
-  # Given requirements FUNC-A-001 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
+  # Given requirements FUNC-A-001, FUNC-A-002 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
   local r; r=$(new_repo ids)
   mkdir -p "$r/requirements"
-  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
+  printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-A-002' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
   printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
@@ -156,6 +156,9 @@ test_requirement_ids_checked() {
 0|test(FUNC-A-001,TECH-B-001): two validated ids
 2|feat(TECH-ZZZ-999): unknown TECH id
 2|feat(FUNC-A-001,TECH-ZZZ-999): unknown second id
+0|feat(FUNC-A-001..002): range of validated ids
+2|feat(FUNC-A-001..003): range reaching an unknown id
+2|feat(TECH-B-001,FUNC-A-002..003): range after another id
 2|feat(FUNC-C-001): id not validated
 0|test(FUNC-D-001): remove tests of a deprecated requirement
 2|test(FUNC-C-001): draft id without draft_ok_prefixes
