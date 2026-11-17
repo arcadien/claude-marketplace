@@ -14,6 +14,9 @@ test_tagging:
 
 linter:
   command: "ruff check ."
+
+rules:                                 # optional audit rules, off by default
+  non_technical_without_code: true     # C2: FUNC, UI, CONF, PLAT name no class, method, variable, file path
 ```
 
 ## .rbd/plan-files.yml

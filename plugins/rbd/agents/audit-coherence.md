@@ -18,7 +18,7 @@ You never modify any file. Your sole output is a JSON array of findings.
 
 0. The dispatch prompt gives the audited tree, a worktree at the audited commit. Read every file from that tree,
    never from the session's working tree.
-1. Read all `requirements/*.md` files.
+1. Read `.rbd/config.yml` for optional `rules:`. Read all `requirements/*.md` files.
 2. Build a complete list of requirements with their IDs, descriptions, statuses, and dependencies.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
 
@@ -43,6 +43,10 @@ For each requirement, evaluate:
 - Does it use vague language without measurable criteria ("fast", "user-friendly", "reasonable", "as needed", "appropriate")?
 - Could two developers write substantially different implementations from this description alone?
 - If any answer is yes → flag it.
+
+**Optional rule — `rules: { non_technical_without_code: true }` in `.rbd/config.yml`:** for each FUNC, UI, CONF and
+PLAT requirement, flag under C2 any class, method, function or variable name, file path or memory layout in its text.
+These requirements state observable behaviour or hardware use; code names belong to TECH. Without the key, skip it.
 
 ### C3 — Dependency Validity
 

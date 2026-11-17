@@ -74,6 +74,7 @@ flowchart TD
 | `rbd` | `/rbd` | Guided workflow: init, requirement discussion, TDD cycle, pre-push checks |
 | `rbd-audit` | `/rbd-audit` | Full read-only audit with two parallel agents |
 | `rbd-review` | `/rbd-review` | MR/PR review from a requirements perspective |
+| `rbd-links` | `/rbd-links` | Link every cited requirement ID to its heading; `--check` lists broken or missing links |
 
 ## Quick Start
 
@@ -91,6 +92,7 @@ flowchart TD
   config.yml          # ID format, test tagging convention, linter command,
                       # optional extra_commit_prefixes: [hw] (accepted by the pre-push hook)
                       # optional draft_ok_prefixes: [test] (may cite draft requirements)
+                      # optional rules: { non_technical_without_code: true } (audit C2)
   plan-files.yml      # workflow files monitored for plan: commit discipline
 
 requirements/

@@ -118,6 +118,14 @@ For every `PLAT-*` requirement with status `validated`:
      If the target is non-existent, invalid, not found, or has status
      `deprecated` → create a T7 finding (severity: error).
 
+### T8 — Requirement ID Links
+
+Run `python3 <plugin root>/skills/rbd-links/rbd_links.py --check <audited tree>` (the plugin root is two directories
+above this agent file's `agents/`). It is read-only.
+
+- Each `broken link` line → a T8 finding (severity: error).
+- Each `is not linked` line → a T8 finding (severity: warning). Report one entry per ID; rbd-audit groups them.
+
 ## Output
 
 Return ONLY a JSON array. No prose, no explanation — just the array.
