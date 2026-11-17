@@ -152,6 +152,8 @@ Update `docs/architecture.md`:
 - Revise the component diagram (add/remove/modify components and edges).
 - Update the Dependency Injection Map with any new or removed bindings.
 - Update the Requirement → Component Traceability table for the current requirement.
+  For an **update**, even when the components stay the same, re-read its row and rewrite it if it restates
+  something that changed (a limit, a behaviour, the title).
 - Update the `_Last updated_` header: today's date and the triggering requirement ID.
 
 Commit: `arch(<ID>): <brief description>`
