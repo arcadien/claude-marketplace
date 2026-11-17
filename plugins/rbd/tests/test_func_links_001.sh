@@ -24,6 +24,7 @@ Code `FUNC-A-002` stays, unknown FUNC-Z-999 stays, range FUNC-A-001..002 stays.
 <!-- FUNC-A-002 in a comment stays -->
 Already linked: [FUNC-A-002](functional.md#func-a-002).
 Example in code: `[FUNC-A-001](nowhere.md#x)` is not checked.
+Italic _FUNC-A-002_ is linked.
 
 ### FUNC-A-002
 **Description:** Done.
@@ -61,6 +62,7 @@ requirements/functional.md|**Description:** Needs [TECH-B-001](technical.md#tech
 requirements/functional.md|Code `FUNC-A-002` stays, unknown FUNC-Z-999 stays, range FUNC-A-001..002 stays.
 requirements/functional.md|<!-- FUNC-A-002 in a comment stays -->
 requirements/functional.md|Already linked: [FUNC-A-002](functional.md#func-a-002).
+requirements/functional.md|Italic _[FUNC-A-002](functional.md#func-a-002)_ is linked.
 requirements/functional.md|FUNC-A-001 in fenced code stays
 docs/architecture.md|| [FUNC-A-001](../requirements/functional.md#func-a-001) | rbd |
 CASES
