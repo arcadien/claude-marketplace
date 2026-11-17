@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-TEST-006_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-PUSH-005_
 
 ---
 
@@ -181,6 +181,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if open audit findings exist | `pre-push hook` |
 | [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
 | [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `rbd`, `rbd-review` |
+| [FUNC-PUSH-005](../requirements/functional.md#func-push-005) | Warning for stacked PRs | `rbd`, `rbd-review` |
 | [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
 | [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
