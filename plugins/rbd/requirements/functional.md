@@ -452,6 +452,22 @@
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002), [CONF-PLAT-001](configuration.md#conf-plat-001)  
 **Description:** `audit-traceability` verifies that every `PLAT-*` requirement with status `validated` has a `derives_from:` frontmatter field referencing an existing FUNC or TECH requirement with status `validated`. Any PLAT requirement missing this field, or referencing a non-existent or deprecated ID, generates a T7 finding (traceability violation).
 
+### FUNC-AUDIT-021
+**Title:** T8 check — requirement ID links  
+**Status:** validated  
+**Dependencies:** [FUNC-LINKS-001](functional.md#func-links-001), [FUNC-AUDIT-002](functional.md#func-audit-002)  
+**Description:** `audit-traceability` runs the check mode of `/rbd-links` on the audited tree. Every broken requirement anchor generates a T8 finding (error); every known requirement ID cited without a link generates a T8 finding (warning).
+
+---
+
+## Requirement Links (LINKS)
+
+### FUNC-LINKS-001
+**Title:** rbd-links skill links every cited requirement ID  
+**Status:** validated  
+**Dependencies:** [UI-DOC-001](ui.md#ui-doc-001)  
+**Description:** `/rbd-links` runs `rbd_links.py` on the project. In apply mode it turns every bare requirement ID cited in `requirements/*.md` and `docs/architecture.md` into a link to its heading, with a path relative to the citing file (`[FUNC-X-001](functional.md#func-x-001)`, `[FUNC-X-001](../requirements/functional.md#func-x-001)`; the anchor is the lowercase ID). It leaves alone headings, fenced code, code spans, HTML comments, existing links, ID ranges and IDs with no heading. In check mode (`--check`) it changes nothing, lists every link whose target file has no heading for its ID and every bare known ID, and exits with status 1 when it finds any.
+
 ---
 
 ## Coverage Metrics (METRICS)

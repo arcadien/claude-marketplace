@@ -32,6 +32,12 @@
 **Dependencies:** [TECH-FMT-001](technical.md#tech-fmt-001)  
 **Description:** A project may declare extra commit prefixes for changes outside the RBD code cycle (for example `hw` for hardware files) in `.rbd/config.yml`, as `extra_commit_prefixes: [hw, ...]`. The pre-push hook accepts `prefix:` and `prefix(...)` for each of them in addition to the built-in list. They never require a requirement ID. Without the key, only the built-in prefixes are accepted.
 
+### CONF-RULES-001
+**Title:** Optional rule: no code names in non-technical requirements  
+**Status:** validated  
+**Dependencies:** [FUNC-AUDIT-004](functional.md#func-audit-004)  
+**Description:** With `rules: { non_technical_without_code: true }` in `.rbd/config.yml`, `audit-coherence` reports under C2 every FUNC, UI, CONF or PLAT requirement whose text names a class, method, function, variable, file path or memory layout: these requirements state observable behaviour or hardware use, and code names belong to TECH. Without the key, the rule is off.
+
 ### CONF-DRAFT-001
 **Title:** Commit prefixes allowed to cite draft requirements  
 **Status:** validated  
