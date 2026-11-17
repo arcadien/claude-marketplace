@@ -96,6 +96,9 @@ conf(CONF-HTTP-TIMEOUT-001): set HTTP request timeout to 30s
 arch(FUNC-AUTH-001): add AuthService and IUserRepository to component diagram
 plan: add Jest/TypeScript tagging support to rbd config
 
+# Range — cites every ID from FUNC-OREGON-001 to FUNC-OREGON-015
+req(FUNC-OREGON-001..015): Oregon protocol requirements
+
 # Multi-requirement (avoid — suggest splitting instead)
 feat: shared authentication middleware
 

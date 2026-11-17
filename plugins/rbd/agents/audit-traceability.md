@@ -51,6 +51,9 @@ Search all test files for all occurrences of the tagging pattern.
 
 ### T3 — Implementation Coverage
 
+A commit header may cite an ID range: `FUNC-X-001..015` cites every ID from `FUNC-X-001` to `FUNC-X-015`
+(same prefix, same digit count). Expand ranges before matching IDs, in T3 and in T5.
+
 For each requirement with status `validated`:
 - Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
 - Run `git log --oneline <hash>` and grep for `test(ID):`.

@@ -26,6 +26,7 @@ Before analysing, record the reviewed commit: `git rev-parse HEAD` in automatic 
 ### Check R1: Requirement Coverage
 
 - Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):`, `arch(ID):`, `test(ID):`).
+- Expand ID ranges: `FUNC-X-001..015` cites every ID from `FUNC-X-001` to `FUNC-X-015` (same digit count).
 - For each extracted ID: verify the requirement exists in `requirements/*.md` with status `validated`.
 - Flag commits referencing non-existent or non-validated requirements.
 
