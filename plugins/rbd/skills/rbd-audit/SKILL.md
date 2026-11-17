@@ -16,6 +16,18 @@ Before running a new audit:
    - Tell the user: "The previous audit from [date] has [N] open finding(s). Resolve them before running a new audit."
    - List the open findings from the previous report.
 3. Load `audits/exclusions.yml`. Keep this in context for the merge step.
+4. Record the audited commit: `git rev-parse HEAD`, the current branch, and its PR/MR if one exists (`gh pr view --json number,url`).
+
+## Since-Last-Audit Mode
+
+`/rbd-audit since-last` audits what changed since the latest report:
+
+1. Read the `Audited commit:` hash from the latest report. If there is none, run a full audit and write
+   "No audited commit in the previous report: full audit." in the report header.
+2. Compute `git log --oneline <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`,
+   where `<audited>` is the commit recorded in step 4 above.
+3. Pass both to the agents with the instruction `since-last`. They focus their checks on the changed requirements,
+   tests, code and commits; `audits/exclusions.yml` still applies to the whole history.
 
 ## Dispatch Parallel Agents
 
@@ -46,6 +58,8 @@ Save to `audits/YYYY-MM-DD-audit.md` using today's date.
 
 ```markdown
 # Audit Report — YYYY-MM-DD
+
+Audited commit: <full hash> — branch `<branch>` — PR #<n> (omit the PR when there is none)
 
 ## Summary
 

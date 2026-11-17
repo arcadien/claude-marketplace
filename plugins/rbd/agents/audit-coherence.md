@@ -20,6 +20,11 @@ You never modify any file. Your sole output is a JSON array of findings.
 2. Build a complete list of requirements with their IDs, descriptions, statuses, and dependencies.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
 
+## Since-last mode
+
+When the dispatch prompt says `since-last`, it also gives a `git log` and a `git diff` of what changed since the
+previous audit. Run every check, but report only findings about requirements, and architecture rows in that range.
+
 ## Execute Coherence Checks
 
 ### C1 — Semantic Overlap

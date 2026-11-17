@@ -23,6 +23,11 @@ You never modify any file. Your sole output is a JSON array of findings.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
 4. Read all `requirements/*.md` files (functional, technical, performance, ui, configuration). Build a map of `{ ID → status }` for all requirements.
 
+## Since-last mode
+
+When the dispatch prompt says `since-last`, it also gives a `git log` and a `git diff` of what changed since the
+previous audit. Run every check, but report only findings about requirements, tests, code or commits in that range.
+
 ## Execute Traceability Checks
 
 ### T1 — Test Coverage per Requirement

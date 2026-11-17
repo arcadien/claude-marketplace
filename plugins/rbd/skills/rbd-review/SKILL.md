@@ -19,6 +19,7 @@ This skill performs a requirements-focused review of a GitHub or GitLab merge re
 - Ask the user to confirm the base branch if ambiguous (default: `main` or `master`).
 
 Proceed with the same analysis regardless of mode.
+Before analysing, record the reviewed commit: `git rev-parse HEAD` in automatic mode, the PR head (`gh pr view <n> --json headRefOid`) in manual mode.
 
 ## Analysis
 
@@ -60,6 +61,8 @@ Sanitize the branch name for the filename: replace every `/` with `-`
 
 ```markdown
 # MR Review — <branch-name> — YYYY-MM-DD
+
+Reviewed commit: <full hash> — branch `<branch>` — PR #<n>
 
 ## Summary
 
