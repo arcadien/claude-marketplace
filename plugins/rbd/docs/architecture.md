@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-AUDIT-020_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-REQ-008_
 
 ---
 
@@ -136,6 +136,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-REQ-005](../requirements/functional.md#func-req-005) | User validation before commit | `requirement-analyst` |
 | [FUNC-REQ-006](../requirements/functional.md#func-req-006) | Requirement splitting when too large | `rbd` |
 | [FUNC-REQ-007](../requirements/functional.md#func-req-007) | Requirement deletion | `requirement-analyst` |
+| [FUNC-REQ-008](../requirements/functional.md#func-req-008) | Verification field for requirements without native tests | `requirement-analyst`, `audit-traceability` |
 | [FUNC-ARCH-001](../requirements/functional.md#func-arch-001) | Component assignment for each requirement | `requirement-analyst` |
 | [FUNC-ARCH-002](../requirements/functional.md#func-arch-002) | DI constraint identification → TECH requirement | `requirement-analyst` |
 | [FUNC-ARCH-003](../requirements/functional.md#func-arch-003) | docs/architecture.md update with arch(ID) commit | `requirement-analyst` |
