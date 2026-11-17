@@ -60,7 +60,37 @@ FUNC-AUDIT-020|skills/rbd-audit/SKILL.md|table and the details agree
 CASES
 }
 
+test_audit_checks() {
+  echo "test_audit_checks"
+  # @req: FUNC-AUDIT-008
+  # @req: FUNC-AUDIT-010
+  # Given the traceability agent and the audit checklist
+  # When they are searched for each rule of the traceability checks
+  # Then every rule is stated
+  check_cases <<'CASES'
+FUNC-AUDIT-008|agents/audit-traceability.md|Verification:.* is not .test.
+FUNC-AUDIT-008|agents/audit-traceability.md|bench \(pending\)
+FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|Verification:.* is not .test.
+FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
+CASES
+}
+
+test_requirement_lifecycle() {
+  echo "test_requirement_lifecycle"
+  # @req: FUNC-REQ-008
+  # Given the workflow agents and the format reference
+  # When they are searched for each rule of the requirement lifecycle
+  # Then every rule is stated
+  check_cases <<'CASES'
+FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* test
+FUNC-REQ-008|skills/rbd/references/formats.md|bench \(pending\)
+FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\*
+CASES
+}
+
 test_audit_reports
+test_audit_checks
+test_requirement_lifecycle
 
 echo
 echo "Results: $PASS passed, $FAIL failed"
