@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-REQ-008_
+_Last updated: 2026-11-17 — triggering requirement: FUNC-TEST-006_
 
 ---
 
@@ -146,6 +146,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-TEST-003](../requirements/functional.md#func-test-003) | Parametrized tests for multiple cases | `test-builder` |
 | [FUNC-TEST-004](../requirements/functional.md#func-test-004) | TOO_LARGE signal when requirement is too large | `test-builder` |
 | [FUNC-TEST-005](../requirements/functional.md#func-test-005) | Test file linting before commit | `test-builder` |
+| [FUNC-TEST-006](../requirements/functional.md#func-test-006) | NO NATIVE TEST route | `test-builder`, `rbd`, `code-builder` |
 | [FUNC-IMPL-001](../requirements/functional.md#func-impl-001) | Design pattern analysis with alternative proposals | `code-builder` |
 | [FUNC-IMPL-002](../requirements/functional.md#func-impl-002) | Production code implementation | `code-builder` |
 | [FUNC-IMPL-003](../requirements/functional.md#func-impl-003) | Full test suite green gate before commit | `code-builder` |
