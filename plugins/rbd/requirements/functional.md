@@ -296,13 +296,19 @@
 **Title:** Timestamped audit report generation  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-003](functional.md#func-audit-003), [FUNC-AUDIT-013](functional.md#func-audit-013)  
-**Description:** After merging and deduplicating findings from both agents, `rbd-audit` generates a report `audits/YYYY-MM-DD-audit.md` containing a summary table and the detail of each finding with its status (open/excluded).
+**Description:** After merging and deduplicating findings from both agents, `rbd-audit` generates a report `audits/YYYY-MM-DD-audit.md` containing a summary table and the detail of each finding with its status (open/excluded). Before dispatching its agents, `rbd-audit` records `git rev-parse HEAD`: the first line under the report title is `Audited commit: <full hash>`, followed by the branch and, when one exists, the PR/MR, so `git diff <hash>..HEAD` shows what changed since.
 
 ### FUNC-AUDIT-015
 **Title:** Finding resolution with the user  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
 **Description:** After report generation, `rbd-audit` works through each open finding with the user: direct fix or addition of a justified entry in `audits/exclusions.yml`.
+
+### FUNC-AUDIT-017
+**Title:** Since-last-audit mode  
+**Status:** validated  
+**Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
+**Description:** `/rbd-audit since-last` reads the `Audited commit:` hash of the latest report and gives both agents `git log <hash>..<audited>` and `git diff <hash>..<audited> -- requirements docs <code and test directories>`. The agents focus their checks on what changed; `audits/exclusions.yml` still applies to the whole history. When the latest report has no `Audited commit:` line, the skill runs a full audit and says so in the report header.
 
 ---
 
@@ -342,7 +348,7 @@
 **Title:** Review report generation  
 **Status:** validated  
 **Dependencies:** [FUNC-REVIEW-003](functional.md#func-review-003), [FUNC-REVIEW-004](functional.md#func-review-004), [FUNC-REVIEW-005](functional.md#func-review-005), [FUNC-REVIEW-006](functional.md#func-review-006)  
-**Description:** `rbd-review` generates a report `audits/YYYY-MM-DD-review-<branch>.md` and emits the signal `REVIEW PASSED` or `REVIEW FAILED`.
+**Description:** `rbd-review` generates a report `audits/YYYY-MM-DD-review-<branch>.md` and emits the signal `REVIEW PASSED` or `REVIEW FAILED`. The first line under the report title is `Reviewed commit: <full hash>`, followed by the branch and the PR/MR.
 
 ---
 
