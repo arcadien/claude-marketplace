@@ -290,13 +290,13 @@
 **Title:** T4 check — plan file coverage  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every file listed in `.rbd/plan-files.yml` has been covered by a `plan:` commit at creation or modification. Any uncovered plan file generates a T4 finding.
+**Description:** `audit-traceability` verifies that every file listed in `.rbd/plan-files.yml` has been covered by a `plan:` commit at creation or modification. Any uncovered plan file generates a T4 finding. The optional `accepted_prefixes:` map of `.rbd/plan-files.yml` gives, for a file or glob, the prefixes accepted instead (for example `audits/exclusions.yml: [plan]`, `requirements/*.md: [req, plan]`); a commit with one of them is covered.
 
 ### FUNC-AUDIT-012
 **Title:** T5 check — architecture document currency  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that `docs/architecture.md` exists, that every validated requirement appears in the traceability table, that the DI map is valid, and that every modification has an `arch(ID):` commit. Any gap generates a T5 finding.
+**Description:** `audit-traceability` verifies that `docs/architecture.md` exists, that every validated requirement appears in the traceability table, that the DI map is valid, and that every modification has an `arch(ID):` commit, or a commit with a prefix that `accepted_prefixes:` of `.rbd/plan-files.yml` lists for `docs/architecture.md` (for example `plan` for a format-only pass with no single requirement behind it). Any gap generates a T5 finding.
 
 ### FUNC-AUDIT-013
 **Title:** T6 check — test structure conventions  
