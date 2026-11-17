@@ -12,6 +12,7 @@ This skill is the **orchestrator**. It does not perform requirement analysis, te
 ## Entry Point
 
 On invocation:
+
 1. Check whether `.rbd/config.yml` exists in the project root.
 2. If absent → run **Phase 1: Init** immediately (handled inline below).
 3. If present → determine the current phase from context (last commit, pending files, user's stated intent) and resume from the right phase.
@@ -39,6 +40,7 @@ Run when `.rbd/config.yml` is missing, or on explicit `/rbd init`.
 **Dispatch the `requirement-analyst` agent.**
 
 Provide the agent with:
+
 - The user's stated intent: new requirement, update to an existing requirement, or deletion.
 - Full project context: all existing `requirements/*.md` files, current `docs/architecture.md`.
 
@@ -70,6 +72,7 @@ The agent handles everything: elicitation, challenge (size/overlap/consistency),
 **Dispatch the `test-builder` agent.**
 
 Provide the agent with:
+
 - The validated requirement ID and its full description.
 - The path to `.rbd/config.yml`.
 
@@ -90,6 +93,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 **Dispatch the `code-builder` agent.**
 
 Provide the agent with:
+
 - The validated requirement ID and its full description.
 - The committed test files for this requirement.
 - The linter command from `.rbd/config.yml`.

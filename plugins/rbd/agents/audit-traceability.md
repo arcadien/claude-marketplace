@@ -36,6 +36,7 @@ previous audit. Run every check, but report only findings about requirements, te
 ### T1 — Test Coverage per Requirement
 
 For each requirement with status `validated`:
+
 - Search all test files for the tag pattern from config (use Grep with the ID).
 - If no match → create a finding, unless the requirement's `**Verification:**` line is not `test`:
   then create an `info` entry instead ("verified by inspection, no test required").
@@ -46,6 +47,7 @@ Note: `deprecated` and `draft` requirements are excluded — deprecated ones may
 ### T2 — Tag Validity
 
 Search all test files for all occurrences of the tagging pattern.
+
 - Extract each ID found.
 - If the ID is not in the requirements map → create a finding.
 - For a tag citing a `draft` requirement (a test kept after its requirement went back to draft) → create a
@@ -57,6 +59,7 @@ A commit header may cite an ID range: `FUNC-X-001..015` cites every ID from `FUN
 (same prefix, same digit count). Expand ranges before matching IDs, in T3 and in T5.
 
 For each requirement with status `validated`:
+
 - Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
@@ -67,6 +70,7 @@ For each requirement with status `validated`:
 ### T4 — Plan File Coverage
 
 For each file in `.rbd/plan-files.yml`:
+
 - Run `git log --oneline <hash> -- <file>` to get commits that modified it.
 - For each such commit, check whether it starts with `plan:`, or with a prefix that the optional `accepted_prefixes:`
   map of `.rbd/plan-files.yml` lists for this file (keys are paths or globs).
@@ -88,6 +92,7 @@ For each file in `.rbd/plan-files.yml`:
 For every test file detected in the project:
 
 **T6a — Tag coverage (error):**
+
 1. List all test functions using the naming convention for the project language (e.g. `def test_`, `it(`, `test(`).
 2. For each function: check whether the tag pattern from `.rbd/config.yml` is present in the function body or decorator.
 3. If a function has no tag → create a finding (severity: error).
@@ -95,6 +100,7 @@ For every test file detected in the project:
 This is a hard check: untagged tests are a traceability break regardless of whether their requirement has coverage from other tests.
 
 **T6b — Given/When/Then structure (warning):**
+
 1. For each test function found in T6a:
 2. Check whether the function body contains the three structural markers: `# Given`, `# When`, `# Then` (or language-equivalent: `// Given`, `// When`, `// Then`).
 3. If any marker is missing → create a finding (severity: warning).

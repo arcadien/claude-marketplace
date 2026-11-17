@@ -1,12 +1,12 @@
 # Architecture — RBD Plugin
 
-_Last updated: 2026-11-17 — triggering requirement: FUNC-ORCH-006_
+Last updated: 2026-11-17 — triggering requirement: [FUNC-ORCH-006](../requirements/functional.md#func-orch-006)
 
 ---
 
 ## Component Diagram
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────────┐
 │  Claude Code Plugin: RBD                                           │
 │                                                                    │

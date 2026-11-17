@@ -11,6 +11,7 @@ It produces a Markdown report. The user processes each finding together with Cla
 ## Pre-Flight Check
 
 Before running a new audit:
+
 1. List all files in `audits/` and find the most recent report: highest date in the filename, then highest same-day
    suffix (`-audit.md`, then `-audit-2.md`, `-audit-3.md`…; `-audit-10.md` comes after `-audit-2.md`).
 2. Check that the summary table and the details agree on every finding's status. A mismatched finding counts as `open`.
@@ -53,7 +54,7 @@ The report is written to `audits/` of the working tree, not of the audited tree.
 
 Wait for both to complete. Collect their JSON finding arrays.
 If an agent returns non-JSON output or fails, treat it as zero findings and add a warning
-to the report header: "Agent <name> failed to return valid output."
+to the report header: "Agent `<name>` failed to return valid output."
 
 ## Merge and Deduplicate Findings
 
@@ -109,6 +110,7 @@ Mode: since <hash> (or: Mode: full)
 ## Post-Audit: Process Findings With the User
 
 Present the summary table. For each `open` finding:
+
 1. Explain the issue in plain language.
 2. Offer two options:
    - **Fix** — work on the issue together (add missing tests, clarify requirement, etc.).

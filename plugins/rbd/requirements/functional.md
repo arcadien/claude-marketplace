@@ -118,7 +118,7 @@
 **Title:** Verification field for requirements without native tests  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
-**Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `inspection`, `build`, `bench` or `bench (pending)`, optionally followed by ` — <details>`. Without the line, verification is `test`. The `requirement-analyst` sets it when no native test can observe the behaviour (registers, sleep modes, wiring, measurements) and states why in the details.
+**Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `inspection`, `build`, `bench` or `bench (pending)`, optionally followed by `—` and details. Without the line, verification is `test`. The `requirement-analyst` sets it when no native test can observe the behaviour (registers, sleep modes, wiring, measurements) and states why in the details.
 
 ---
 
@@ -484,7 +484,7 @@
 **Dependencies:** [CONF-IDLVL-001](configuration.md#conf-idlvl-001)  
 **Description:** The `rbd-metrics` skill reads all requirement files and counts, per main category (FUNC, TECH, PERF, UI, CONF, PLAT) and per subcategory, the total number of validated requirements and how many have at least one `test(ID):` commit. Output is an ASCII structured list printed to stdout:
 
-```
+```text
 FUNC  (12 validated)
 ├── AUTH    3 / 3  ████████████  100%
 ├── DATA    2 / 4  ██████░░░░░░   50%  ← 2 missing

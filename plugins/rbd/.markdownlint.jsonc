@@ -1,0 +1,16 @@
+// markdownlint config of the rbd plugin, read by the linter command of .rbd/config.yml
+{
+  "default": true,
+  // prose is not hard-wrapped
+  "MD013": false,
+  // requirement blocks put their fields right under the "### ID" heading
+  "MD022": { "lines_above": 1, "lines_below": 0 },
+  // requirement files hold "### ID" headings right under the "# Category" title
+  "MD001": false,
+  // agent and skill prompts start with prose after their frontmatter
+  "MD041": false,
+  // table pipes are not aligned
+  "MD060": false,
+  // CHANGELOG repeats "### Fixes" under each version
+  "MD024": { "siblings_only": true }
+}

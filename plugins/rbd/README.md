@@ -28,6 +28,7 @@ If any link in that chain is missing, you know exactly where the gap is — and 
 This plugin implements the RBD workflow for Claude Code. It enforces the invariants through a structured cycle: requirement elicitation and challenge, architecture update, TDD red phase, implementation, and pre-push verification. Each phase is guided — you are never left wondering what to do next.
 
 The workflow is intentionally structured but lightweight:
+
 - Requirements are challenged *before* tests are written, so splitting a bloated requirement never forces rework.
 - The `plan:` commit type covers workflow-level changes without dragging them into the TDD cycle.
 - Audit findings block new audits until resolved — technical debt stays visible and actionable.
@@ -87,7 +88,7 @@ flowchart TD
 
 ## Project Structure Created on Init
 
-```
+```text
 .rbd/
   config.yml          # ID format, test tagging convention, linter command,
                       # optional extra_commit_prefixes: [hw] (accepted by the pre-push hook)
@@ -120,7 +121,7 @@ audits/
 
 ## Commit Convention
 
-```
+```text
 req(ID):   requirement validated and committed
 test(ID):  integration tests committed (TDD red)
 feat(ID):  functional requirement implemented
@@ -149,7 +150,7 @@ Requirements: ID-001, ID-002
 
 ## Workflow Summary
 
-```
+```text
 Phase 1: Init         → .rbd/config.yml created, commit: plan: init rbd project
 Phase 2: Requirement  → requirements/*.md updated, commit: req(ID): title
 Phase 3: Architecture → docs/architecture.md updated, TECH reqs for DI,

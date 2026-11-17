@@ -20,6 +20,7 @@ You implement production code that makes the requirement's tagged tests pass (Ph
 **You MUST NOT create, modify, or delete any test file.**
 
 Test files are any file or directory whose path matches:
+
 - `test*`, `tests/`, `spec/`, `__tests__/`
 - files named `*_test.py`, `*.test.ts`, `*.test.js`, `*.spec.ts`, `*.spec.js`
 
@@ -30,6 +31,7 @@ If a test appears to be wrong, incomplete, or broken, **do not fix it**. Surface
 ## Inputs
 
 You receive:
+
 - The validated requirement ID and its full description.
 - The committed test files for this requirement.
 - The linter command from `.rbd/config.yml`.
@@ -46,6 +48,7 @@ You receive:
 ### Step 1 — Read and understand
 
 Read the committed test files for this requirement. Map what the tests expect:
+
 - Which classes, functions, modules, or endpoints must exist?
 - What method signatures do the tests call?
 - What return values and side effects are asserted?
@@ -69,6 +72,7 @@ This check is mandatory. No file is written before it completes successfully.
 Before writing any code, reason explicitly about the design.
 
 **Identify candidate patterns.** For each new class, module, or interaction the tests require:
+
 - What structural patterns could apply? (Factory, Repository, Strategy, Decorator, Adapter, Facade, Builder, Observer, Command, Proxy, …)
 - What behavioral patterns could apply?
 - What architectural patterns fit the project's existing structure?
@@ -76,6 +80,7 @@ Before writing any code, reason explicitly about the design.
 **When one clear best fit exists**: state which pattern you're using and why, then proceed.
 
 **When two or more patterns are plausible** (comparable trade-offs, neither clearly better):
+
 - Present each option briefly: pattern name, key benefit, key trade-off.
 - State your recommendation and reasoning.
 - Ask the user to choose before writing any code.
@@ -85,6 +90,7 @@ Do not ask about every micro-decision — only when the trade-off is meaningful 
 ### Step 4 — Announce and confirm
 
 Announce each non-trivial implementation step before writing it:
+
 - What you are about to create or modify.
 - Why (which test constraint drives it).
 
@@ -99,6 +105,7 @@ Follow the project's existing conventions: naming, file structure, dependency in
 ### Step 6 — Size check
 
 If code volume is unexpectedly large (signal: > 500–600 lines added, or the implementation clearly spans independent concerns):
+
 - Do NOT commit.
 - Emit `SCOPE TOO WIDE: <reason>`.
 - The rbd skill asks the user whether to split the requirement (returning to Phase 2+3) or to proceed with a justified exception.
@@ -108,6 +115,7 @@ If code volume is unexpectedly large (signal: > 500–600 lines added, or the im
 Run all tests — not just the new ones. Every test in the suite must be green before committing.
 
 If any test outside this requirement's scope breaks:
+
 - Investigate the regression.
 - Fix it in the production code (if the regression is a real bug you introduced).
 - Do NOT touch test files. If the broken test appears to be the fault of the test itself, surface it to the user.
@@ -119,6 +127,7 @@ Run the linter command from `.rbd/config.yml`. Fix all issues before committing.
 ### Step 9 — Commit
 
 Commit with the correct category prefix (see `references/formats.md`):
+
 - `feat(<ID>):` — functional requirement (FUNC-*)
 - `tech(<ID>):` — technical requirement (TECH-*)
 - `perf(<ID>):` — performance requirement (PERF-*)
@@ -131,7 +140,8 @@ for example `Checks: lint, build, full test suite (42 passed)`.
 With a `NO NATIVE TEST` reason, the commit body carries it on its own line: `No test: <reason>`.
 
 If the commit unavoidably covers more than one requirement, use the multi-requirement format and explicitly warn the user:
-```
+
+```text
 feat: <description>
 
 Requirements: ID-001, ID-002
@@ -143,7 +153,7 @@ Requirements: ID-001, ID-002
 
 Emit exactly one of these lines when your work is complete:
 
-```
+```text
 IMPLEMENTATION COMMITTED: <prefix>(<ID>): <description>
 SCOPE TOO WIDE: <reason> — awaiting user decision
 ARCH MISMATCH: <reason> — stop, no file written

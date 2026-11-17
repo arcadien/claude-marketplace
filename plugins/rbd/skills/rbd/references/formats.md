@@ -59,7 +59,7 @@ accepted_prefixes:
 
 Update this file whenever a new workflow file is added to the project. The update itself is a `plan:` commit.
 
-## requirements/<category>.md
+## `requirements/<category>.md`
 
 Each category file has a header and one entry per requirement:
 
@@ -97,7 +97,7 @@ exclusions:
 
 ## Commit Format
 
-```
+```text
 # Standard — one requirement
 req(FUNC-AUTH-LOGIN-001): add login requirement
 test(FUNC-AUTH-LOGIN-001): integration test for email/password login
@@ -160,6 +160,7 @@ Use a parameter table when the requirement has multiple input/output cases.
 The tag goes on the parametrized function, not on individual cases.
 
 **Python (pytest):**
+
 ```python
 @pytest.mark.req('FUNC-AUTH-LOGIN-001')
 @pytest.mark.parametrize("email,password,expected_error", [
@@ -179,6 +180,7 @@ def test_login_error_cases(email, password, expected_error):
 ```
 
 **JavaScript (Jest/Vitest):**
+
 ```javascript
 const cases = [
   { id: "wrong-password",  email: "alice@example.com",  password: "wrong",  error: "invalid_credentials" },
@@ -206,7 +208,7 @@ Created during Phase 3 (first requirement). Updated after every requirement chan
 ```markdown
 # Architecture
 
-_Last updated: YYYY-MM-DD — requirement: ID_
+Last updated: YYYY-MM-DD — requirement: ID
 
 ## Component Diagram
 
@@ -233,6 +235,7 @@ graph TD
 | Requirement | Component(s) | Notes |
 |-------------|-------------|-------|
 | FUNC-AUTH-001 | AuthService | entry point for login flow |
-```
+
+```text
 
 `docs/architecture.md` is tracked separately from `plan-files.yml`. Every modification must have an `arch(ID):` commit where `ID` is the triggering requirement. The traceability agent checks this via T5.

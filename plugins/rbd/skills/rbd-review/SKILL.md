@@ -10,10 +10,12 @@ This skill performs a requirements-focused review of a GitHub or GitLab merge re
 ## Two Modes
 
 **Manual** — user provides a MR/PR number or URL:
+
 - Fetch the diff via `gh pr diff <number>` (GitHub CLI) or GitLab API.
 - This is the standard usage: review a MR before merging.
 
 **Automatic** — invoked by `rbd` Phase 6 (pre-push check) with no MR reference:
+
 - A remote MR already exists for the current branch, meaning code was likely pushed outside the RBD workflow.
 - Diff the current branch against its base branch locally.
 - Ask the user to confirm the base branch if ambiguous (default: `main` or `master`).

@@ -32,6 +32,7 @@ previous audit. Run every check, but report only findings about requirements, an
 ### C1 — Semantic Overlap
 
 Compare all pairs of requirements using inference.
+
 - Flag pairs where the two requirements describe the same behavior, or where the boundary between them is unclear or ambiguous.
 - Do NOT flag intentional parent/child relationships where the distinction is explicit.
 - Focus on requirements within the same category first, then cross-category pairs.
@@ -39,6 +40,7 @@ Compare all pairs of requirements using inference.
 ### C2 — Precision and Testability
 
 For each requirement, evaluate:
+
 - Is the description precise enough to write unambiguous integration tests?
 - Does it use vague language without measurable criteria ("fast", "user-friendly", "reasonable", "as needed", "appropriate")?
 - Could two developers write substantially different implementations from this description alone?
@@ -51,6 +53,7 @@ These requirements state observable behaviour or hardware use; code names belong
 ### C3 — Dependency Validity
 
 For each requirement with a `Dependencies:` field:
+
 - Parse the listed dependency IDs.
 - Verify each ID exists in the requirements map.
 - Flag any ID that does not exist.
