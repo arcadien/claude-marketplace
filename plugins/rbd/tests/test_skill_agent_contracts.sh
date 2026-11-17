@@ -33,6 +33,7 @@ test_audit_reports() {
   # @req: FUNC-AUDIT-018
   # @req: FUNC-AUDIT-019
   # @req: FUNC-AUDIT-020
+  # @req: FUNC-PUSH-005
   # Given the audit and review instruction files
   # When they are searched for each behaviour of the audit reports
   # Then every behaviour is stated
@@ -57,6 +58,9 @@ FUNC-AUDIT-019|skills/rbd-audit/references/checklist.md|"info"
 FUNC-AUDIT-020|skills/rbd-audit/SKILL.md|/rbd-audit status <n>
 FUNC-AUDIT-020|skills/rbd-audit/SKILL.md|--ref <EXCLUSION-ID>
 FUNC-AUDIT-020|skills/rbd-audit/SKILL.md|table and the details agree
+FUNC-PUSH-005|skills/rbd/SKILL.md|baseRefName
+FUNC-PUSH-005|skills/rbd-review/SKILL.md|baseRefName
+FUNC-PUSH-005|skills/rbd-review/SKILL.md|git merge-base --is-ancestor
 CASES
 }
 
