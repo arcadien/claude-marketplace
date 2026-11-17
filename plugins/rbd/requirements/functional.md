@@ -322,6 +322,12 @@
 **Dependencies:** [FUNC-AUDIT-014](functional.md#func-audit-014)  
 **Description:** In its merge step, `rbd-audit` groups the agent entries that share a check and a cause into one finding that lists all their requirement IDs. Entries of severity `info` need no action: they go to an `Info (no action required)` section, unnumbered and without a status, and never block the next audit or a push. The report header states `N raw entries merged into M findings`.
 
+### FUNC-AUDIT-020
+**Title:** Finding status command  
+**Status:** validated  
+**Dependencies:** [FUNC-AUDIT-015](functional.md#func-audit-015)  
+**Description:** `/rbd-audit status <n>[,<n>…] fixed|excluded [--ref <EXCLUSION-ID>]` sets the status of the listed findings of the latest report in both places: the summary table row and the `**Status:**` line of the finding. `excluded` requires `--ref`, whose ID must exist in `audits/exclusions.yml`; it is written as `**Exclusion ref:**`. After the update, the command checks that the table and the details agree for every finding and lists any mismatch. The pre-flight of [FUNC-AUDIT-001](functional.md#func-audit-001) runs the same agreement check and treats a mismatched finding as `open`.
+
 ---
 
 ## MR Review (REVIEW)
