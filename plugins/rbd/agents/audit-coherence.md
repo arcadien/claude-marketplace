@@ -16,6 +16,8 @@ You never modify any file. Your sole output is a JSON array of findings.
 
 ## Setup
 
+0. The dispatch prompt gives the audited tree, a worktree at the audited commit. Read every file from that tree,
+   never from the session's working tree.
 1. Read all `requirements/*.md` files.
 2. Build a complete list of requirements with their IDs, descriptions, statuses, and dependencies.
 3. Read `audits/exclusions.yml` to note already-excluded findings.

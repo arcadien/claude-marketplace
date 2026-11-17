@@ -39,7 +39,13 @@ These are named Claude Code agents installed at `.claude/agents/`:
 
 Invoke each with `subagent_type: "claude"` and use the agent file's content as the prompt,
 or dispatch by agent name if your Claude Code version supports named agent dispatch.
-Pass the current working directory as context so the agents can locate project files.
+The agents read a fixed commit, not the working tree, so a branch switch or an edit during the audit changes nothing:
+
+1. Create a worktree at the audited commit: `git worktree add --detach "$(mktemp -d)/audit" <hash>`.
+2. Give both agents its path as the audited tree, and the hash.
+3. Once both agents have returned, remove it: `git worktree remove --force <path>`.
+
+The report is written to `audits/` of the working tree, not of the audited tree.
 
 Wait for both to complete. Collect their JSON finding arrays.
 If an agent returns non-JSON output or fails, treat it as zero findings and add a warning

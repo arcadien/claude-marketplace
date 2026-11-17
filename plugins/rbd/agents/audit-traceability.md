@@ -18,6 +18,9 @@ You never modify any file. Your sole output is a JSON array of findings.
 
 ## Setup
 
+0. The dispatch prompt gives the audited tree (a worktree at the audited commit) and its hash `<hash>`.
+   Read every file from that tree and run git as `git -C <audited tree>`, never in the session's working tree.
+   History commands run on the audited commit: `git log <hash>`, not `--all`.
 1. Read `.rbd/config.yml` to get the test tagging convention (pattern and language).
 2. Read `.rbd/plan-files.yml` to get the list of monitored plan files.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
@@ -47,14 +50,14 @@ Search all test files for all occurrences of the tagging pattern.
 ### T3 — Implementation Coverage
 
 For each requirement with status `validated`:
-- Run `git log --oneline --all` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
-- Run `git log --oneline --all` and grep for `test(ID):`.
+- Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
+- Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
 
 ### T4 — Plan File Coverage
 
 For each file in `.rbd/plan-files.yml`:
-- Run `git log --oneline -- <file>` to get commits that modified it.
+- Run `git log --oneline <hash> -- <file>` to get commits that modified it.
 - For each such commit, check whether it starts with `plan:`.
 - If a modification commit does not start with `plan:` → create a finding.
 
@@ -63,7 +66,7 @@ For each file in `.rbd/plan-files.yml`:
 1. Check that `docs/architecture.md` exists. If absent → create a finding (severity: error).
 2. Read the "Requirement → Component Traceability" table. For each validated requirement: verify it has a row.
 3. Read the "Dependency Injection Map". For each entry: verify a corresponding TECH requirement exists with status `validated`.
-4. Run `git log --oneline -- docs/architecture.md`. For each commit that modified the file:
+4. Run `git log --oneline <hash> -- docs/architecture.md`. For each commit that modified the file:
    - Verify the commit message starts with `arch(` and contains a valid requirement ID.
    - If not → create a finding.
 
