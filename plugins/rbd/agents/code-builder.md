@@ -33,6 +33,9 @@ You receive:
 - The validated requirement ID and its full description.
 - The committed test files for this requirement.
 - The linter command from `.rbd/config.yml`.
+- Possibly `resume mode` with a list of modified production files: a previous run was interrupted before its
+  commit. Keep those changes, check them against the tests and the architecture (Steps 1–2), complete what is
+  missing, then go on from Step 6. Do not start over.
 - Or, instead of test files, a `NO NATIVE TEST: <reason>` from test-builder: no native test can observe this
   requirement. Implement from the requirement text; still run the full suite and the linter.
 
@@ -121,6 +124,9 @@ Commit with the correct category prefix (see `references/formats.md`):
 - `perf(<ID>):` — performance requirement (PERF-*)
 - `ui(<ID>):` — UI requirement (UI-*)
 - `conf(<ID>):` — configuration value (CONF-*)
+
+Commit as soon as the linter and the full suite are green. The commit body lists the checks that passed, on one line,
+for example `Checks: lint, build, full test suite (42 passed)`.
 
 With a `NO NATIVE TEST` reason, the commit body carries it on its own line: `No test: <reason>`.
 

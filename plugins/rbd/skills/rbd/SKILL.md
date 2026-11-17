@@ -104,6 +104,16 @@ The agent handles everything: design pattern analysis (proposes alternatives to 
 | `SCOPE TOO WIDE: <reason>` | Ask the user: split the requirement (re-dispatch requirement-analyst) or proceed with a justified exception? |
 | `ARCH MISMATCH: <reason>` | Present two options to the user (see below). code-builder is blocked until the chosen option completes. |
 
+### Resume after an interrupted Phase 5
+
+If code-builder ends without a return signal (API error, interruption), read `git log -1` and `git status`:
+
+- The last commit is `<prefix>(<ID>):` for this requirement → the implementation is committed; proceed to Phase 6.
+- Production files are modified but not committed → re-dispatch code-builder in resume mode, listing those files.
+- Nothing changed → re-dispatch code-builder normally.
+
+Never commit the partial work yourself: code-builder runs the gates (lint, full suite) before committing.
+
 ### ARCH MISMATCH — two-option routing
 
 When `code-builder` emits `ARCH MISMATCH`, present the user with exactly two choices:
