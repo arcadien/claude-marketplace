@@ -11,7 +11,9 @@ Used by the two parallel audit agents. Each agent executes its section and retur
 For each requirement with status `validated` in `requirements/functional.md`, `technical.md`, `performance.md`, `ui.md`, `configuration.md`:
 - Read all test files in the project.
 - Search for the tagging pattern from `.rbd/config.yml` (e.g. `@pytest.mark.req('ID')`).
-- If no test file contains a tag matching this requirement ID → flag as finding.
+- If no test file contains a tag matching this requirement ID → flag as finding, unless the requirement's
+  `**Verification:**` line is not `test` (inspection, build, bench): report it as `info` instead.
+- List all `bench (pending)` requirements in one `info` entry.
 
 Note: `deprecated` and `draft` requirements are excluded. Deprecated requirements may have been intentionally decommissioned; draft requirements have not yet reached the test phase.
 
@@ -51,6 +53,7 @@ For each validated requirement (status: `validated`):
 - States to flag:
   - `test(ID):` commit exists but no implementation commit → "tests committed, implementation missing"
   - Implementation commit exists but no `test(ID):` commit → "implementation committed, tests missing"
+    (not flagged when the requirement's verification is not `test`)
 
 Note: for `CONF-*` requirements, the implementation commit is `conf(ID):` and tests verify the actual configured value is applied (e.g., assert timeout == 30).
   - Neither exists (but requirement is validated) → "no test and no implementation"

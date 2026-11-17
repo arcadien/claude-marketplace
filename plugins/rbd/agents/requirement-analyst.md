@@ -81,6 +81,9 @@ Ask the user to explicitly validate the requirement text before committing.
 ### Step 5 — Commit
 
 Append or update `requirements/<category>.md` using the format in `references/formats.md`.
+If no native test can observe the behaviour (registers, sleep modes, wiring, bench measurements), agree with the user
+on a `**Verification:**` line (`inspection`, `build`, `bench` or `bench (pending)`) and state why in its details.
+Otherwise leave it out: verification is then `test`.
 Commit: `req(<ID>): <short title>`
 
 #### PLAT requirement blocks

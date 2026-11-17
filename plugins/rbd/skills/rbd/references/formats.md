@@ -57,10 +57,17 @@ Each category file has a header and one entry per requirement:
 **Title:** User can log in with email and password
 **Status:** draft | validated | deprecated
 **Dependencies:** TECH-DB-001
+**Verification:** test
 **Description:** The system must allow a user to authenticate using a valid email address and
 password combination. On success, a session token is returned. On failure, a clear error message
 is displayed without revealing whether the email or password was wrong.
 ```
+
+`**Verification:**` is optional; without it, verification is `test`. Values: `test`, `inspection`, `build`, `bench`,
+`bench (pending)`, optionally followed by `—` and details. Use a value other than `test` only when no native test can
+observe the behaviour (registers, sleep modes, wiring, measurements), for example
+`**Verification:** inspection — AVR registers, checked in the disassembly and the AVR builds`.
+The audit does not require a test for such requirements and lists the `bench (pending)` ones.
 
 `deprecated` is used only when a requirement was historically validated and implemented, then later
 superseded. Requirements split before any commit are deleted without trace — they have no history.

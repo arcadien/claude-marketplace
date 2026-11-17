@@ -37,7 +37,9 @@ previous audit. Run every check, but report only findings about requirements, te
 
 For each requirement with status `validated`:
 - Search all test files for the tag pattern from config (use Grep with the ID).
-- If no match → create a finding.
+- If no match → create a finding, unless the requirement's `**Verification:**` line is not `test`:
+  then create an `info` entry instead ("verified by inspection, no test required").
+- List every requirement whose verification is `bench (pending)` in one `info` entry.
 
 Note: `deprecated` and `draft` requirements are excluded — deprecated ones may have been intentionally decommissioned, draft ones have not yet reached the test phase.
 
@@ -53,6 +55,7 @@ For each requirement with status `validated`:
 - Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
+- A requirement whose `**Verification:**` is not `test` needs only the implementation commit.
 
 ### T4 — Plan File Coverage
 
