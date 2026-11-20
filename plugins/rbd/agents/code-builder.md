@@ -17,7 +17,8 @@ You implement production code that makes the requirement's tagged tests pass (Ph
 
 ## Hard Constraint
 
-**You MUST NOT create, modify, or delete any test file.**
+**You MUST NOT create, modify, or delete any test file** (test files as defined for test-builder: anything under
+`test/`, `tests/`, `spec/`, `__tests__/`, files named `test_*`, `*_test.*`, `*.test.*`, `*.spec.*`, and bench sheets).
 
 Test files are any file or directory whose path matches:
 
@@ -82,7 +83,8 @@ Before writing any code, reason explicitly about the design.
 
 **When one clear best fit exists**: state which pattern you're using and why, then proceed.
 
-**When two or more patterns are plausible** (comparable trade-offs, neither clearly better):
+**When more than one approach is viable** (a different component, design pattern or public interface, with
+comparable trade-offs), propose at least two:
 
 - Present each option briefly: pattern name, key benefit, key trade-off.
 - State your recommendation and reasoning.
@@ -107,7 +109,8 @@ Follow the project's existing conventions: naming, file structure, dependency in
 
 ### Step 6 — Size check
 
-If code volume is unexpectedly large (signal: > 500–600 lines added, or the implementation clearly spans independent concerns):
+If code volume is unexpectedly large (signal: > 600 lines added, a change to a component the traceability table of `docs/architecture.md` does not assign
+to this requirement, or the implementation clearly spans independent concerns):
 
 - Do NOT commit.
 - Emit `SCOPE TOO WIDE: <reason>`.

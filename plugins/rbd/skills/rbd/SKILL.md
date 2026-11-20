@@ -15,7 +15,11 @@ On invocation:
 
 1. Check whether `.rbd/config.yml` exists in the project root.
 2. If absent → run **Phase 1: Init** immediately (handled inline below).
-3. If present → determine the current phase from context (last commit, pending files, user's stated intent) and resume from the right phase.
+3. If present → a user intent naming a new requirement, or another one than the requirement in progress, starts
+   Phase 2. Otherwise resume from the last RBD commit of the requirement in progress:
+   - after `req(ID):` or `arch(ID):` → Phase 4;
+   - after `test(ID):` with no implementation commit for that ID → Phase 5;
+   - after the implementation commit (`feat/tech/perf/ui/conf(ID):`) → Phase 6.
 4. If the phase is ambiguous, ask the user what they want to work on.
 
 ---
@@ -146,7 +150,8 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
    - `REVIEW PASSED: …` → continue. `REVIEW FAILED: …` → block the push and show the review report.
-   - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
+   - If no remote MR exists yet, skip this step: the review runs at the first Phase 6 after the MR is opened, or on a
+     manual `/rbd-review`.
    - **Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
      branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
      to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.

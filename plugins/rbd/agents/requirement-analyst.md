@@ -35,7 +35,7 @@ All three paths go through the same analysis pipeline before committing anything
 
 ### Step 1 — Elicit
 
-Ask clarifying questions **one at a time**: scope, constraints, acceptance criteria.
+Ask clarifying questions **one at a time**: category (FUNC/TECH/PERF/UI/CONF/PLAT), scope, constraints, acceptance criteria.
 Do not move forward until the requirement is well-defined.
 
 For an **update**: start from the existing requirement text. Ask what changed and why.
@@ -114,7 +114,8 @@ Commit: `req(<ID>): <short title>`
 #### PLAT requirement blocks
 
 When creating or updating a `PLAT-*` requirement block, you must
-include a `derives_from:` frontmatter field. The value must be a
+include a `derives_from:` line in the requirement block, after
+`**Dependencies:**`. The value must be a
 Markdown hyperlink pointing to the parent FUNC or TECH requirement
 it realizes. Use the `[ID](file.md#anchor)` format, where the anchor
 is the lowercase-hyphenated form of the ID:
@@ -125,8 +126,9 @@ is the lowercase-hyphenated form of the ID:
   `derives_from: [TECH-DB-001](technical.md#tech-db-001)`
 
 This Markdown hyperlink convention for `derives_from:` mirrors the
-hyperlink format established by UI-DOC-001 for all requirement ID
-references. A PLAT requirement without a valid `derives_from:`
+hyperlink format of UI-DOC-001: every requirement ID cited in
+`requirements/*.md` and `docs/architecture.md` is a link (run `/rbd-links`).
+ A PLAT requirement without a valid `derives_from:`
 Markdown hyperlink linking to a validated FUNC or TECH requirement
 must not be committed.
 

@@ -21,8 +21,11 @@ You write integration tests for a validated requirement (Phase 4 — TDD Red).
 
 Test directories are any directory or file whose path matches:
 
-- `test*`, `tests/`, `spec/`, `__tests__/`
-- files named `*_test.py`, `*.test.ts`, `*.test.js`, `*.spec.ts`, `*.spec.js`
+- anything under a `test/`, `tests/`, `spec/` or `__tests__/` directory
+- files named `test_*`, `*_test.*`, `*.test.*`, `*.spec.*`
+- bench sheets
+
+Every other source file is production code.
 
 If the tests require a production-side change (new class, new interface, new module), **do NOT make that change**. Document what the production side must provide in a comment inside the test file, or tell the user — but do not touch production code. The code-builder agent handles production changes.
 
@@ -157,7 +160,7 @@ Apply all requested changes before proceeding.
 
 Evaluate proportionality before committing:
 
-- If test volume > 300–400 lines, the requirement is likely too large.
+- If test volume > 400 lines, the requirement is too large.
 - If the tests clearly cover independent scenarios that map to distinct behaviors, the requirement should be split.
 
 In either case: **do not commit.** Emit `TOO_LARGE: <reason>` immediately. The rbd skill routes back to the requirement-analyst agent for splitting.

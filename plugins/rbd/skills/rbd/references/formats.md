@@ -32,6 +32,7 @@ plan_files:
   - requirements/performance.md
   - requirements/ui.md
   - requirements/configuration.md
+  - requirements/platform.md
   - audits/exclusions.yml
 
   # Plugin skill files — add these only if the plugin is installed locally
@@ -143,7 +144,8 @@ When creating `requirements/<category>.md` during init:
 <!-- Format: req(ID): title -->
 ```
 
-During init, create one file per category: `functional.md`, `technical.md`, `performance.md`, `ui.md`, `configuration.md`.
+During init, create one file per category: `functional.md`, `technical.md`, `performance.md`, `ui.md`, `configuration.md`,
+`platform.md`.
 
 ## Test Structure
 
