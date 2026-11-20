@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-Last updated: 2026-11-20 — triggering requirement: [FUNC-TEST-007](../requirements/functional.md#func-test-007)
+Last updated: 2026-11-20 — triggering requirement: [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009)
 
 ---
 
@@ -80,7 +80,7 @@ Last updated: 2026-11-20 — triggering requirement: [FUNC-TEST-007](../requirem
 
 | Component | Type | Responsibilities |
 |---|---|---|
-| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH`; `/rbd release <tag>` gate on bench sheets (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
+| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH` (re-dispatches `requirement-analyst` to fix architecture or revise requirement); `/rbd release <tag>` gate on bench sheets; no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
 | `init-agent` | Agent | Negotiates ID format, language/framework, linter; generates all initial project files; performs initial commit |
 | `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency, specification not plan); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
 | `test-builder` | Agent | Generates integration tests in GWT structure, or a tagged bench sheet and its `bring-up.md` entry for a manual hardware check; emits `NO NATIVE TEST` for build or inspection verification; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
@@ -193,6 +193,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-PUSH-005](../requirements/functional.md#func-push-005) | Warning for stacked PRs | `rbd`, `rbd-review` |
 | [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
 | [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
+| [TECH-HOOK-002](../requirements/technical.md#tech-hook-002) | Hook checks the repository being pushed, only an RBD project | `pre-push hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
 | [TECH-SEP-002](../requirements/technical.md#tech-sep-002) | code-builder must not modify test files | `code-builder` |
 | [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate | `test-builder` |
@@ -217,4 +218,6 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-RELEASE-001](../requirements/functional.md#func-release-001) | Release gate on bench sheets | `rbd` |
 | [FUNC-LINKS-001](../requirements/functional.md#func-links-001) | rbd-links skill links every cited requirement ID | `rbd-links` |
 | [FUNC-AUDIT-021](../requirements/functional.md#func-audit-021) | T8 check — requirement ID links | `audit-traceability`, `rbd-links` |
+| [CONF-PREFIX-001](../requirements/configuration.md#conf-prefix-001) | Project-specific extra commit prefixes | `pre-push hook` |
+| [CONF-DRAFT-001](../requirements/configuration.md#conf-draft-001) | Commit prefixes allowed to cite draft requirements | `pre-push hook`, `audit-traceability` |
 | [CONF-RULES-001](../requirements/configuration.md#conf-rules-001) | Optional rule: no code names in non-technical requirements | `audit-coherence` |
