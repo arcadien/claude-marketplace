@@ -11,10 +11,13 @@ Used by the two parallel audit agents. Each agent executes its section and retur
 For each requirement with status `validated` in `requirements/functional.md`, `technical.md`, `performance.md`, `ui.md`, `configuration.md`:
 
 - Read all test files in the project.
-- Search for the tagging pattern from `.rbd/config.yml` (e.g. `@pytest.mark.req('ID')`).
+- Search for the tagging pattern from `.rbd/config.yml` (e.g. `@pytest.mark.req('ID')`), and for
+  `<!-- @req ID -->` in bench sheets (`test_tagging.bench_sheets`, default `tests/bench/*.md`). A tagged test or a
+  tagged bench sheet covers the requirement.
 - If no test file contains a tag matching this requirement ID → flag as finding, unless the requirement's
-  `**Verification:**` line is not `test` (inspection, build, bench): report it as `info` instead.
-- List all `bench (pending)` requirements in one `info` entry.
+  `**Verification:**` is `build` or `inspection`: report it as `info` instead.
+- List in one `info` entry the bench sheets with no passing row (`Pass` `yes` or `✅`) for the latest release tag, or
+  with no passing row at all when there is no tag. Never a finding: bench results do not block a push.
 
 Note: `deprecated` and `draft` requirements are excluded. Deprecated requirements may have been intentionally decommissioned; draft requirements have not yet reached the test phase.
 
@@ -35,6 +38,7 @@ For every test tag found across all test files:
 - Extract the requirement ID from the tag.
 - Verify the ID exists in `requirements/*.md`.
 - If the ID does not exist → flag as finding.
+- Bench sheet tags too; a sheet tag citing a `draft` or `deprecated` requirement → warning.
 
 ```json
 {
@@ -56,7 +60,8 @@ For each validated requirement (status: `validated`):
 - States to flag:
   - `test(ID):` commit exists but no implementation commit → "tests committed, implementation missing"
   - Implementation commit exists but no `test(ID):` commit → "implementation committed, tests missing"
-    (not flagged when the requirement's verification is not `test`)
+    (not flagged when the requirement's verification is `build` or `inspection`)
+  - A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement.
   - A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
     line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Not flagged.
 
@@ -133,7 +138,8 @@ For every test function in the project:
 **T6a — Tag coverage (error):**
 
 - Verify the requirement tag is present (pattern from `.rbd/config.yml`).
-- If missing → flag as error.
+- If missing → flag as error. A bench sheet without a `<!-- @req ID -->` line is flagged the same way.
+- T6b does not apply to bench sheets.
 
 **T6b — Given/When/Then structure (warning):**
 
@@ -186,6 +192,9 @@ For each requirement, evaluate via inference:
 - Is the requirement precise enough to write unambiguous tests?
 - Does it contain vague language ("should be fast", "user-friendly", "as needed")?
 - Could two developers write substantially different implementations from this requirement?
+- Does it carry test information: a `Test:`, `Verified by` or `Acceptance:` sentence, or a `Verification:` value other
+  than `test`, `build` or `inspection`?
+- Is it a TECH requirement that only names the code behind another requirement (a helper, a class)?
 - If yes to any → flag.
 
 ```json
@@ -269,5 +278,6 @@ Each agent returns a JSON array. Return `[]` if no issues are found.
 ]
 ```
 
-Severity `info` is for facts that need no action (for example a requirement verified on the bench, not by a test).
+Severity `info` is for facts that need no action (for example a requirement verified by the build, or a bench sheet
+pending for the latest release).
 Report one entry per requirement ID; `rbd-audit` groups entries that share a check and a cause.
