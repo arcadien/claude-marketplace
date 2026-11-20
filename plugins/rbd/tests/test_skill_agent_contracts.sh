@@ -3,7 +3,7 @@
 #
 # Skills and agents are prompts: their behaviour is the text Claude follows. Each case
 # checks that the instruction file of a requirement states that behaviour.
-# Case format: ID|file relative to the plugin|extended regex (no '|' inside)
+# Case format: ID|file relative to the plugin|extended regex (no '|' inside); a leading '!' means the file must not state it
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PASS=0
@@ -11,14 +11,18 @@ FAIL=0
 
 # check_cases: reads cases on stdin, one PASS/FAIL line per case
 check_cases() {
-  local id file pattern
+  local id file pattern expected found
   while IFS='|' read -r id file pattern; do
     [ -z "$id" ] && continue
-    if grep -qE -- "$pattern" "$REPO_ROOT/$file" 2>/dev/null; then
-      echo "  PASS: $id — $file states /$pattern/"
+    expected=states
+    case "$pattern" in '!'*) expected="does not state"; pattern=${pattern#!} ;; esac
+    found="does not state"
+    grep -qE -- "$pattern" "$REPO_ROOT/$file" 2>/dev/null && found=states
+    if [ "$found" = "$expected" ]; then
+      echo "  PASS: $id — $file $found /$pattern/"
       PASS=$((PASS + 1))
     else
-      echo "  FAIL: $id — $file does not state /$pattern/"
+      echo "  FAIL: $id — $file $found /$pattern/"
       FAIL=$((FAIL + 1))
     fi
   done
@@ -82,10 +86,6 @@ test_audit_checks() {
   # When they are searched for each rule of the traceability checks
   # Then every rule is stated
   check_cases <<'CASES'
-FUNC-AUDIT-008|agents/audit-traceability.md|Verification:.* is not .test.
-FUNC-AUDIT-008|agents/audit-traceability.md|bench \(pending\)
-FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|Verification:.* is not .test.
-FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
 FUNC-AUDIT-010|agents/audit-traceability.md|tag-only
 FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|tag-only
 FUNC-AUDIT-009|agents/audit-traceability.md|tag citing a .draft. requirement
@@ -109,8 +109,9 @@ test_requirement_lifecycle() {
   # @req: FUNC-ARCH-001
   # @req: FUNC-REQ-005
   # @req: FUNC-ORCH-006
-  # @req: FUNC-REQ-008
-  # @req: FUNC-TEST-006
+  # @req: FUNC-REQ-009
+  # @req: FUNC-REQ-007
+  # @req: FUNC-AUDIT-004
   # Given the workflow agents and the format reference
   # When they are searched for each rule of the requirement lifecycle
   # Then every rule is stated
@@ -122,17 +123,76 @@ FUNC-REQ-005|skills/rbd/SKILL.md|User validation:
 FUNC-ORCH-006|skills/rbd/SKILL.md|Resume after an interrupted Phase 5
 FUNC-ORCH-006|agents/code-builder.md|resume mode
 FUNC-ORCH-006|agents/code-builder.md|Checks: lint
-FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* test
-FUNC-REQ-008|skills/rbd/references/formats.md|bench \(pending\)
-FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\*
-FUNC-TEST-006|agents/test-builder.md|NO NATIVE TEST: <reason>
-FUNC-TEST-006|skills/rbd/SKILL.md|NO NATIVE TEST: <reason>
-FUNC-TEST-006|agents/code-builder.md|No test: <reason>
+FUNC-REQ-009|agents/requirement-analyst.md|observable from outside the unit
+FUNC-REQ-009|agents/requirement-analyst.md|survives a refactor
+FUNC-REQ-009|agents/requirement-analyst.md|states its reason
+FUNC-REQ-009|agents/requirement-analyst.md|verifiable on its own
+FUNC-REQ-009|agents/requirement-analyst.md|the how .* goes to .docs/architecture\.md.
+FUNC-REQ-009|agents/requirement-analyst.md|no test information
+FUNC-REQ-009|agents/requirement-analyst.md|Examples:
+FUNC-REQ-009|agents/requirement-analyst.md|no TECH requirement per helper
+FUNC-REQ-009|agents/requirement-analyst.md|!\*\*Verification:\*\*
+FUNC-REQ-009|skills/rbd/references/formats.md|!\*\*Verification:\*\*
+FUNC-REQ-009|skills/rbd/references/formats.md|\*\*Examples:\*\*
+FUNC-REQ-009|agents/audit-traceability.md|!is not .test.
+FUNC-REQ-009|skills/rbd-audit/references/checklist.md|!is not .test.
+FUNC-REQ-009|skills/rbd-audit/SKILL.md|!verified by inspection
+FUNC-REQ-007|skills/rbd/references/formats.md|\*\*Superseded by:\*\*
+FUNC-REQ-007|agents/requirement-analyst.md|\*\*Superseded by:\*\*
+FUNC-AUDIT-004|agents/audit-coherence.md|Verified by
+FUNC-AUDIT-004|agents/audit-coherence.md|Acceptance:
+FUNC-AUDIT-004|agents/audit-coherence.md|only names the code behind another requirement
+FUNC-AUDIT-004|skills/rbd-audit/references/checklist.md|Verified by
+CASES
+}
+
+test_bench_sheets() {
+  echo "test_bench_sheets"
+  # @req: FUNC-TEST-007
+  # @req: CONF-BENCH-001
+  # @req: FUNC-ORCH-003
+  # @req: FUNC-AUDIT-008
+  # @req: FUNC-AUDIT-009
+  # @req: FUNC-AUDIT-010
+  # @req: FUNC-AUDIT-013
+  # @req: FUNC-METRICS-001
+  # @req: FUNC-RELEASE-001
+  # Given the workflow, audit and metrics instruction files
+  # When they are searched for each rule about bench sheets
+  # Then every rule is stated, and the NO NATIVE TEST route is gone
+  check_cases <<'CASES'
+FUNC-TEST-007|agents/test-builder.md|<!-- @req <ID> -->
+FUNC-TEST-007|agents/test-builder.md|bring-up\.md
+FUNC-TEST-007|agents/test-builder.md|!NO NATIVE TEST
+FUNC-TEST-007|agents/code-builder.md|does not run bench sheets
+FUNC-TEST-007|agents/code-builder.md|!NO NATIVE TEST
+FUNC-TEST-007|skills/rbd/references/formats.md|## Bench sheet
+FUNC-TEST-007|skills/rbd/references/formats.md|Date . Release \(tag / commit\) . measurements . Pass . By . Notes
+FUNC-TEST-007|skills/rbd/references/formats.md|release checklist
+FUNC-ORCH-003|skills/rbd/SKILL.md|!NO NATIVE TEST
+CONF-BENCH-001|skills/rbd/references/formats.md|bench_sheets: "tests/bench/\{id\}\.md"
+CONF-BENCH-001|agents/test-builder.md|bench_sheets
+CONF-BENCH-001|agents/audit-traceability.md|bench_sheets
+FUNC-AUDIT-008|agents/audit-traceability.md|tagged bench sheet covers
+FUNC-AUDIT-008|agents/audit-traceability.md|latest release tag
+FUNC-AUDIT-008|agents/audit-traceability.md|never a finding
+FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|tagged bench sheet covers
+FUNC-AUDIT-009|agents/audit-traceability.md|sheet tag citing a .deprecated.
+FUNC-AUDIT-010|agents/audit-traceability.md|adds or changes a bench sheet
+FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|adds or changes a bench sheet
+FUNC-AUDIT-013|agents/audit-traceability.md|bench sheet without a .<!-- @req
+FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|\(N bench\)
+FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|"bench":
+FUNC-RELEASE-001|skills/rbd/SKILL.md|/rbd release <tag>
+FUNC-RELEASE-001|skills/rbd/SKILL.md|order of .bring-up\.md.
+FUNC-RELEASE-001|skills/rbd/SKILL.md|creates no tag
+FUNC-RELEASE-001|skills/rbd/SKILL.md|git tag <tag>
 CASES
 }
 
 test_audit_reports
 test_audit_checks
+test_bench_sheets
 test_requirement_lifecycle
 
 echo
