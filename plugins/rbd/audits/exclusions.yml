@@ -1,8 +1,4 @@
 exclusions:
-  - id: BACKLOG-T1-001
-    finding: "47 validated requirements have no tagged test (2026-11-20 audit, finding 1)"
-    justification: "Requirements of the agent prompts written before the contract-test convention. Contract cases are added when a requirement is next changed, as done for FUNC-ORCH-003 in 0.17.0."
-    date: 2026-11-20
   - id: BACKLOG-T3-FIX-001
     finding: "CONF-DRAFT-001, CONF-PREFIX-001, FUNC-PUSH-001, TECH-HOOK-001, TECH-HOOK-002 implemented in fix(ID): commits (finding 2)"
     justification: "The hook script was implemented as fix(ID): in published history; rewriting pushed commits is not worth it. New hook changes use feat(ID):."
@@ -15,10 +11,6 @@ exclusions:
     finding: "Malformed headers lose FUNC-ANALYZE-003, FUNC-ANALYZE-004, FUNC-ORCH-005 (finding 4)"
     justification: "Published commits 189f60d and 2538827 predate range support; the tests are tagged and pass. The pre-push hook now rejects such headers."
     date: 2026-11-20
-  - id: BACKLOG-T3-UIDOC-001
-    finding: "UI-DOC-001 implementation commit without test (finding 5)"
-    justification: "UI-DOC-001 is checked by T8 and tests/test_func_links_001.sh (FUNC-LINKS-001); a dedicated tag is added when UI-DOC-001 is next changed."
-    date: 2026-11-20
   - id: BACKLOG-T4-001
     finding: "Plan files modified with prefixes that are not accepted (finding 6)"
     justification: "Published history from before accepted_prefixes and the chore: release prefix. Current commits follow plan-files.yml."
@@ -26,28 +18,4 @@ exclusions:
   - id: BACKLOG-T5-001
     finding: "docs/architecture.md modified by req/ui commits b7293a6, b6d2445, d06f82d (finding 8)"
     justification: "Published history from before the arch(ID): rule was enforced. Not fixable without rewriting history."
-    date: 2026-11-20
-  - id: BACKLOG-T6B-001
-    finding: "6 hook and links tests merge '# When' and '# Then' (finding 9)"
-    justification: "Style only; the tests are correct. To be split when these tests are next changed."
-    date: 2026-11-20
-  - id: BACKLOG-C1-001
-    finding: "Same constraint stated by several requirements (finding 12)"
-    justification: "Known overlaps between FUNC and TECH statements of the same rule; merging them is a separate requirement clean-up, out of scope for 0.17.0."
-    date: 2026-11-20
-  - id: BACKLOG-C1-REVIEW-001
-    finding: "rbd-review R1, R3, R4 lag the hook and audit rules (finding 13)"
-    justification: "To be aligned in a dedicated rbd-review update; tracked for the next release."
-    date: 2026-11-20
-  - id: BACKLOG-C1-UIDOC-001
-    finding: "UI-DOC-001 link scope contradicts FUNC-LINKS-001 and FUNC-AUDIT-021 (finding 14)"
-    justification: "FUNC-LINKS-001 and T8 are the stricter, current rule; UI-DOC-001 is to be widened in the requirement clean-up."
-    date: 2026-11-20
-  - id: BACKLOG-C1-PLAT-001
-    finding: "PLAT support inconsistent across init and elicitation requirements (finding 16)"
-    justification: "Pre-existing gap from the PLAT addition; to be fixed in the requirement clean-up."
-    date: 2026-11-20
-  - id: BACKLOG-C2-001
-    finding: "Imprecise criteria in older requirements (finding 18)"
-    justification: "Judgement criteria of prompt-driven agents (size, non-trivial, phase detection); to be made precise one by one when each requirement is next changed."
     date: 2026-11-20
