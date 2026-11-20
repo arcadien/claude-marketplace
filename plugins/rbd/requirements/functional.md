@@ -20,7 +20,7 @@
 **Title:** Inter-phase routing via agent return signals  
 **Status:** validated  
 **Dependencies:** [FUNC-ORCH-001](functional.md#func-orch-001)  
-**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
+**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `REQUIREMENT DELETED`, `SPLIT REQUIRED`, `TESTS COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `IMPLEMENTATION COMMITTED`, `SCOPE TOO WIDE`, `ARCH MISMATCH`, and `REVIEW PASSED` / `REVIEW FAILED` in Phase 6). The orchestrator contains no business logic.
 
 ### FUNC-ORCH-004
 **Title:** Exclusive delegation to specialized agents  
@@ -290,19 +290,19 @@
 **Title:** T1 check — test coverage per requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every `validated` requirement is covered by a test file carrying its tag: a software test, or a bench sheet ([FUNC-TEST-007](functional.md#func-test-007)). Any requirement without one generates a T1 finding, unless its `**Verification:**` ([FUNC-REQ-008](functional.md#func-req-008)) is `build` or `inspection`: such requirements are reported as `info`. One `info` entry lists the bench sheets with no passing row (`Pass` is `yes` or `✅`) for the latest release tag, or with no passing row at all when the project has no tag. Bench results never generate a finding: they do not block a push.
+**Description:** `audit-traceability` verifies that every `validated` requirement is covered by a test file carrying its tag: a software test, or a bench sheet ([FUNC-TEST-007](functional.md#func-test-007)). Any requirement without one generates a T1 finding, unless its `**Verification:**` ([FUNC-REQ-008](functional.md#func-req-008)) is `build` or `inspection`: such requirements are reported as `info`. One `info` entry lists the bench sheets with no passing row (`Pass` is `yes` or `✅`) for the latest release tag (the latest tag reachable from the audited commit), or with no passing row at all when the project has no tag. Bench results never generate a finding: they do not block a push.
 
 ### FUNC-AUDIT-009
 **Title:** T2 check — tag validity in tests  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every ID referenced in test tags exists in the requirement files with status `validated`. Any orphan tag generates a T2 finding (error). A tag citing a `draft` requirement (for example a test kept after its requirement went back to draft) generates a T2 warning: re-validate the requirement, or remove the tests or their tag. Bench sheets are checked like tests; a bench sheet tag citing a `deprecated` requirement also generates a T2 warning.
+**Description:** `audit-traceability` verifies that every ID referenced in test tags exists in the requirement files with status `validated`. Any orphan tag generates a T2 finding (error). A tag citing a `draft` requirement (for example a test kept after its requirement went back to draft) generates a T2 warning: re-validate the requirement, or remove the tests or their tag. Bench sheets are checked like tests, with two differences: a bench sheet tag citing a `deprecated` requirement generates a T2 warning, and one citing a `draft` requirement only an `info` entry, since a sheet may be written while its requirement is still draft, before the bench run that validates it ([CONF-DRAFT-001](configuration.md#conf-draft-001)).
 
 ### FUNC-AUDIT-010
 **Title:** T3 check — implementation coverage  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-008](functional.md#func-audit-008)  
-**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is `build` or `inspection` needs only the implementation commit. A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A tag-only `test(ID):` commit, whose diff only adds lines carrying the tagging convention and removes none (tags backfilled on existing tests), is not a test commit awaiting implementation: T3 does not flag it.
+**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is `build` or `inspection` needs only the implementation commit. A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A requirement whose only tagged test files are bench sheets needs no implementation commit (a wiring or measurement check may change no software). A tag-only `test(ID):` commit, whose diff only adds lines carrying the tagging convention and removes none (tags backfilled on existing tests), is not a test commit awaiting implementation: T3 does not flag it.
 
 ### FUNC-AUDIT-011
 **Title:** T4 check — plan file coverage  
@@ -505,7 +505,7 @@ TECH  (4 validated)
 └── TAG     4 / 4  ████████████  100%
 ```
 
-Requirements whose only tagged test files are bench sheets are counted apart: their row shows `(N bench)` and the JSON gives a `bench` count.
+Requirements whose only tagged test files are bench sheets count as covered, in `covered / total` and the percentage, and are also counted apart: their row shows `(N bench)` and the JSON gives a `bench` count.
 
 No file is written. An optional `--json` flag exports the same data as a JSON object to stdout.
 
@@ -523,4 +523,4 @@ No file is written. An optional `--json` flag exports the same data as a JSON ob
 **Title:** Release gate on bench sheets  
 **Status:** validated  
 **Dependencies:** [FUNC-TEST-007](functional.md#func-test-007)  
-**Description:** `/rbd release <tag>` lists the bench sheets in the order of `bring-up.md`, each with its passing row for `<tag>` or for the candidate commit, and creates the tag only when every sheet has one. Otherwise it lists the sheets still to run and creates no tag. Bench results are recorded once per release, so outside this gate a missing result blocks nothing. Pushing the tag stays with the user.
+**Description:** `/rbd release <tag>` lists the bench sheets in the order of `bring-up.md`, each with its passing row (`Pass` is `yes` or `✅`) for `<tag>` or for the candidate commit (`HEAD`, written as its full hash or a prefix of at least 7 characters), and creates the tag on that commit only when every sheet has one. Otherwise it lists the sheets still to run and creates no tag. Bench results are recorded once per release, so outside this gate a missing result blocks nothing. Pushing the tag stays with the user.
