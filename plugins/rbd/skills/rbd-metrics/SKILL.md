@@ -44,6 +44,8 @@ Group validated requirements by category, then by subcategory:
 - **Total**: number of validated requirements in the subcategory.
 - **Covered**: number with at least one `test(ID):` commit in git log.
 - **Missing**: total minus covered (used for the "N missing" annotation).
+- **Bench**: covered requirements whose only tagged test files are bench sheets (`<!-- @req <ID> -->` in
+  `test_tagging.bench_sheets`, default `tests/bench/*.md`). They count as covered, and are shown apart.
 
 ## Step 4 — Print ASCII Structured Report
 
@@ -56,7 +58,7 @@ FUNC  (12 validated)
 ├── DATA    2 / 4  ██████░░░░░░   50%  ← 2 missing
 └── PUSH    1 / 1  ████████████  100%
 TECH  (4 validated)
-└── TAG     4 / 4  ████████████  100%
+└── HAL     4 / 4  ████████████  100%  (2 bench)
 ```
 
 Each subcategory line includes:
@@ -69,6 +71,7 @@ Each subcategory line includes:
 - **Percentage** derived from covered / total (e.g. `100%`, `50%`).
 - **"N missing" annotation** (prefixed with `←`) when coverage is below
   100%, indicating how many requirements still lack a `test(ID):` commit.
+- **"(N bench)" annotation** when N covered requirements are covered only by bench sheets.
 
 Categories with zero validated requirements are omitted.
 Subcategories are listed in alphabetical order within each category.
@@ -85,8 +88,8 @@ count, missing count, and percentage. Example structure:
   "FUNC": {
     "total_validated": 12,
     "subcategories": {
-      "AUTH": { "total": 3, "covered": 3, "missing": 0, "percent": 100 },
-      "DATA": { "total": 4, "covered": 2, "missing": 2, "percent": 50 }
+      "AUTH": { "total": 3, "covered": 3, "bench": 1, "missing": 0, "percent": 100 },
+      "DATA": { "total": 4, "covered": 2, "bench": 0, "missing": 2, "percent": 50 }
     }
   }
 }
