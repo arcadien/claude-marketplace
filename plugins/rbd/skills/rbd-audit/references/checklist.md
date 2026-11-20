@@ -38,7 +38,8 @@ For every test tag found across all test files:
 - Extract the requirement ID from the tag.
 - Verify the ID exists in `requirements/*.md`.
 - If the ID does not exist → flag as finding.
-- Bench sheet tags too; a sheet tag citing a `draft` or `deprecated` requirement → warning.
+- Bench sheet tags too; a sheet tag citing a `deprecated` requirement → warning; a sheet tag citing a `draft` requirement → `info`
+  (a sheet may be written before the bench run that validates its requirement).
 
 ```json
 {
@@ -61,7 +62,8 @@ For each validated requirement (status: `validated`):
   - `test(ID):` commit exists but no implementation commit → "tests committed, implementation missing"
   - Implementation commit exists but no `test(ID):` commit → "implementation committed, tests missing"
     (not flagged when the requirement's verification is `build` or `inspection`)
-  - A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement.
+  - A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A requirement covered
+    only by bench sheets needs no implementation commit.
   - A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
     line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Not flagged.
 

@@ -22,7 +22,8 @@ You never modify any file. Your sole output is a JSON array of findings.
    Read every file from that tree and run git as `git -C <audited tree>`, never in the session's working tree.
    History commands run on the audited commit: `git log <hash>`, not `--all`.
 1. Read `.rbd/config.yml` to get the test tagging convention (pattern and language) and `test_tagging.bench_sheets`,
-   the bench sheet path (default `tests/bench/*.md`, except `bring-up.md`). Bench sheets are test files: their tag is a
+   the bench sheet path (default `tests/bench/*.md`, except `bring-up.md`). With a configured path, the sheets are
+   the files matching it with `{id}` read as `*`; `bring-up.md` is in their directory. Bench sheets are test files: their tag is a
    `<!-- @req <ID> -->` line.
 2. Read `.rbd/plan-files.yml` to get the list of monitored plan files.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
@@ -58,8 +59,10 @@ Search all test files for all occurrences of the tagging pattern.
 - If the ID is not in the requirements map → create a finding.
 - For a tag citing a `draft` requirement (a test kept after its requirement went back to draft) → create a
   `warning`: re-validate the requirement, or remove the tests or their tag.
-- Bench sheets are checked the same way. A bench sheet tag citing a `deprecated` requirement → create a `warning`:
-  remove the sheet, or retag it with the superseding requirement.
+- Bench sheets are checked the same way, except for two cases. A bench sheet tag citing a `deprecated` requirement →
+  create a `warning`: remove the sheet, or retag it with the superseding requirement.
+  A bench sheet tag citing a `draft` requirement → an `info` entry, not a warning: a sheet may be written while its
+  requirement is still draft, before the bench run that validates it.
 
 ### T3 — Implementation Coverage
 
@@ -72,7 +75,9 @@ For each requirement with status `validated`:
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
 - A requirement whose `**Verification:**` is `build` or `inspection` needs only the implementation commit.
-- A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement.
+- A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A requirement whose
+  only tagged test files are bench sheets needs no implementation commit: a wiring or measurement check may change no
+  software.
 - A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
   line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Do not flag it.
 
