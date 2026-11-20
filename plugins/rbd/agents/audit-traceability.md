@@ -110,10 +110,9 @@ For every test file detected in the project:
 1. List all test functions using the naming convention for the project language (e.g. `def test_`, `it(`, `test(`).
 2. For each function: check whether the tag pattern from `.rbd/config.yml` is present in the function body or decorator.
 3. If a function has no tag → create a finding (severity: error).
+4. A bench sheet without a `<!-- @req <ID> -->` line → create a finding (severity: error).
 
 This is a hard check: untagged tests are a traceability break regardless of whether their requirement has coverage from other tests.
-
-4. A bench sheet without a `<!-- @req <ID> -->` line → create a finding (severity: error).
 
 **T6b — Given/When/Then structure (warning):**
 
