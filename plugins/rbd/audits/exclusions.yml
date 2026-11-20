@@ -1,1 +1,21 @@
-exclusions: []
+exclusions:
+  - id: BACKLOG-T3-FIX-001
+    finding: "CONF-DRAFT-001, CONF-PREFIX-001, FUNC-PUSH-001, TECH-HOOK-001, TECH-HOOK-002 implemented in fix(ID): commits (finding 2)"
+    justification: "The hook script was implemented as fix(ID): in published history; rewriting pushed commits is not worth it. New hook changes use feat(ID):."
+    date: 2026-11-20
+  - id: BACKLOG-T3-ANALYZE-001
+    finding: "FUNC-ANALYZE-002, TECH-ANALYST-001 test commits without implementation commit (finding 3)"
+    justification: "The arch-analyst agent and rbd-arch-analyze skill exist and their tests pass; the implementation landed in published commits with another header. Not fixable without rewriting history."
+    date: 2026-11-20
+  - id: BACKLOG-T3-HEADER-001
+    finding: "Malformed headers lose FUNC-ANALYZE-003, FUNC-ANALYZE-004, FUNC-ORCH-005 (finding 4)"
+    justification: "Published commits 189f60d and 2538827 predate range support; the tests are tagged and pass. The pre-push hook now rejects such headers."
+    date: 2026-11-20
+  - id: BACKLOG-T4-001
+    finding: "Plan files modified with prefixes that are not accepted (finding 6)"
+    justification: "Published history from before accepted_prefixes and the chore: release prefix. Current commits follow plan-files.yml."
+    date: 2026-11-20
+  - id: BACKLOG-T5-001
+    finding: "docs/architecture.md modified by req/ui commits b7293a6, b6d2445, d06f82d (finding 8)"
+    justification: "Published history from before the arch(ID): rule was enforced. Not fixable without rewriting history."
+    date: 2026-11-20

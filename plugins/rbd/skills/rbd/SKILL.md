@@ -15,7 +15,11 @@ On invocation:
 
 1. Check whether `.rbd/config.yml` exists in the project root.
 2. If absent → run **Phase 1: Init** immediately (handled inline below).
-3. If present → determine the current phase from context (last commit, pending files, user's stated intent) and resume from the right phase.
+3. If present → a user intent naming a new requirement, or another one than the requirement in progress, starts
+   Phase 2. Otherwise resume from the last RBD commit of the requirement in progress:
+   - after `req(ID):` or `arch(ID):` → Phase 4;
+   - after `test(ID):` with no implementation commit for that ID → Phase 5;
+   - after the implementation commit (`feat/tech/perf/ui/conf(ID):`) → Phase 6.
 4. If the phase is ambiguous, ask the user what they want to work on.
 
 ---
@@ -76,6 +80,8 @@ Provide the agent with:
 - The validated requirement ID and its full description.
 - The path to `.rbd/config.yml`.
 
+For a manual hardware check, the committed test file is a bench sheet (see `references/formats.md`).
+
 The agent handles everything: test design, GWT structure, parametrized test conventions, user review, size check, hard gate (tag presence on every function), lint, and commit.
 
 **Route based on the agent's return signal:**
@@ -83,7 +89,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 | Signal | Next action |
 |--------|-------------|
 | `TESTS COMMITTED: test(<ID>): ...` | Proceed to Phase 5. |
-| `NO NATIVE TEST: <reason>` | The requirement's verification is not `test`. Proceed to Phase 5 and give code-builder the reason. |
+| `NO NATIVE TEST: <reason>` | The requirement's verification is `build` or `inspection`. Proceed to Phase 5 and give code-builder the reason. |
 | `TOO_LARGE: <reason>` | The requirement is too large to test coherently. Re-dispatch requirement-analyst for splitting. Provide the `TOO_LARGE` reason as context so the agent knows where to split. |
 
 ---
@@ -143,12 +149,30 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
    - No code file was modified outside of a properly prefixed commit.
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
-   - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
+   - `REVIEW PASSED: …` → continue. `REVIEW FAILED: …` → block the push and show the review report.
+   - If no remote MR exists yet, skip this step: the review runs at the first Phase 6 after the MR is opened, or on a
+     manual `/rbd-review`.
    - **Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
      branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
      to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
 5. If all checks pass → confirm and allow the push.
+
+---
+
+## Release — `/rbd release <tag>`
+
+Bench sheets are run by hand, once per release. Before creating a release tag:
+
+1. Read the bench sheets (`test_tagging.bench_sheets` in `.rbd/config.yml`, default `tests/bench/*.md`) in the
+   order of `bring-up.md`, then any sheet it does not list.
+2. For each sheet, find a Results row whose `Release (tag / commit)` is `<tag>` or the candidate commit `HEAD`
+   (its full hash, or a prefix of at least 7 characters) and whose `Pass` is `yes` or `✅`.
+3. Print the list in that order, each sheet with its passing row or `missing`.
+4. If a sheet is missing → stop: list the sheets still to run and creates no tag.
+5. Otherwise run `git tag <tag> HEAD`. Pushing the tag stays with the user.
+
+Without bench sheets, the gate passes. Outside this step, a missing bench result blocks nothing.
 
 ---
 

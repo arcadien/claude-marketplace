@@ -104,7 +104,7 @@ Mode: since <hash> (or: Mode: full)
 
 ## Info (no action required)
 
-- T1: TECH-HAL-004, TECH-HAL-005 are verified by inspection, not by a test.
+- T1: bench check pending for release v1.2.0: tests/bench/TECH-HAL-004.md, tests/bench/TECH-HAL-005.md.
 ```
 
 ## Post-Audit: Process Findings With the User

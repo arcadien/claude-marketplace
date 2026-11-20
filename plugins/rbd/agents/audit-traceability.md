@@ -21,7 +21,10 @@ You never modify any file. Your sole output is a JSON array of findings.
 0. The dispatch prompt gives the audited tree (a worktree at the audited commit) and its hash `<hash>`.
    Read every file from that tree and run git as `git -C <audited tree>`, never in the session's working tree.
    History commands run on the audited commit: `git log <hash>`, not `--all`.
-1. Read `.rbd/config.yml` to get the test tagging convention (pattern and language).
+1. Read `.rbd/config.yml` to get the test tagging convention (pattern and language) and `test_tagging.bench_sheets`,
+   the bench sheet path (default `tests/bench/*.md`, except `bring-up.md`). With a configured path, the sheets are
+   the files matching it with `{id}` read as `*`; `bring-up.md` is in their directory. Bench sheets are test files: their tag is a
+   `<!-- @req <ID> -->` line.
 2. Read `.rbd/plan-files.yml` to get the list of monitored plan files.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
 4. Read all `requirements/*.md` files (functional, technical, performance, ui, configuration). Build a map of `{ ID → status }` for all requirements.
@@ -37,10 +40,14 @@ previous audit. Run every check, but report only findings about requirements, te
 
 For each requirement with status `validated`:
 
-- Search all test files for the tag pattern from config (use Grep with the ID).
-- If no match → create a finding, unless the requirement's `**Verification:**` line is not `test`:
-  then create an `info` entry instead ("verified by inspection, no test required").
-- List every requirement whose verification is `bench (pending)` in one `info` entry.
+- Search all test files for the tag pattern from config, and bench sheets for `<!-- @req <ID> -->` (use Grep with the ID).
+  A tagged test or a tagged bench sheet covers the requirement.
+- If no match → create a finding, unless the requirement's `**Verification:**` is `build` or `inspection`:
+  then create an `info` entry instead ("verified by the build or by inspection, no test required").
+- Pending bench checks: take the latest release tag (`git -C <audited tree> describe --tags --abbrev=0 <hash>`). List in
+  one `info` entry every bench sheet whose Results table has no row with that tag in `Release (tag / commit)` and
+  `Pass` `yes` or `✅`; without any tag, the sheets with no passing row at all. Bench results are recorded once per
+  release, so a pending bench check is never a finding.
 
 Note: `deprecated` and `draft` requirements are excluded — deprecated ones may have been intentionally decommissioned, draft ones have not yet reached the test phase.
 
@@ -52,6 +59,10 @@ Search all test files for all occurrences of the tagging pattern.
 - If the ID is not in the requirements map → create a finding.
 - For a tag citing a `draft` requirement (a test kept after its requirement went back to draft) → create a
   `warning`: re-validate the requirement, or remove the tests or their tag.
+- Bench sheets are checked the same way, except for two cases. A bench sheet tag citing a `deprecated` requirement →
+  create a `warning`: remove the sheet, or retag it with the superseding requirement.
+  A bench sheet tag citing a `draft` requirement → an `info` entry, not a warning: a sheet may be written while its
+  requirement is still draft, before the bench run that validates it.
 
 ### T3 — Implementation Coverage
 
@@ -63,7 +74,10 @@ For each requirement with status `validated`:
 - Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
-- A requirement whose `**Verification:**` is not `test` needs only the implementation commit.
+- A requirement whose `**Verification:**` is `build` or `inspection` needs only the implementation commit.
+- A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A requirement whose
+  only tagged test files are bench sheets needs no implementation commit: a wiring or measurement check may change no
+  software.
 - A tag-only `test(ID):` commit backfills tags on existing tests: in `git show -U0 --format= <commit>`, every added
   line carries the tagging convention and no line is removed. Such a commit does not need an implementation commit. Do not flag it.
 
@@ -96,12 +110,13 @@ For every test file detected in the project:
 1. List all test functions using the naming convention for the project language (e.g. `def test_`, `it(`, `test(`).
 2. For each function: check whether the tag pattern from `.rbd/config.yml` is present in the function body or decorator.
 3. If a function has no tag → create a finding (severity: error).
+4. A bench sheet without a `<!-- @req <ID> -->` line → create a finding (severity: error).
 
 This is a hard check: untagged tests are a traceability break regardless of whether their requirement has coverage from other tests.
 
 **T6b — Given/When/Then structure (warning):**
 
-1. For each test function found in T6a:
+1. For each test function found in T6a (not bench sheets):
 2. Check whether the function body contains the three structural markers: `# Given`, `# When`, `# Then` (or language-equivalent: `// Given`, `// When`, `// Then`).
 3. If any marker is missing → create a finding (severity: warning).
 
@@ -113,8 +128,8 @@ For every `PLAT-*` requirement with status `validated`:
 
 1. Read `requirements/platform.md` and all other `requirements/*.md`
    files that may contain PLAT requirements.
-2. Check whether the requirement's frontmatter contains a
-   `derives_from:` field.
+2. Check whether the requirement has a `derives_from:` line in its requirement block
+   (between its `###` heading and the next one).
    - If absent or empty → create a T7 finding (severity: error).
      Example: "PLAT-XYZ-001 has no derives_from field."
 3. If `derives_from:` is present, extract the referenced ID and verify:

@@ -21,8 +21,11 @@ You write integration tests for a validated requirement (Phase 4 — TDD Red).
 
 Test directories are any directory or file whose path matches:
 
-- `test*`, `tests/`, `spec/`, `__tests__/`
-- files named `*_test.py`, `*.test.ts`, `*.test.js`, `*.spec.ts`, `*.spec.js`
+- anything under a `test/`, `tests/`, `spec/` or `__tests__/` directory
+- files named `test_*`, `*_test.*`, `*.test.*`, `*.spec.*`
+- bench sheets
+
+Every other source file is production code.
 
 If the tests require a production-side change (new class, new interface, new module), **do NOT make that change**. Document what the production side must provide in a comment inside the test file, or tell the user — but do not touch production code. The code-builder agent handles production changes.
 
@@ -46,14 +49,32 @@ You receive:
 Read `.rbd/config.yml`:
 
 - Extract the test tagging convention (e.g., `@pytest.mark.req('{id}')`).
+- Extract `test_tagging.bench_sheets`, the bench sheet path (default `tests/bench/{id}.md`).
 - Extract the linter command.
 
 Read `requirements/<category>.md` to confirm the requirement status is `validated`.
 
-If the requirement's `**Verification:**` line is not `test` (inspection, build, bench), no native test can observe it:
-write and commit no test, and emit `NO NATIVE TEST: <reason>`, where the reason restates the verification line
-(for example "AVR registers, verified by inspection and the AVR builds"). Without the line, verification is `test`
-and this signal is never emitted.
+If the requirement's `**Verification:**` line is `build` or `inspection`, an automatic check that is not a test
+verifies it: write and commit no test, and emit `NO NATIVE TEST: <reason>`, where the reason restates the verification
+line (for example "AVR registers, checked in the disassembly and the AVR builds"). Without the line, verification is
+`test` and this signal is never emitted.
+
+### Step 1b — Bench sheet for a manual hardware check
+
+When the behaviour can only be checked by hand on the hardware (wiring, measurements, sleep current), and neither a
+software test nor a `build` or `inspection` verification can observe it, write a bench sheet instead, at the `bench_sheets` path, from the template in `references/formats.md`:
+
+- First line(s): `<!-- @req <ID> -->`, one line per requirement the sheet covers.
+- Then the requirement link, Equipment, Setup, Steps, Pass criteria, and an empty Results table
+  (`Date | Release (tag / commit) | measurements | Pass | By | Notes`, one row per release run).
+- Add the sheet to `bring-up.md` next to the sheets (the release checklist, in run order); create it from the
+  template if absent.
+
+Review the sheet with the user (Step 3), then lint and commit the sheet and `bring-up.md` as `test(<ID>): <description>`
+(Steps 6–7). The Given/When/Then and function-tag gates apply to software tests only.
+When some cases are observable by software tests and others are not, write both.
+
+The tests of a helper are tagged with the requirement whose behaviour uses the helper.
 
 ### Step 2 — Propose tests
 
@@ -139,7 +160,7 @@ Apply all requested changes before proceeding.
 
 Evaluate proportionality before committing:
 
-- If test volume > 300–400 lines, the requirement is likely too large.
+- If test volume > 400 lines, the requirement is too large.
 - If the tests clearly cover independent scenarios that map to distinct behaviors, the requirement should be split.
 
 In either case: **do not commit.** Emit `TOO_LARGE: <reason>` immediately. The rbd skill routes back to the requirement-analyst agent for splitting.
@@ -160,7 +181,7 @@ Run the linter command from `.rbd/config.yml`. Fix all issues before committing.
 
 ### Step 7 — Commit
 
-Commit only test files: `test(<ID>): <description>`
+Commit only test files (bench sheets included): `test(<ID>): <description>`
 
 ---
 
@@ -174,6 +195,6 @@ TOO_LARGE: <reason>
 NO NATIVE TEST: <reason>
 ```
 
-- `TESTS COMMITTED` → rbd routes to code-builder (Phase 5).
+- `TESTS COMMITTED` → rbd routes to code-builder (Phase 5), also when the committed file is a bench sheet.
 - `TOO_LARGE` → rbd routes back to requirement-analyst for splitting. No test files are committed.
 - `NO NATIVE TEST` → rbd routes to code-builder (Phase 5) with the reason. No test files are committed.

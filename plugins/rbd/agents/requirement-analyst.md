@@ -35,7 +35,7 @@ All three paths go through the same analysis pipeline before committing anything
 
 ### Step 1 — Elicit
 
-Ask clarifying questions **one at a time**: scope, constraints, acceptance criteria.
+Ask clarifying questions **one at a time**: category (FUNC/TECH/PERF/UI/CONF/PLAT), scope, constraints, acceptance criteria.
 Do not move forward until the requirement is well-defined.
 
 For an **update**: start from the existing requirement text. Ask what changed and why.
@@ -48,7 +48,8 @@ For updates and deletions, the existing ID is preserved.
 
 Draft the requirement with its ID.
 
-For a **deletion**: update the requirement's `**Status:**` to `deprecated` in `requirements/<category>.md`. Commit: `req(<ID>): deprecate <title>`. Then proceed directly to Phase 3 Step 1 — Steps 3, 4, and 5 below are skipped.
+For a **deletion**: update the requirement's `**Status:**` to `deprecated` in `requirements/<category>.md`. When
+another requirement replaces it, add `**Superseded by:** [<NEW-ID>](<file>.md#<anchor>)` under the status line. Commit: `req(<ID>): deprecate <title>`. Then proceed directly to Phase 3 Step 1 — Steps 3, 4, and 5 below are skipped.
 
 ### Step 3 — Challenge (add and update only — skip for deletions)
 
@@ -76,6 +77,20 @@ Verify the new/updated requirement:
 - Does not break any stated dependency chain (existing requirements that depend on this one, or this one's dependencies).
 - Uses language precise enough for unambiguous test writing. Flag vague language: "should be fast", "user-friendly", "as needed", "roughly", "where applicable".
 
+**3d — Specification, not plan:**
+A requirement says what and why, never how or how it is tested. Check that it:
+
+- is observable from outside the unit;
+- survives a refactor: it names no class, method, helper, file or register, except a boundary interface;
+- states its reason;
+- is verifiable on its own.
+
+Everything about the how (classes, helpers, registers, file layout) goes to `docs/architecture.md` (Phase 3), not to
+the requirement. Write no test information in a requirement: no `Test:`, `Verified by` or `Acceptance:` line, no
+"native test" or "bench check pending" note. The only exception is the `**Verification:**` line of Step 5. Input → output examples stay, under `**Examples:**`.
+Propose no TECH requirement per helper, nor one that only names the code behind another requirement: the helper's
+tests are tagged with the requirement whose behaviour uses it.
+
 Resolve all findings with the user before proceeding.
 
 ### Step 4 — Validate
@@ -90,15 +105,17 @@ you are about to commit is identical to the validated text, commit without askin
 ### Step 5 — Commit
 
 Append or update `requirements/<category>.md` using the format in `references/formats.md`.
-If no native test can observe the behaviour (registers, sleep modes, wiring, bench measurements), agree with the user
-on a `**Verification:**` line (`inspection`, `build`, `bench` or `bench (pending)`) and state why in its details.
-Otherwise leave it out: verification is then `test`.
+When an automatic check that is not a test verifies the behaviour (the compilation, an inspection of the build output),
+agree with the user on `**Verification:** build` or `**Verification:** inspection`, and name the check after `—`.
+Otherwise leave it out: verification is then `test`. A manual hardware check is no verification value: test-builder
+writes a bench sheet for it.
 Commit: `req(<ID>): <short title>`
 
 #### PLAT requirement blocks
 
 When creating or updating a `PLAT-*` requirement block, you must
-include a `derives_from:` frontmatter field. The value must be a
+include a `derives_from:` line in the requirement block, after
+`**Dependencies:**`. The value must be a
 Markdown hyperlink pointing to the parent FUNC or TECH requirement
 it realizes. Use the `[ID](file.md#anchor)` format, where the anchor
 is the lowercase-hyphenated form of the ID:
@@ -109,8 +126,9 @@ is the lowercase-hyphenated form of the ID:
   `derives_from: [TECH-DB-001](technical.md#tech-db-001)`
 
 This Markdown hyperlink convention for `derives_from:` mirrors the
-hyperlink format established by UI-DOC-001 for all requirement ID
-references. A PLAT requirement without a valid `derives_from:`
+hyperlink format of UI-DOC-001: every requirement ID cited in
+`requirements/*.md` and `docs/architecture.md` is a link (run `/rbd-links`).
+ A PLAT requirement without a valid `derives_from:`
 Markdown hyperlink linking to a validated FUNC or TECH requirement
 must not be committed.
 

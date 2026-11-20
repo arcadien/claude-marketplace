@@ -144,7 +144,8 @@ test_requirement_ids_checked() {
   printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
-  # When a branch carries one commit with this message, Then the hook exits with the expected code
+  # When a branch carries one commit with this message
+  # Then the hook exits with the expected code
   local expected msg
   while IFS='|' read -r expected msg; do
     git -C "$r" reset -q --hard main
@@ -184,7 +185,8 @@ draft_ok_prefixes: [test]
 ' > "$r/.rbd/config.yml"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
-  # When a branch carries one commit with this message, Then the hook exits with the expected code
+  # When a branch carries one commit with this message
+  # Then the hook exits with the expected code
   local expected msg
   while IFS='|' read -r expected msg; do
     git -C "$r" reset -q --hard main
@@ -202,26 +204,27 @@ CASES
 test_latest_audit_chosen_by_name() {
   echo "test_latest_audit_chosen_by_name"
   # @req: FUNC-PUSH-001
-  # Given a clean recent audit, and an older audit with open findings but a newer mtime
+  # Given audits/ holding these reports, written in this order (every mtime set to 2026-01-01)
+  # When the hook sees a push after each report is added
+  # Then only the latest audit report by name counts; review reports are ignored
   local r; r=$(new_repo audit)
   mkdir -p "$r/audits"
-  printf '| F1 | x | **Status:** resolved |\n' > "$r/audits/2026-02-01-audit.md"
-  printf '| F1 | x | **Status:** open |\n' > "$r/audits/2026-01-01-audit.md"
-  touch -d '2026-01-01' "$r/audits/2026-02-01-audit.md"
   git -C "$r" switch -q -c work
   commit "$r" "docs: change"
-  # When the hook sees a push, Then only the latest by name counts
-  assert_rc "old open audit ignored" 0 "$(run_hook "$r" "$PUSH_CMD")"
-  # Given the latest audit by name has open findings, Then the push is blocked
-  printf '| F2 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit.md"
-  touch -d '2026-01-01' "$r/audits/2026-03-01-audit.md"
-  assert_rc "latest open audit blocks" 2 "$(run_hook "$r" "$PUSH_CMD")"
-  # Given a second report the same day, clean, Then it is the latest: the push is allowed
-  printf '| F2 | x | **Status:** fixed |\n' > "$r/audits/2026-03-01-audit-2.md"
-  assert_rc "same-day -audit-2 comes after -audit" 0 "$(run_hook "$r" "$PUSH_CMD")"
-  # Given -audit-10 has open findings, Then it comes after -audit-2: the push is blocked
-  printf '| F3 | x | **Status:** open |\n' > "$r/audits/2026-03-01-audit-10.md"
-  assert_rc "same-day -audit-10 comes after -audit-2" 2 "$(run_hook "$r" "$PUSH_CMD")"
+  local name status rc label
+  while IFS='|' read -r name status rc label; do
+    printf '| F | x | **Status:** %s |\n' "$status" > "$r/audits/$name"
+    touch -d '2026-01-01' "$r/audits/$name"
+    assert_rc "$label" "$rc" "$(run_hook "$r" "$PUSH_CMD")"
+  done <<'CASES'
+2026-02-01-audit.md|fixed|0|clean audit allows
+2026-01-01-audit.md|open|0|older open audit ignored, even written last
+2026-03-01-audit.md|open|2|latest open audit blocks
+2026-03-01-audit-2.md|fixed|0|same-day -audit-2 comes after -audit
+2026-03-01-audit-10.md|open|2|same-day -audit-10 comes after -audit-2
+2026-03-02-audit.md|fixed|0|next day clean audit allows
+2026-03-02-review-work.md|open|0|review report is not an audit report
+CASES
 }
 
 test_merge_commits_not_checked() {
@@ -340,7 +343,8 @@ test_non_rbd_repo_not_checked() {
   local r; r=$(new_repo plain none)
   git -C "$r" switch -q -c work
   commit "$r" "wip: not an rbd project"
-  # When the hook sees a push, Then it lets it through
+  # When the hook sees a push
+  # Then it lets it through
   assert_rc "non-RBD repo allowed" 0 "$(run_hook "$r" "$PUSH_CMD")"
   # And a directory outside any git repository is allowed too
   mkdir -p "$WORK/no_git"
@@ -355,7 +359,8 @@ test_rbd_project_in_subdirectory() {
   printf 'linter:\n  command: "true"\nextra_commit_prefixes: [hw]\n' > "$r/plugins/p/.rbd/config.yml"
   git -C "$r" switch -q -c work
   commit "$r" "hw: from the subproject config"
-  # When the hook sees a push, Then the subproject config applies
+  # When the hook sees a push
+  # Then the subproject config applies
   assert_rc "subproject extra prefix allowed" 0 "$(run_hook "$r" "$PUSH_CMD")"
   commit "$r" "wip: bad"
   assert_rc "bad commit in monorepo blocked" 2 "$(run_hook "$r" "$PUSH_CMD")"

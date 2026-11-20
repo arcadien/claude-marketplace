@@ -1,5 +1,53 @@
 # Changelog
 
+## [0.17.0] - 2026-11-20
+
+Feedback from tinySensor (PR #94): bench test sheets count as coverage, requirements carry no test information.
+
+### Breaking
+
+- `**Verification:**` accepts only `test`, `build` or `inspection`. `bench` and `bench (pending)` are gone: a manual
+  hardware check is a bench sheet. Audit C2 flags the old values.
+
+### Features
+
+- feat(FUNC-TEST-007,CONF-BENCH-001): test-builder writes a bench sheet (`tests/bench/<ID>.md`, tagged
+  `<!-- @req <ID> -->`, one Results row per release) and its `bring-up.md` entry for a manual hardware check;
+  `test_tagging.bench_sheets` sets the path; templates in `references/formats.md`
+- feat(FUNC-RELEASE-001): `/rbd release <tag>` lists the bench sheets in bring-up order and creates the tag only when
+  each has a passing row for that release
+- feat(FUNC-AUDIT-008,FUNC-AUDIT-009,FUNC-AUDIT-010,FUNC-AUDIT-013): a tagged bench sheet covers its requirement (T1);
+  sheet tags checked by T2 (deprecated → warning), T3 (a `test(ID):` commit on a sheet is the test commit) and T6a;
+  sheets with no passing row for the latest release tag are listed as info, never as findings
+- feat(FUNC-REQ-009,FUNC-AUDIT-004): requirement-analyst checks a requirement is a specification (observable, survives
+  a refactor, states its reason, verifiable on its own), sends the how to `docs/architecture.md`, writes no test
+  information; C2 flags `Test:`, `Verified by`, `Acceptance:` and TECH requirements that only name code
+- feat(FUNC-REQ-007): optional `**Superseded by:**` line on a deprecated requirement, checked by T8
+- feat(FUNC-METRICS-001): rbd-metrics counts bench-only coverage apart (`(N bench)`, `"bench"` in JSON)
+
+### Fixes (from the 0.17.0 full audit)
+
+- fix(FUNC-AUDIT-009): a bench sheet tag citing a draft requirement is info, not a warning
+- fix(FUNC-AUDIT-010): a requirement covered only by bench sheets needs no implementation commit
+- fix(CONF-BENCH-001,FUNC-RELEASE-001): sheet enumeration for a custom path; HEAD matched by a hash prefix of 7+ characters
+- fix(FUNC-ORCH-003): rbd routes `REVIEW PASSED` / `REVIEW FAILED`; the signal list is complete
+- fix(CONF-DRAFT-001): dependency cycle with FUNC-PUSH-002 removed; hook requirements traced in `docs/architecture.md`
+- fix(FUNC-PUSH-001): pre-push hook ignores review reports (`*-review-*.md`) when picking the latest audit report
+- fix(FUNC-REVIEW-003,FUNC-REVIEW-005,FUNC-REVIEW-006): rbd-review accepts what the pre-push hook accepts
+  (deprecated IDs, draft for `draft_ok_prefixes`, extra prefixes, multi-category commits); build/inspection need no test
+- TECH-TAG-001 deprecated, superseded by FUNC-TEST-002; overlapping requirements narrowed; PLAT in init and elicitation;
+  thresholds (100 words, 400 test lines, 600 code lines), phase mapping and test file definition made explicit
+- Contract cases for the 46 requirements that had none
+- First full audit report committed, `audits/2026-11-20-audit.md`; pre-convention findings excluded in `audits/exclusions.yml`
+
+### Tests
+
+- Contract cases for bench sheets, the release gate and the spec rules; `!` cases for text that must be gone
+
+### Docs
+
+- README: bench sheets, `/rbd release`, multi-ID and range commits in the pre-push hook
+
 ## [0.16.0] - 2026-11-17
 
 Feedback from using rbd 0.14.0 on tinySensor (#23–#38).

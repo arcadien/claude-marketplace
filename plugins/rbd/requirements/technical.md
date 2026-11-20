@@ -18,17 +18,18 @@
 **Title:** test-builder must not modify production code  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** The `test-builder` agent is strictly forbidden from writing to or editing any production code file. It may only create or modify files in the test directories. Any violation of this constraint invalidates the TDD Red phase.
+**Description:** The `test-builder` agent is strictly forbidden from writing to or editing any production code file. It may only create or modify test files: files under a `test`, `tests`, `spec` or `__tests__` directory, files named `test_*`, `*_test.*`, `*.test.*` or `*.spec.*`, and bench sheets. Every other source file is production code. Any violation of this constraint invalidates the TDD Red phase.
 
 ### TECH-SEP-002
 **Title:** code-builder must not modify test files  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** The `code-builder` agent is strictly forbidden from writing to or editing any test file. It may only create or modify production code files. Any violation of this constraint invalidates the TDD Green phase.
+**Description:** The `code-builder` agent is strictly forbidden from writing to or editing any test file (as defined in [TECH-SEP-001](technical.md#tech-sep-001)). It may only create or modify production code files. Any violation of this constraint invalidates the TDD Green phase.
 
 ### TECH-TAG-001
 **Title:** Untagged test functions are a hard gate blocking commit  
-**Status:** validated  
+**Status:** deprecated  
+**Superseded by:** [FUNC-TEST-002](functional.md#func-test-002)  
 **Dependencies:** [TECH-SEP-001](technical.md#tech-sep-001)  
 **Description:** The presence of a valid requirement ID tag on every test function is a hard gate enforced by `test-builder` before every test commit. Any test function missing its tag causes the commit to be rejected. This check is also enforced by `audit-traceability` (T6a).
 
@@ -36,7 +37,7 @@
 **Title:** Non-plan commits must follow the prefix(ID): format  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** Every commit that modifies requirements, tests, production code, or architecture must follow the format `prefix(ID): <description>` where `prefix` is one of: req, test, feat, tech, perf, ui, conf, arch. Only `plan:` commits are exempt from the ID requirement.
+**Description:** Every commit that modifies requirements, tests, production code, or architecture must follow the format `prefix(ID): <description>` where `prefix` is one of: req, test, feat, tech, perf, ui, conf, arch. Commits outside the RBD cycle use `plan`, `chore`, `fix`, `docs`, `style` or `refactor` (or an extra prefix of [CONF-PREFIX-001](configuration.md#conf-prefix-001)), which need no requirement ID.
 
 ### TECH-AUDIT-001
 **Title:** Audit agents are strictly read-only  

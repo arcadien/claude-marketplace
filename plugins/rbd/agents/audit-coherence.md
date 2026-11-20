@@ -44,6 +44,11 @@ For each requirement, evaluate:
 - Is the description precise enough to write unambiguous integration tests?
 - Does it use vague language without measurable criteria ("fast", "user-friendly", "reasonable", "as needed", "appropriate")?
 - Could two developers write substantially different implementations from this description alone?
+- Does it carry test information? Flag a `Test:`, `Verified by` or `Acceptance:` sentence, a "native test" or
+  "bench check pending" note, or a `**Verification:**` value other than `test`, `build` or `inspection`.
+  Tests and bench sheets point to the requirement with their tag; the requirement says nothing about its tests.
+- Is it a TECH requirement that only names the code behind another requirement (a helper, a class, a register
+  layout)? Flag it: that belongs to `docs/architecture.md`, and the helper's tests carry the other requirement's tag.
 - If any answer is yes → flag it.
 
 **Optional rule — `rules: { non_technical_without_code: true }` in `.rbd/config.yml`:** for each FUNC, UI, CONF and
@@ -72,6 +77,7 @@ If a cycle is found → flag all requirements in the cycle.
    - Use inference: does the requirement describe behavior that belongs in that component's responsibility?
    - Flag responsibility mismatches.
    - Flag a row that restates the requirement differently from its current text (old limits, missing behaviours).
+   - A missing row is reported by T5 (audit-traceability), not here.
 3. For each row in the Dependency Injection Map:
    - If the "Interface" column is blank or identical to the concrete implementation → flag as a missing abstraction.
 

@@ -41,5 +41,11 @@
 ### CONF-DRAFT-001
 **Title:** Commit prefixes allowed to cite draft requirements  
 **Status:** validated  
-**Dependencies:** [CONF-PREFIX-001](configuration.md#conf-prefix-001), [FUNC-PUSH-002](functional.md#func-push-002)  
+**Dependencies:** [CONF-PREFIX-001](configuration.md#conf-prefix-001)  
 **Description:** A project may list, in `.rbd/config.yml` as `draft_ok_prefixes: [test, ...]`, commit prefixes whose cited requirements may also have status `draft` (for example bench test sheets written before the measurement that validates their requirement). For these prefixes the pre-push hook accepts `validated`, `deprecated` or `draft`; the existence check and the at-least-one-ID rule still apply. Without the key, only `validated` and `deprecated` are accepted, as before.
+
+### CONF-BENCH-001
+**Title:** Configurable bench sheet path  
+**Status:** validated  
+**Dependencies:** [CONF-TAG-001](configuration.md#conf-tag-001)  
+**Description:** `test_tagging.bench_sheets` in `.rbd/config.yml` gives the path of a bench sheet, `{id}` standing for the requirement ID (for example `tests/bench/{id}.md`). The bench sheets are the files matching that path with `{id}` read as `*`, and `bring-up.md` sits in their directory. Without the key, bench sheets are `tests/bench/*.md`, except `bring-up.md`. Whatever the test tagging convention, a bench sheet is tagged by a `<!-- @req <ID> -->` line.
