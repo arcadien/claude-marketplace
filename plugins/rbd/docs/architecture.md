@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-Last updated: 2026-11-17 — triggering requirement: [FUNC-ORCH-006](../requirements/functional.md#func-orch-006)
+Last updated: 2026-11-20 — triggering requirement: [FUNC-TEST-007](../requirements/functional.md#func-test-007)
 
 ---
 
@@ -80,15 +80,15 @@ Last updated: 2026-11-17 — triggering requirement: [FUNC-ORCH-006](../requirem
 
 | Component | Type | Responsibilities |
 |---|---|---|
-| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH` (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
+| `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH`; `/rbd release <tag>` gate on bench sheets (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
 | `init-agent` | Agent | Negotiates ID format, language/framework, linter; generates all initial project files; performs initial commit |
-| `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
-| `test-builder` | Agent | Generates integration tests in GWT structure; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
+| `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency, specification not plan); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
+| `test-builder` | Agent | Generates integration tests in GWT structure, or a tagged bench sheet and its `bring-up.md` entry when no software test can observe the behaviour; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
 | `code-builder` | Agent | Reads test contracts; proposes design alternatives; verifies architectural boundary before writing any file (emits `ARCH MISMATCH` if a planned file cannot be mapped to a declared component); implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
-| `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
-| `audit-traceability` | Agent | Read-only; performs T1 (test coverage), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability), T8 (requirement ID links, via `rbd_links.py --check`) checks |
-| `rbd-metrics` | Skill | Reads all requirement files and git log; computes validated requirement counts and `test(ID):` commit coverage per category and subcategory; prints ASCII structured report to stdout; supports `--json` and `--latency` flags; strictly read-only |
+| `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision, no test information), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
+| `audit-traceability` | Agent | Read-only; performs T1 (test coverage, software tests or bench sheets), T2 (tag validity), T3 (impl coverage), T4 (plan file coverage), T5 (architecture currency), T6 (test structure), T7 (PLAT derives_from traceability), T8 (requirement ID links, via `rbd_links.py --check`) checks |
+| `rbd-metrics` | Skill | Reads all requirement files and git log; computes validated requirement counts and `test(ID):` commit coverage per category and subcategory, bench-only coverage counted apart; prints ASCII structured report to stdout; supports `--json` and `--latency` flags; strictly read-only |
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by `rbd` Phase 6; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
 | `rbd-links` | Skill + script | Runs `rbd_links.py`: links every cited requirement ID in `requirements/*.md` and `docs/architecture.md` to its heading; `--check` lists broken or missing links without writing |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment |
@@ -143,7 +143,8 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-REQ-005](../requirements/functional.md#func-req-005) | User validation before commit | `requirement-analyst` |
 | [FUNC-REQ-006](../requirements/functional.md#func-req-006) | Requirement splitting when too large | `rbd` |
 | [FUNC-REQ-007](../requirements/functional.md#func-req-007) | Requirement deletion | `requirement-analyst` |
-| [FUNC-REQ-008](../requirements/functional.md#func-req-008) | Verification field for requirements without native tests | `requirement-analyst`, `audit-traceability` |
+| [FUNC-REQ-008](../requirements/functional.md#func-req-008) | Verification field (deprecated, superseded by [FUNC-REQ-009](../requirements/functional.md#func-req-009)) | — |
+| [FUNC-REQ-009](../requirements/functional.md#func-req-009) | A requirement is a specification, not a plan | `requirement-analyst`, `audit-coherence` |
 | [FUNC-ARCH-001](../requirements/functional.md#func-arch-001) | Component assignment for each requirement | `requirement-analyst` |
 | [FUNC-ARCH-002](../requirements/functional.md#func-arch-002) | DI constraint identification → TECH requirement | `requirement-analyst` |
 | [FUNC-ARCH-003](../requirements/functional.md#func-arch-003) | docs/architecture.md update with arch(ID) commit | `requirement-analyst` |
@@ -153,7 +154,8 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-TEST-003](../requirements/functional.md#func-test-003) | Parametrized tests for multiple cases | `test-builder` |
 | [FUNC-TEST-004](../requirements/functional.md#func-test-004) | TOO_LARGE signal when requirement is too large | `test-builder` |
 | [FUNC-TEST-005](../requirements/functional.md#func-test-005) | Test file linting before commit | `test-builder` |
-| [FUNC-TEST-006](../requirements/functional.md#func-test-006) | NO NATIVE TEST route | `test-builder`, `rbd`, `code-builder` |
+| [FUNC-TEST-006](../requirements/functional.md#func-test-006) | NO NATIVE TEST route (deprecated, superseded by [FUNC-TEST-007](../requirements/functional.md#func-test-007)) | — |
+| [FUNC-TEST-007](../requirements/functional.md#func-test-007) | Bench sheet for behaviour no software test can observe | `test-builder` |
 | [FUNC-IMPL-001](../requirements/functional.md#func-impl-001) | Design pattern analysis with alternative proposals | `code-builder` |
 | [FUNC-IMPL-002](../requirements/functional.md#func-impl-002) | Production code implementation | `code-builder` |
 | [FUNC-IMPL-003](../requirements/functional.md#func-impl-003) | Full test suite green gate before commit | `code-builder` |
@@ -163,16 +165,16 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-AUDIT-001](../requirements/functional.md#func-audit-001) | Block audit if open findings exist | `rbd-audit` |
 | [FUNC-AUDIT-002](../requirements/functional.md#func-audit-002) | Parallel dispatch of coherence and traceability agents | `rbd-audit` |
 | [FUNC-AUDIT-003](../requirements/functional.md#func-audit-003) | C1 check — semantic overlap | `audit-coherence` |
-| [FUNC-AUDIT-004](../requirements/functional.md#func-audit-004) | C2 check — precision and testability | `audit-coherence` |
+| [FUNC-AUDIT-004](../requirements/functional.md#func-audit-004) | C2 check — precision, testability, no test information | `audit-coherence` |
 | [FUNC-AUDIT-005](../requirements/functional.md#func-audit-005) | C3 check — dependency validity | `audit-coherence` |
 | [FUNC-AUDIT-006](../requirements/functional.md#func-audit-006) | C4 check — circular dependency detection | `audit-coherence` |
 | [FUNC-AUDIT-007](../requirements/functional.md#func-audit-007) | C5 check — architecture coherence | `audit-coherence` |
-| [FUNC-AUDIT-008](../requirements/functional.md#func-audit-008) | T1 check — test coverage per requirement | `audit-traceability` |
-| [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009) | T2 check — tag validity in tests | `audit-traceability` |
+| [FUNC-AUDIT-008](../requirements/functional.md#func-audit-008) | T1 check — coverage by a test or a bench sheet | `audit-traceability` |
+| [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009) | T2 check — tag validity in tests and bench sheets | `audit-traceability` |
 | [FUNC-AUDIT-010](../requirements/functional.md#func-audit-010) | T3 check — implementation coverage | `audit-traceability` |
 | [FUNC-AUDIT-011](../requirements/functional.md#func-audit-011) | T4 check — plan file coverage | `audit-traceability` |
 | [FUNC-AUDIT-012](../requirements/functional.md#func-audit-012) | T5 check — architecture document currency | `audit-traceability` |
-| [FUNC-AUDIT-013](../requirements/functional.md#func-audit-013) | T6 check — test structure conventions | `audit-traceability` |
+| [FUNC-AUDIT-013](../requirements/functional.md#func-audit-013) | T6 check — test structure conventions, bench sheet tag | `audit-traceability` |
 | [FUNC-AUDIT-014](../requirements/functional.md#func-audit-014) | Timestamped audit report generation | `rbd-audit` |
 | [FUNC-AUDIT-015](../requirements/functional.md#func-audit-015) | Finding resolution with the user | `rbd-audit` |
 | [FUNC-AUDIT-017](../requirements/functional.md#func-audit-017) | Since-last-audit mode by default, `--full` | `rbd-audit`, `audit-coherence`, `audit-traceability` |
@@ -199,6 +201,7 @@ If a future requirement introduces a component that depends on an external servi
 | [TECH-AGENT-001](../requirements/technical.md#tech-agent-001) | Each phase is delegated to a dedicated agent | `rbd` |
 | [CONF-IDLVL-001](../requirements/configuration.md#conf-idlvl-001) | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
 | [CONF-TAG-001](../requirements/configuration.md#conf-tag-001) | Configurable test tagging convention | `init-agent`, `test-builder` |
+| [CONF-BENCH-001](../requirements/configuration.md#conf-bench-001) | Configurable bench sheet path | `test-builder`, `audit-traceability`, `rbd` |
 | [CONF-LINT-001](../requirements/configuration.md#conf-lint-001) | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
 | [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst` |
 | [FUNC-ANALYZE-001](../requirements/functional.md#func-analyze-001) | rbd-arch-analyze skill triggers the arch-analyst agent | `rbd-arch-analyze` |
@@ -209,8 +212,9 @@ If a future requirement introduces a component that depends on an external servi
 | [CONF-PLAT-001](../requirements/configuration.md#conf-plat-001) | PLAT as a recognized requirement category in config | `init-agent`, `rbd` |
 | [FUNC-AUDIT-016](../requirements/functional.md#func-audit-016) | T7 check — derives_from traceability for PLAT requirements | `audit-traceability` |
 | [UI-DOC-002](../requirements/ui.md#ui-doc-002) | Markdown hyperlinks for derives_from references in PLAT requirements | `requirement-analyst` |
-| [FUNC-METRICS-001](../requirements/functional.md#func-metrics-001) | Coverage metrics report per category and subcategory | `rbd-metrics` |
+| [FUNC-METRICS-001](../requirements/functional.md#func-metrics-001) | Coverage metrics report per category and subcategory, bench counted apart | `rbd-metrics` |
 | [FUNC-METRICS-002](../requirements/functional.md#func-metrics-002) | Opt-in req-to-green latency per requirement | `rbd-metrics` |
+| [FUNC-RELEASE-001](../requirements/functional.md#func-release-001) | Release gate on bench sheets | `rbd` |
 | [FUNC-LINKS-001](../requirements/functional.md#func-links-001) | rbd-links skill links every cited requirement ID | `rbd-links` |
 | [FUNC-AUDIT-021](../requirements/functional.md#func-audit-021) | T8 check — requirement ID links | `audit-traceability`, `rbd-links` |
 | [CONF-RULES-001](../requirements/configuration.md#conf-rules-001) | Optional rule: no code names in non-technical requirements | `audit-coherence` |
