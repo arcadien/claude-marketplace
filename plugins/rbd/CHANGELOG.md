@@ -32,6 +32,12 @@ Feedback from tinySensor (PR #94): bench test sheets count as coverage, requirem
 - fix(CONF-BENCH-001,FUNC-RELEASE-001): sheet enumeration for a custom path; HEAD matched by a hash prefix of 7+ characters
 - fix(FUNC-ORCH-003): rbd routes `REVIEW PASSED` / `REVIEW FAILED`; the signal list is complete
 - fix(CONF-DRAFT-001): dependency cycle with FUNC-PUSH-002 removed; hook requirements traced in `docs/architecture.md`
+- fix(FUNC-PUSH-001): pre-push hook ignores review reports (`*-review-*.md`) when picking the latest audit report
+- fix(FUNC-REVIEW-003,FUNC-REVIEW-005,FUNC-REVIEW-006): rbd-review accepts what the pre-push hook accepts
+  (deprecated IDs, draft for `draft_ok_prefixes`, extra prefixes, multi-category commits); build/inspection need no test
+- TECH-TAG-001 deprecated, superseded by FUNC-TEST-002; overlapping requirements narrowed; PLAT in init and elicitation;
+  thresholds (100 words, 400 test lines, 600 code lines), phase mapping and test file definition made explicit
+- Contract cases for the 46 requirements that had none
 - First full audit report committed, `audits/2026-11-20-audit.md`; pre-convention findings excluded in `audits/exclusions.yml`
 
 ### Tests
