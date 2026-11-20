@@ -83,7 +83,7 @@ Last updated: 2026-11-20 — triggering requirement: [FUNC-TEST-007](../requirem
 | `rbd` | Skill / Orchestrator | Phase detection from config and git state; assembles context; routes agent return signals including `ARCH MISMATCH`; `/rbd release <tag>` gate on bench sheets (re-dispatches `requirement-analyst` to fix architecture or revise requirement); no domain logic ([TECH-AGENT-001](../requirements/technical.md#tech-agent-001)) |
 | `init-agent` | Agent | Negotiates ID format, language/framework, linter; generates all initial project files; performs initial commit |
 | `requirement-analyst` | Agent | Requirement elicitation via dialogue; challenge (size, overlap, consistency, specification not plan); architecture coherence check; DI constraint identification; updates `docs/architecture.md` |
-| `test-builder` | Agent | Generates integration tests in GWT structure, or a tagged bench sheet and its `bring-up.md` entry when no software test can observe the behaviour; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
+| `test-builder` | Agent | Generates integration tests in GWT structure, or a tagged bench sheet and its `bring-up.md` entry for a manual hardware check; emits `NO NATIVE TEST` for build or inspection verification; enforces requirement ID tags; runs linter before commit; emits `TOO_LARGE` signal; never touches production code |
 | `code-builder` | Agent | Reads test contracts; proposes design alternatives; verifies architectural boundary before writing any file (emits `ARCH MISMATCH` if a planned file cannot be mapped to a declared component); implements production code; runs full test suite and linter before commit; emits `SCOPE TOO WIDE` signal; never touches test files |
 | `rbd-audit` | Skill | Dispatches `audit-coherence` and `audit-traceability` in parallel; merges and deduplicates findings; generates timestamped report; resolves findings with user |
 | `audit-coherence` | Agent | Read-only; performs C1 (overlap), C2 (precision, no test information), C3 (dependency validity), C4 (circular deps), C5 (architecture coherence) checks |
@@ -143,7 +143,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-REQ-005](../requirements/functional.md#func-req-005) | User validation before commit | `requirement-analyst` |
 | [FUNC-REQ-006](../requirements/functional.md#func-req-006) | Requirement splitting when too large | `rbd` |
 | [FUNC-REQ-007](../requirements/functional.md#func-req-007) | Requirement deletion | `requirement-analyst` |
-| [FUNC-REQ-008](../requirements/functional.md#func-req-008) | Verification field (deprecated, superseded by [FUNC-REQ-009](../requirements/functional.md#func-req-009)) | — |
+| [FUNC-REQ-008](../requirements/functional.md#func-req-008) | Verification field: build or inspection | `requirement-analyst`, `audit-traceability` |
 | [FUNC-REQ-009](../requirements/functional.md#func-req-009) | A requirement is a specification, not a plan | `requirement-analyst`, `audit-coherence` |
 | [FUNC-ARCH-001](../requirements/functional.md#func-arch-001) | Component assignment for each requirement | `requirement-analyst` |
 | [FUNC-ARCH-002](../requirements/functional.md#func-arch-002) | DI constraint identification → TECH requirement | `requirement-analyst` |
@@ -154,7 +154,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-TEST-003](../requirements/functional.md#func-test-003) | Parametrized tests for multiple cases | `test-builder` |
 | [FUNC-TEST-004](../requirements/functional.md#func-test-004) | TOO_LARGE signal when requirement is too large | `test-builder` |
 | [FUNC-TEST-005](../requirements/functional.md#func-test-005) | Test file linting before commit | `test-builder` |
-| [FUNC-TEST-006](../requirements/functional.md#func-test-006) | NO NATIVE TEST route (deprecated, superseded by [FUNC-TEST-007](../requirements/functional.md#func-test-007)) | — |
+| [FUNC-TEST-006](../requirements/functional.md#func-test-006) | NO NATIVE TEST route for build and inspection | `test-builder`, `rbd`, `code-builder` |
 | [FUNC-TEST-007](../requirements/functional.md#func-test-007) | Bench sheet for behaviour no software test can observe | `test-builder` |
 | [FUNC-IMPL-001](../requirements/functional.md#func-impl-001) | Design pattern analysis with alternative proposals | `code-builder` |
 | [FUNC-IMPL-002](../requirements/functional.md#func-impl-002) | Production code implementation | `code-builder` |
