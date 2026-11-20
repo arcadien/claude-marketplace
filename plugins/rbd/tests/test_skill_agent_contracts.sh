@@ -165,6 +165,7 @@ test_bench_sheets() {
   # @req: FUNC-AUDIT-013
   # @req: FUNC-METRICS-001
   # @req: FUNC-RELEASE-001
+  # @req: FUNC-ORCH-003
   # Given the workflow, audit and metrics instruction files
   # When they are searched for each rule about bench sheets
   # Then every rule is stated
@@ -183,6 +184,15 @@ FUNC-AUDIT-008|agents/audit-traceability.md|latest release tag
 FUNC-AUDIT-008|agents/audit-traceability.md|never a finding
 FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|tagged bench sheet covers
 FUNC-AUDIT-009|agents/audit-traceability.md|sheet tag citing a .deprecated.
+FUNC-AUDIT-009|agents/audit-traceability.md|sheet tag citing a .draft. requirement → an .info. entry
+FUNC-AUDIT-009|skills/rbd-audit/references/checklist.md|sheet tag citing a .draft. requirement → .info.
+FUNC-AUDIT-009|skills/rbd-audit/references/checklist.md|!citing a .draft. or .deprecated. requirement → warning
+FUNC-ORCH-003|skills/rbd/SKILL.md|REQUIREMENT DELETED: <ID>
+FUNC-ORCH-003|skills/rbd/SKILL.md|REVIEW PASSED
+FUNC-ORCH-003|skills/rbd/SKILL.md|REVIEW FAILED
+CONF-BENCH-001|agents/audit-traceability.md|.\{id\}. read as .\*.
+FUNC-AUDIT-010|agents/audit-traceability.md|only tagged test files are bench sheets needs no implementation commit
+FUNC-RELEASE-001|skills/rbd/SKILL.md|at least 7 characters
 FUNC-AUDIT-010|agents/audit-traceability.md|adds or changes a bench sheet
 FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|adds or changes a bench sheet
 FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
