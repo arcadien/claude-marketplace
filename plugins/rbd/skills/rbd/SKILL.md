@@ -145,6 +145,7 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
    - No code file was modified outside of a properly prefixed commit.
    Flag any violation and block the push until resolved.
 3. **MR safety net (`rbd-review`):** This step is a fallback for cases where code was pushed to a remote branch *without* going through the RBD workflow. If a PR/MR already exists on GitHub/GitLab for this branch, invoke `rbd-review` against that MR. The review performs deep inference-based analysis (uncovered behaviors, category mismatches, missing tests) that goes beyond the mechanical check in step 2.
+   - `REVIEW PASSED: …` → continue. `REVIEW FAILED: …` → block the push and show the review report.
    - If no remote MR exists yet, skip this step — `rbd-review` will be triggered at merge time.
    - **Stacked PR warning (does not block):** compare the PR base (`gh pr view --json baseRefName`) with the default
      branch (`gh repo view --json defaultBranchRef`). When they differ, warn: once the base PR is merged, retarget this PR
@@ -160,11 +161,11 @@ Bench sheets are run by hand, once per release. Before creating a release tag:
 
 1. Read the bench sheets (`test_tagging.bench_sheets` in `.rbd/config.yml`, default `tests/bench/*.md`) in the
    order of `bring-up.md`, then any sheet it does not list.
-2. For each sheet, find a Results row whose `Release (tag / commit)` is `<tag>` or the candidate commit
-   (`git rev-parse --short HEAD`, or the full hash) and whose `Pass` is `yes` or `✅`.
+2. For each sheet, find a Results row whose `Release (tag / commit)` is `<tag>` or the candidate commit `HEAD`
+   (its full hash, or a prefix of at least 7 characters) and whose `Pass` is `yes` or `✅`.
 3. Print the list in that order, each sheet with its passing row or `missing`.
 4. If a sheet is missing → stop: list the sheets still to run and creates no tag.
-5. Otherwise run `git tag <tag>` on the candidate commit. Pushing the tag stays with the user.
+5. Otherwise run `git tag <tag> HEAD`. Pushing the tag stays with the user.
 
 Without bench sheets, the gate passes. Outside this step, a missing bench result blocks nothing.
 
