@@ -245,6 +245,8 @@ Build the dependency graph from all requirements. Detect cycles.
 
 ### Check C5: Architecture Coherence
 
+A missing traceability row is reported by T5, not by C5.
+
 Read `docs/architecture.md`. For each validated requirement:
 
 - Use inference to determine whether the requirement is consistent with the component responsible for it in the architecture (per the traceability table).

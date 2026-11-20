@@ -129,8 +129,8 @@ For every `PLAT-*` requirement with status `validated`:
 
 1. Read `requirements/platform.md` and all other `requirements/*.md`
    files that may contain PLAT requirements.
-2. Check whether the requirement's frontmatter contains a
-   `derives_from:` field.
+2. Check whether the requirement has a `derives_from:` line in its requirement block
+   (between its `###` heading and the next one).
    - If absent or empty → create a T7 finding (severity: error).
      Example: "PLAT-XYZ-001 has no derives_from field."
 3. If `derives_from:` is present, extract the referenced ID and verify:

@@ -77,6 +77,7 @@ If a cycle is found → flag all requirements in the cycle.
    - Use inference: does the requirement describe behavior that belongs in that component's responsibility?
    - Flag responsibility mismatches.
    - Flag a row that restates the requirement differently from its current text (old limits, missing behaviours).
+   - A missing row is reported by T5 (audit-traceability), not here.
 3. For each row in the Dependency Injection Map:
    - If the "Interface" column is blank or identical to the concrete implementation → flag as a missing abstraction.
 
