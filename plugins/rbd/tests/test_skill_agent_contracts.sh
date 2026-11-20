@@ -206,9 +206,139 @@ FUNC-RELEASE-001|skills/rbd/SKILL.md|git tag <tag>
 CASES
 }
 
+test_workflow_contracts() {
+  echo "test_workflow_contracts"
+  # @req: CONF-IDLVL-001
+  # @req: CONF-TAG-001
+  # @req: CONF-LINT-001
+  # @req: FUNC-INIT-001
+  # @req: FUNC-INIT-002
+  # @req: FUNC-INIT-003
+  # @req: FUNC-INIT-004
+  # @req: FUNC-ORCH-001
+  # @req: FUNC-ORCH-002
+  # @req: FUNC-ORCH-004
+  # @req: TECH-AGENT-001
+  # @req: FUNC-REQ-001
+  # @req: FUNC-REQ-002
+  # @req: FUNC-REQ-003
+  # @req: FUNC-REQ-004
+  # @req: FUNC-REQ-006
+  # @req: FUNC-ARCH-002
+  # @req: FUNC-ARCH-003
+  # @req: FUNC-ARCH-004
+  # @req: FUNC-TEST-001
+  # @req: FUNC-TEST-002
+  # @req: FUNC-TEST-003
+  # @req: FUNC-TEST-004
+  # @req: FUNC-TEST-005
+  # @req: TECH-SEP-001
+  # @req: TECH-SEP-002
+  # @req: FUNC-IMPL-001
+  # @req: FUNC-IMPL-002
+  # @req: FUNC-IMPL-003
+  # @req: FUNC-IMPL-004
+  # @req: FUNC-IMPL-005
+  # Given the orchestrator, the workflow agents and the format reference
+  # When they are searched for each rule of init, elicitation, tests and implementation
+  # Then every rule is stated
+  check_cases <<'CASES'
+CONF-IDLVL-001|skills/rbd/SKILL.md|intermediate classification levels
+CONF-IDLVL-001|skills/rbd/references/formats.md|levels: \[
+CONF-TAG-001|skills/rbd/references/formats.md|convention: .*\{id\}
+CONF-TAG-001|agents/test-builder.md|test tagging convention
+CONF-LINT-001|skills/rbd/references/formats.md|^linter:
+CONF-LINT-001|agents/test-builder.md|Run the linter command
+CONF-LINT-001|agents/code-builder.md|linter command
+FUNC-INIT-001|skills/rbd/SKILL.md|FUNC, TECH, PERF, UI, CONF, PLAT
+FUNC-INIT-002|skills/rbd/SKILL.md|language and test framework
+FUNC-INIT-002|skills/rbd/SKILL.md|Offer to defer
+FUNC-INIT-003|skills/rbd/SKILL.md|What is the linter command
+FUNC-INIT-004|skills/rbd/SKILL.md|plan: init rbd project
+FUNC-INIT-004|skills/rbd/references/formats.md|platform\.md
+FUNC-ORCH-001|skills/rbd/SKILL.md|after .test\(ID\):. with no implementation commit
+FUNC-ORCH-002|skills/rbd/SKILL.md|ask the user what they want to work on
+FUNC-ORCH-004|skills/rbd/SKILL.md|Dispatch the .test-builder. agent
+TECH-AGENT-001|skills/rbd/SKILL.md|does not perform requirement analysis, test writing, or code implementation directly
+FUNC-REQ-001|agents/requirement-analyst.md|FUNC/TECH/PERF/UI/CONF/PLAT
+FUNC-REQ-002|agents/requirement-analyst.md|> 100 words
+FUNC-REQ-002|agents/requirement-analyst.md|SPLIT REQUIRED
+FUNC-REQ-003|agents/requirement-analyst.md|Semantic overlap check
+FUNC-REQ-004|agents/requirement-analyst.md|Consistency and precision check
+FUNC-REQ-006|skills/rbd/SKILL.md|Re-dispatch requirement-analyst for each sub-requirement
+FUNC-ARCH-002|agents/requirement-analyst.md|propose a TECH requirement anchoring the DI constraint
+FUNC-ARCH-003|agents/requirement-analyst.md|Commit: .arch\(<ID>\):
+FUNC-ARCH-004|agents/requirement-analyst.md|Step 5 — Gate
+FUNC-TEST-001|agents/test-builder.md|Rule T-GWT
+FUNC-TEST-002|agents/test-builder.md|Rule T-TAG
+FUNC-TEST-002|agents/test-builder.md|If ANY function is missing its tag: do not commit
+FUNC-TEST-003|agents/test-builder.md|Rule T-PARAM
+FUNC-TEST-004|agents/test-builder.md|> 400 lines
+FUNC-TEST-004|agents/test-builder.md|!300–400
+FUNC-TEST-005|agents/test-builder.md|Step 6 — Lint
+TECH-SEP-001|agents/test-builder.md|MUST NOT create, modify, or delete any file outside of test directories
+TECH-SEP-001|agents/test-builder.md|.test_\*.
+TECH-SEP-002|agents/code-builder.md|test files as defined for test-builder
+FUNC-IMPL-001|agents/code-builder.md|a different component, design pattern or public interface
+FUNC-IMPL-002|agents/code-builder.md|production code
+FUNC-IMPL-003|agents/code-builder.md|full test suite
+FUNC-IMPL-004|agents/code-builder.md|Run the linter
+FUNC-IMPL-005|agents/code-builder.md|> 600 lines added
+FUNC-IMPL-005|agents/code-builder.md|!500–600
+CASES
+}
+
+test_audit_review_contracts() {
+  echo "test_audit_review_contracts"
+  # @req: FUNC-AUDIT-002
+  # @req: PERF-AUDIT-001
+  # @req: FUNC-AUDIT-003
+  # @req: FUNC-AUDIT-006
+  # @req: FUNC-AUDIT-007
+  # @req: FUNC-AUDIT-015
+  # @req: FUNC-AUDIT-016
+  # @req: TECH-AUDIT-001
+  # @req: FUNC-REVIEW-001
+  # @req: FUNC-REVIEW-003
+  # @req: FUNC-REVIEW-004
+  # @req: FUNC-REVIEW-005
+  # @req: FUNC-REVIEW-006
+  # @req: FUNC-PUSH-003
+  # @req: TECH-FMT-001
+  # @req: UI-DOC-001
+  # Given the audit and review instruction files and the hook
+  # When they are searched for each rule of the audit and the review
+  # Then every rule is stated
+  check_cases <<'CASES'
+FUNC-AUDIT-002|skills/rbd-audit/SKILL.md|Collect their JSON finding arrays
+PERF-AUDIT-001|skills/rbd-audit/SKILL.md|Launch both agents simultaneously
+FUNC-AUDIT-003|agents/audit-coherence.md|### C1 — Semantic Overlap
+FUNC-AUDIT-006|agents/audit-coherence.md|### C4 — Circular Dependencies
+FUNC-AUDIT-007|agents/audit-coherence.md|A missing row is reported by T5
+FUNC-AUDIT-015|skills/rbd-audit/SKILL.md|Process Findings With the User
+FUNC-AUDIT-016|agents/audit-traceability.md|.derives_from:. line in its requirement block
+FUNC-AUDIT-016|agents/audit-traceability.md|!frontmatter
+TECH-AUDIT-001|agents/audit-traceability.md|You never modify any file
+TECH-AUDIT-001|agents/audit-coherence.md|You never modify any file
+FUNC-REVIEW-001|skills/rbd-review/SKILL.md|MR number or URL
+FUNC-REVIEW-003|skills/rbd-review/SKILL.md|.validated. or .deprecated.
+FUNC-REVIEW-003|skills/rbd-review/SKILL.md|draft_ok_prefixes
+FUNC-REVIEW-004|skills/rbd-review/SKILL.md|### Check R2: Uncovered Behaviors
+FUNC-REVIEW-005|skills/rbd-review/SKILL.md|extra_commit_prefixes
+FUNC-REVIEW-005|skills/rbd-review/SKILL.md|at least one ID it cites
+FUNC-REVIEW-006|skills/rbd-review/SKILL.md|.build. or .inspection.
+FUNC-PUSH-003|skills/rbd/SKILL.md|first Phase 6 after the MR is opened
+FUNC-PUSH-003|skills/rbd/SKILL.md|!triggered at merge time
+TECH-FMT-001|hooks/rbd-pre-push-check.sh|plan.chore.fix.docs.style.refactor
+UI-DOC-001|agents/requirement-analyst.md|every requirement ID cited
+CASES
+}
+
 test_audit_reports
 test_audit_checks
 test_bench_sheets
+test_workflow_contracts
+test_audit_review_contracts
 test_requirement_lifecycle
 
 echo

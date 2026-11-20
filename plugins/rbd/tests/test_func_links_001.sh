@@ -74,7 +74,8 @@ test_check_mode() {
   # Given a project with bare IDs, then the same project linked, then a broken anchor
   local p; p=$(new_project check)
   local before; before=$(cat "$p/requirements/functional.md")
-  # When the script runs in check mode, Then it fails on bare IDs and writes nothing
+  # When the script runs in check mode
+  # Then it fails on bare IDs and writes nothing
   python3 "$SCRIPT" --check "$p" >/dev/null; assert_eq "bare IDs fail the check" 1 "$?"
   assert_eq "check mode writes nothing" "$before" "$(cat "$p/requirements/functional.md")"
   python3 "$SCRIPT" "$p" >/dev/null
