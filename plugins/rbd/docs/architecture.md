@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-Last updated: 2026-11-20 — triggering requirement: [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009)
+Last updated: 2026-11-20 — triggering requirement: [FUNC-REVIEW-005](../requirements/functional.md#func-review-005)
 
 ---
 
@@ -150,7 +150,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-ARCH-003](../requirements/functional.md#func-arch-003) | docs/architecture.md update with arch(ID) commit | `requirement-analyst` |
 | [FUNC-ARCH-004](../requirements/functional.md#func-arch-004) | Architecture coherence gate before tests | `requirement-analyst` |
 | [FUNC-TEST-001](../requirements/functional.md#func-test-001) | Integration test generation with GWT structure | `test-builder` |
-| [FUNC-TEST-002](../requirements/functional.md#func-test-002) | Mandatory requirement ID tag on every test function | `test-builder` |
+| [FUNC-TEST-002](../requirements/functional.md#func-test-002) | Mandatory requirement ID tag on every test function, hard gate | `test-builder`, `audit-traceability` |
 | [FUNC-TEST-003](../requirements/functional.md#func-test-003) | Parametrized tests for multiple cases | `test-builder` |
 | [FUNC-TEST-004](../requirements/functional.md#func-test-004) | TOO_LARGE signal when requirement is too large | `test-builder` |
 | [FUNC-TEST-005](../requirements/functional.md#func-test-005) | Test file linting before commit | `test-builder` |
@@ -182,12 +182,12 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-AUDIT-019](../requirements/functional.md#func-audit-019) | Findings grouped by cause, info items apart | `rbd-audit` |
 | [FUNC-AUDIT-020](../requirements/functional.md#func-audit-020) | Finding status command | `rbd-audit` |
 | [FUNC-REVIEW-001](../requirements/functional.md#func-review-001) | Manual review trigger by MR number or URL | `rbd-review` |
-| [FUNC-REVIEW-003](../requirements/functional.md#func-review-003) | R1 check — requirement coverage in commits | `rbd-review` |
+| [FUNC-REVIEW-003](../requirements/functional.md#func-review-003) | R1 check — cited IDs have a status the hook accepts | `rbd-review` |
 | [FUNC-REVIEW-004](../requirements/functional.md#func-review-004) | R2 check — uncovered behaviors via inference | `rbd-review` |
 | [FUNC-REVIEW-005](../requirements/functional.md#func-review-005) | R3 check — commit prefix consistency | `rbd-review` |
-| [FUNC-REVIEW-006](../requirements/functional.md#func-review-006) | R4 check — test presence for each impl commit | `rbd-review` |
+| [FUNC-REVIEW-006](../requirements/functional.md#func-review-006) | R4 check — test presence for each impl commit, build/inspection exempt | `rbd-review` |
 | [FUNC-REVIEW-007](../requirements/functional.md#func-review-007) | Review report generation | `rbd-review` |
-| [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if open audit findings exist | `pre-push hook` |
+| [FUNC-PUSH-001](../requirements/functional.md#func-push-001) | Block push if the latest audit report (review reports ignored) has open findings | `pre-push hook` |
 | [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
 | [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `rbd`, `rbd-review` |
 | [FUNC-PUSH-005](../requirements/functional.md#func-push-005) | Warning for stacked PRs | `rbd`, `rbd-review` |
@@ -196,15 +196,15 @@ If a future requirement introduces a component that depends on an external servi
 | [TECH-HOOK-002](../requirements/technical.md#tech-hook-002) | Hook checks the repository being pushed, only an RBD project | `pre-push hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
 | [TECH-SEP-002](../requirements/technical.md#tech-sep-002) | code-builder must not modify test files | `code-builder` |
-| [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate | `test-builder` |
-| [TECH-FMT-001](../requirements/technical.md#tech-fmt-001) | Non-plan commits must follow prefix(ID): format | `pre-push hook`, `test-builder`, `code-builder` |
+| [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate (deprecated, superseded by [FUNC-TEST-002](../requirements/functional.md#func-test-002)) | — |
+| [TECH-FMT-001](../requirements/technical.md#tech-fmt-001) | RBD-cycle commits follow prefix(ID):; plan, chore, fix, docs, style, refactor need no ID | `pre-push hook`, `rbd-review`, `test-builder`, `code-builder` |
 | [TECH-AUDIT-001](../requirements/technical.md#tech-audit-001) | Audit agents are strictly read-only | `audit-coherence`, `audit-traceability` |
 | [TECH-AGENT-001](../requirements/technical.md#tech-agent-001) | Each phase is delegated to a dedicated agent | `rbd` |
 | [CONF-IDLVL-001](../requirements/configuration.md#conf-idlvl-001) | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
 | [CONF-TAG-001](../requirements/configuration.md#conf-tag-001) | Configurable test tagging convention | `init-agent`, `test-builder` |
 | [CONF-BENCH-001](../requirements/configuration.md#conf-bench-001) | Configurable bench sheet path | `test-builder`, `audit-traceability`, `rbd` |
 | [CONF-LINT-001](../requirements/configuration.md#conf-lint-001) | Configurable linter command per project | `init-agent`, `test-builder`, `code-builder` |
-| [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst` |
+| [UI-DOC-001](../requirements/ui.md#ui-doc-001) | Markdown hyperlinks for all requirement ID references | `requirement-analyst`, `rbd-links` |
 | [FUNC-ANALYZE-001](../requirements/functional.md#func-analyze-001) | rbd-arch-analyze skill triggers the arch-analyst agent | `rbd-arch-analyze` |
 | [FUNC-ANALYZE-002](../requirements/functional.md#func-analyze-002) | arch-analyst generates a global component partitioning diagram | `arch-analyst` |
 | [FUNC-ANALYZE-003](../requirements/functional.md#func-analyze-003) | arch-analyst generates per-component Mermaid diagrams | `arch-analyst` |
