@@ -25,6 +25,15 @@ Feedback from tinySensor (PR #94): bench test sheets count as coverage, requirem
 - feat(FUNC-REQ-007): optional `**Superseded by:**` line on a deprecated requirement, checked by T8
 - feat(FUNC-METRICS-001): rbd-metrics counts bench-only coverage apart (`(N bench)`, `"bench"` in JSON)
 
+### Fixes (from the 0.17.0 full audit)
+
+- fix(FUNC-AUDIT-009): a bench sheet tag citing a draft requirement is info, not a warning
+- fix(FUNC-AUDIT-010): a requirement covered only by bench sheets needs no implementation commit
+- fix(CONF-BENCH-001,FUNC-RELEASE-001): sheet enumeration for a custom path; HEAD matched by a hash prefix of 7+ characters
+- fix(FUNC-ORCH-003): rbd routes `REVIEW PASSED` / `REVIEW FAILED`; the signal list is complete
+- fix(CONF-DRAFT-001): dependency cycle with FUNC-PUSH-002 removed; hook requirements traced in `docs/architecture.md`
+- First full audit report committed, `audits/2026-11-20-audit.md`; pre-convention findings excluded in `audits/exclusions.yml`
+
 ### Tests
 
 - Contract cases for bench sheets, the release gate and the spec rules; `!` cases for text that must be gone
