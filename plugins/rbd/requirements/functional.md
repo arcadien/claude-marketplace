@@ -20,7 +20,7 @@
 **Title:** Inter-phase routing via agent return signals  
 **Status:** validated  
 **Dependencies:** [FUNC-ORCH-001](functional.md#func-orch-001)  
-**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
+**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `TESTS COMMITTED`, `IMPLEMENTATION COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `SCOPE TOO WIDE`, `SPLIT REQUIRED`, `ARCH MISMATCH`). The orchestrator contains no business logic.
 
 ### FUNC-ORCH-004
 **Title:** Exclusive delegation to specialized agents  
@@ -115,17 +115,16 @@
 **Description:** The `requirement-analyst` agent handles deletion of an existing requirement. It emits the signal `REQUIREMENT DELETED: <ID>`. The workflow cycle ends and the user is informed. When another requirement replaces the deprecated one, the deprecated entry carries a `**Superseded by:**` line linking to the replacement, checked like any requirement link ([FUNC-AUDIT-021](functional.md#func-audit-021)).
 
 ### FUNC-REQ-008
-**Title:** Verification field for requirements without native tests  
-**Status:** deprecated  
-**Superseded by:** [FUNC-REQ-009](functional.md#func-req-009)  
+**Title:** Verification field for requirements checked automatically without a test  
+**Status:** validated  
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
-**Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `inspection`, `build`, `bench` or `bench (pending)`, optionally followed by `—` and details. Without the line, verification is `test`. The `requirement-analyst` sets it when no native test can observe the behaviour (registers, sleep modes, wiring, measurements) and states why in the details.
+**Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `build` or `inspection`, optionally followed by `—` and details. Without the line, verification is `test`. The `requirement-analyst` sets `build` or `inspection` when an automatic check that is not a test (the compilation, an inspection of the build output) verifies the behaviour, and states which check in the details. A manual hardware check is not a verification value: it is a bench sheet ([FUNC-TEST-007](functional.md#func-test-007)).
 
 ### FUNC-REQ-009
 **Title:** A requirement is a specification, not a plan  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-004](functional.md#func-req-004)  
-**Description:** When challenging a draft, the `requirement-analyst` checks that the requirement is observable from outside the unit, survives a refactor (it names no class, method, file or register, except a boundary interface), states its reason, and can be verified on its own. It moves the how (classes, helpers, registers, file layout) to `docs/architecture.md`. It writes no test information in a requirement: no `Verification:`, `Test:` or `Verified by` line, no test or bench status; input → output examples stay, under `Examples:`. It proposes no TECH requirement that only names the code behind another requirement: the tests of a helper are tagged with the requirement whose behaviour uses it.
+**Description:** When challenging a draft, the `requirement-analyst` checks that the requirement is observable from outside the unit, survives a refactor (it names no class, method, file or register, except a boundary interface), states its reason, and can be verified on its own. It moves the how (classes, helpers, registers, file layout) to `docs/architecture.md`. It writes no test information in a requirement: no `Test:`, `Verified by` or `Acceptance:` line, no test or bench status; the only exception is the `**Verification:**` line of [FUNC-REQ-008](functional.md#func-req-008). Input → output examples stay, under `Examples:`. It proposes no TECH requirement that only names the code behind another requirement: the tests of a helper are tagged with the requirement whose behaviour uses it.
 
 ---
 
@@ -191,16 +190,15 @@
 
 ### FUNC-TEST-006
 **Title:** NO NATIVE TEST route for requirements no test can observe  
-**Status:** deprecated  
-**Superseded by:** [FUNC-TEST-007](functional.md#func-test-007)  
+**Status:** validated  
 **Dependencies:** [FUNC-REQ-008](functional.md#func-req-008), [FUNC-ORCH-003](functional.md#func-orch-003)  
-**Description:** When the requirement's `**Verification:**` is not `test`, `test-builder` writes and commits no test and emits `NO NATIVE TEST: <reason>`. The orchestrator then dispatches `code-builder` (Phase 5) with the reason, and the implementation commit body carries it as `No test: <reason>` (for example "No test: AVR registers, verified by inspection and the AVR builds"). When verification is `test`, `test-builder` never emits this signal.
+**Description:** When the requirement's `**Verification:**` is `build` or `inspection`, `test-builder` writes and commits no test and emits `NO NATIVE TEST: <reason>`. The orchestrator then dispatches `code-builder` (Phase 5) with the reason, and the implementation commit body carries it as `No test: <reason>` (for example "No test: AVR registers, verified by inspection and the AVR builds"). When verification is `test`, `test-builder` never emits this signal.
 
 ### FUNC-TEST-007
 **Title:** Bench sheet for behaviour no software test can observe  
 **Status:** validated  
 **Dependencies:** [FUNC-TEST-002](functional.md#func-test-002), [CONF-BENCH-001](configuration.md#conf-bench-001)  
-**Description:** When no software test can observe the behaviour (registers, sleep modes, wiring, measurements), `test-builder` writes a bench sheet at the configured path instead of a test, from the template of `references/formats.md`: one `<!-- @req <ID> -->` line per requirement covered at the top, then the requirement link, Equipment, Setup, Steps, Pass criteria and a Results table with one row per release (`Date | Release (tag / commit) | measurements | Pass | By | Notes`). It adds the sheet to `bring-up.md`, the release checklist next to the sheets that gives their run order, commits both as `test(<ID>):` and emits `TESTS COMMITTED`. Bench sheets are run by hand before each release: `code-builder` does not run them.
+**Description:** When the behaviour can only be checked by hand on the hardware (wiring, measurements, sleep current), and neither a software test nor a `build` or `inspection` verification ([FUNC-REQ-008](functional.md#func-req-008)) can observe it, `test-builder` writes a bench sheet at the configured path instead of a test, from the template of `references/formats.md`: one `<!-- @req <ID> -->` line per requirement covered at the top, then the requirement link, Equipment, Setup, Steps, Pass criteria and a Results table with one row per release (`Date | Release (tag / commit) | measurements | Pass | By | Notes`). It adds the sheet to `bring-up.md`, the release checklist next to the sheets that gives their run order, commits both as `test(<ID>):` and emits `TESTS COMMITTED`. Bench sheets are run by hand before each release: `code-builder` does not run them.
 
 ---
 
@@ -268,7 +266,7 @@
 **Title:** C2 check — requirement precision and testability  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-coherence` verifies that each requirement is precise enough to be testable (no vague terms such as "handle", "optimize" without measurable criteria). Any imprecise requirement generates a C2 finding. So does, in any requirement, a test-information sentence or field (`Verification:`, `Test:`, `Verified by`, `Acceptance:`), and a TECH requirement that only names the code behind another requirement ([FUNC-REQ-009](functional.md#func-req-009)).
+**Description:** `audit-coherence` verifies that each requirement is precise enough to be testable (no vague terms such as "handle", "optimize" without measurable criteria). Any imprecise requirement generates a C2 finding. So does, in any requirement, a test-information sentence or field (`Test:`, `Verified by`, `Acceptance:`, a `Verification:` value other than `test`, `build` or `inspection`), and a TECH requirement that only names the code behind another requirement ([FUNC-REQ-009](functional.md#func-req-009)).
 
 ### FUNC-AUDIT-005
 **Title:** C3 check — dependency validity  
@@ -292,7 +290,7 @@
 **Title:** T1 check — test coverage per requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-traceability` verifies that every `validated` requirement is covered by a test file carrying its tag: a software test, or a bench sheet ([FUNC-TEST-007](functional.md#func-test-007)). Any requirement without one generates a T1 finding. One `info` entry lists the bench sheets with no passing row (`Pass` is `yes` or `✅`) for the latest release tag, or with no passing row at all when the project has no tag. Bench results never generate a finding: they do not block a push.
+**Description:** `audit-traceability` verifies that every `validated` requirement is covered by a test file carrying its tag: a software test, or a bench sheet ([FUNC-TEST-007](functional.md#func-test-007)). Any requirement without one generates a T1 finding, unless its `**Verification:**` ([FUNC-REQ-008](functional.md#func-req-008)) is `build` or `inspection`: such requirements are reported as `info`. One `info` entry lists the bench sheets with no passing row (`Pass` is `yes` or `✅`) for the latest release tag, or with no passing row at all when the project has no tag. Bench results never generate a finding: they do not block a push.
 
 ### FUNC-AUDIT-009
 **Title:** T2 check — tag validity in tests  
@@ -304,7 +302,7 @@
 **Title:** T3 check — implementation coverage  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-008](functional.md#func-audit-008)  
-**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A tag-only `test(ID):` commit, whose diff only adds lines carrying the tagging convention and removes none (tags backfilled on existing tests), is not a test commit awaiting implementation: T3 does not flag it.
+**Description:** `audit-traceability` verifies that every requirement with tests also has a corresponding implementation commit (`feat/tech/perf/ui/conf`(ID):). Any requirement with tests but no implementation generates a T3 finding. A requirement whose verification is `build` or `inspection` needs only the implementation commit. A `test(ID):` commit that adds or changes a bench sheet is the test commit of that requirement. A tag-only `test(ID):` commit, whose diff only adds lines carrying the tagging convention and removes none (tags backfilled on existing tests), is not a test commit awaiting implementation: T3 does not flag it.
 
 ### FUNC-AUDIT-011
 **Title:** T4 check — plan file coverage  
