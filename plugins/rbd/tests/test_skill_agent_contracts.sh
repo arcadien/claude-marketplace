@@ -110,6 +110,8 @@ test_requirement_lifecycle() {
   # @req: FUNC-REQ-005
   # @req: FUNC-ORCH-006
   # @req: FUNC-REQ-009
+  # @req: FUNC-REQ-008
+  # @req: FUNC-TEST-006
   # @req: FUNC-REQ-007
   # @req: FUNC-AUDIT-004
   # Given the workflow agents and the format reference
@@ -131,18 +133,25 @@ FUNC-REQ-009|agents/requirement-analyst.md|the how .* goes to .docs/architecture
 FUNC-REQ-009|agents/requirement-analyst.md|no test information
 FUNC-REQ-009|agents/requirement-analyst.md|Examples:
 FUNC-REQ-009|agents/requirement-analyst.md|no TECH requirement per helper
-FUNC-REQ-009|agents/requirement-analyst.md|!\*\*Verification:\*\*
-FUNC-REQ-009|skills/rbd/references/formats.md|!\*\*Verification:\*\*
 FUNC-REQ-009|skills/rbd/references/formats.md|\*\*Examples:\*\*
-FUNC-REQ-009|agents/audit-traceability.md|!is not .test.
-FUNC-REQ-009|skills/rbd-audit/references/checklist.md|!is not .test.
-FUNC-REQ-009|skills/rbd-audit/SKILL.md|!verified by inspection
+FUNC-REQ-008|skills/rbd/references/formats.md|\*\*Verification:\*\* build
+FUNC-REQ-008|skills/rbd/references/formats.md|!bench \(pending\)
+FUNC-REQ-008|agents/requirement-analyst.md|\*\*Verification:\*\* build
+FUNC-REQ-008|agents/requirement-analyst.md|!bench \(pending\)
+FUNC-REQ-008|agents/audit-traceability.md|Verification:.* is .build. or .inspection.
+FUNC-REQ-008|agents/audit-traceability.md|!bench \(pending\)
+FUNC-REQ-008|skills/rbd-audit/references/checklist.md|Verification:.* is .build. or .inspection.
+FUNC-REQ-008|skills/rbd-audit/references/checklist.md|!bench \(pending\)
+FUNC-TEST-006|agents/test-builder.md|NO NATIVE TEST: <reason>
+FUNC-TEST-006|skills/rbd/SKILL.md|NO NATIVE TEST: <reason>
+FUNC-TEST-006|agents/code-builder.md|No test: <reason>
 FUNC-REQ-007|skills/rbd/references/formats.md|\*\*Superseded by:\*\*
 FUNC-REQ-007|agents/requirement-analyst.md|\*\*Superseded by:\*\*
 FUNC-AUDIT-004|agents/audit-coherence.md|Verified by
 FUNC-AUDIT-004|agents/audit-coherence.md|Acceptance:
 FUNC-AUDIT-004|agents/audit-coherence.md|only names the code behind another requirement
 FUNC-AUDIT-004|skills/rbd-audit/references/checklist.md|Verified by
+FUNC-AUDIT-004|agents/audit-coherence.md|other than .test., .build. or .inspection.
 CASES
 }
 
@@ -150,7 +159,6 @@ test_bench_sheets() {
   echo "test_bench_sheets"
   # @req: FUNC-TEST-007
   # @req: CONF-BENCH-001
-  # @req: FUNC-ORCH-003
   # @req: FUNC-AUDIT-008
   # @req: FUNC-AUDIT-009
   # @req: FUNC-AUDIT-010
@@ -159,17 +167,14 @@ test_bench_sheets() {
   # @req: FUNC-RELEASE-001
   # Given the workflow, audit and metrics instruction files
   # When they are searched for each rule about bench sheets
-  # Then every rule is stated, and the NO NATIVE TEST route is gone
+  # Then every rule is stated
   check_cases <<'CASES'
 FUNC-TEST-007|agents/test-builder.md|<!-- @req <ID> -->
 FUNC-TEST-007|agents/test-builder.md|bring-up\.md
-FUNC-TEST-007|agents/test-builder.md|!NO NATIVE TEST
 FUNC-TEST-007|agents/code-builder.md|does not run bench sheets
-FUNC-TEST-007|agents/code-builder.md|!NO NATIVE TEST
 FUNC-TEST-007|skills/rbd/references/formats.md|## Bench sheet
 FUNC-TEST-007|skills/rbd/references/formats.md|Date . Release \(tag / commit\) . measurements . Pass . By . Notes
 FUNC-TEST-007|skills/rbd/references/formats.md|release checklist
-FUNC-ORCH-003|skills/rbd/SKILL.md|!NO NATIVE TEST
 CONF-BENCH-001|skills/rbd/references/formats.md|bench_sheets: "tests/bench/\{id\}\.md"
 CONF-BENCH-001|agents/test-builder.md|bench_sheets
 CONF-BENCH-001|agents/audit-traceability.md|bench_sheets
@@ -180,6 +185,7 @@ FUNC-AUDIT-008|skills/rbd-audit/references/checklist.md|tagged bench sheet cover
 FUNC-AUDIT-009|agents/audit-traceability.md|sheet tag citing a .deprecated.
 FUNC-AUDIT-010|agents/audit-traceability.md|adds or changes a bench sheet
 FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|adds or changes a bench sheet
+FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
 FUNC-AUDIT-013|agents/audit-traceability.md|bench sheet without a .<!-- @req
 FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|\(N bench\)
 FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|"bench":
