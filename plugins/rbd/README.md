@@ -72,7 +72,7 @@ flowchart TD
 
 | Skill | Invoke | Purpose |
 |-------|--------|---------|
-| `rbd` | `/rbd` | Guided workflow: init, requirement discussion, TDD cycle, pre-push checks |
+| `rbd` | `/rbd` | Guided workflow: init, requirement discussion, TDD cycle, pre-push checks, `/rbd release <tag>` bench gate |
 | `rbd-audit` | `/rbd-audit` | Read-only audit with two parallel agents: changes since the last report, or `--full` |
 | `rbd-review` | `/rbd-review` | MR/PR review from a requirements perspective |
 | `rbd-links` | `/rbd-links` | Link every cited requirement ID to its heading; `--check` lists broken or missing links |
@@ -85,6 +85,7 @@ flowchart TD
 4. Before pushing: the pre-push hook runs automatically, or run Phase 6 (pre-push check) manually via `/rbd`.
 5. For an audit: `/rbd-audit` checks what changed since the last report; `/rbd-audit --full` checks the whole repository.
 6. Before merging a branch: `/rbd-review`.
+7. Before tagging a release: `/rbd release <tag>` checks every bench sheet has a passing row for that release.
 
 ## Project Structure Created on Init
 
@@ -94,6 +95,7 @@ flowchart TD
                       # optional extra_commit_prefixes: [hw] (accepted by the pre-push hook)
                       # optional draft_ok_prefixes: [test] (may cite draft requirements)
                       # optional rules: { non_technical_without_code: true } (audit C2)
+                      # optional test_tagging.bench_sheets: "tests/bench/{id}.md" (the default)
   plan-files.yml      # workflow files monitored for plan: commit discipline
 
 requirements/
@@ -108,6 +110,10 @@ audits/
   YYYY-MM-DD-audit.md                # timestamped full audit reports
   YYYY-MM-DD-audit-2.md              # second audit of the same day (then -3, ...)
   YYYY-MM-DD-review-<branch>.md      # MR review reports
+
+tests/bench/                         # created when a manual hardware check is needed
+  <ID>.md                            # bench sheet, tagged <!-- @req <ID> -->, one Results row per release
+  bring-up.md                        # release checklist: the order the sheets are run in
 ```
 
 ## Pre-push Hook
@@ -115,7 +121,11 @@ audits/
 - The hook reads the commit log **before** the Bash command runs. A command that rewrites a message
   (`git commit --amend`, `git filter-branch --msg-filter …`) and pushes in the same line is checked on the old
   message: run the rewrite and the push as two separate commands.
+- A commit may cite several IDs (`test(FUNC-A-001,TECH-B-002): …`) or a range (`req(FUNC-X-001..015): …`); every
+  ID is checked.
 - Commits citing a `draft` requirement are blocked, except for the prefixes in `draft_ok_prefixes`.
+- Bench results never block a push: pending bench sheets are `info` in `/rbd-audit`, and only `/rbd release <tag>`
+  waits for them.
 - Tests still tagged with a `draft` ID are a T2 warning of `/rbd-audit`; a `validated` requirement depending on a
   `draft` one is a C3 finding. Re-validate the draft requirement, or remove the tests, their tag or the dependency.
 
