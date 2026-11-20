@@ -11,6 +11,7 @@ id_format:
 test_tagging:
   language: python
   convention: "@pytest.mark.req('{id}')"  # {id} is replaced with the requirement ID at generation time
+  bench_sheets: "tests/bench/{id}.md"     # optional, this is the default: manual hardware checks
 
 linter:
   command: "ruff check ."
@@ -71,19 +72,32 @@ Each category file has a header and one entry per requirement:
 **Status:** draft | validated | deprecated
 **Dependencies:** TECH-DB-001
 **Verification:** test
-**Description:** The system must allow a user to authenticate using a valid email address and
-password combination. On success, a session token is returned. On failure, a clear error message
-is displayed without revealing whether the email or password was wrong.
+**Description:** A user authenticates with a valid email address and password, so that only account
+owners reach their data. On success, a session token is returned. On failure, an error message is
+shown that does not reveal whether the email or the password was wrong.
+**Examples:** `alice@example.com` + right password → token; `alice@example.com` + wrong password →
+"invalid credentials"; unknown email → "invalid credentials".
 ```
 
-`**Verification:**` is optional; without it, verification is `test`. Values: `test`, `inspection`, `build`, `bench`,
-`bench (pending)`, optionally followed by `—` and details. Use a value other than `test` only when no native test can
-observe the behaviour (registers, sleep modes, wiring, measurements), for example
-`**Verification:** inspection — AVR registers, checked in the disassembly and the AVR builds`.
-The audit does not require a test for such requirements and lists the `bench (pending)` ones.
+A requirement is a specification, not a plan: it is observable from outside the unit, names no class, method, file or
+register (except a boundary interface), states its reason and is verifiable on its own. It carries no test
+information (no `Test:`, `Verified by` or `Acceptance:` line, no test or bench status): tests and bench sheets point
+to the requirement with their tag, not the other way round. `**Examples:**` (input → output) is optional.
+
+`**Verification:**` is optional; without it, verification is `test`. The other values are `build` and `inspection`,
+optionally followed by `—` and details: an automatic check that is not a test, for example
+`**Verification:** build — AVR registers, checked in the disassembly and the AVR builds`.
+The audit does not require a test for such requirements. A manual hardware check is no verification value: it is a
+bench sheet (below).
 
 `deprecated` is used only when a requirement was historically validated and implemented, then later
 superseded. Requirements split before any commit are deleted without trace — they have no history.
+A deprecated requirement replaced by another one carries an optional line after `**Status:**`:
+
+```markdown
+**Status:** deprecated
+**Superseded by:** [FUNC-AUTH-LOGIN-002](functional.md#func-auth-login-002)
+```
 
 ## audits/exclusions.yml
 
@@ -200,6 +214,58 @@ test.each(cases)("login error: $id — req:FUNC-AUTH-LOGIN-001", async ({ email,
 ```
 
 Adding a new edge case = adding one row to the table. No new function, no duplication.
+
+## Bench sheet
+
+When a behaviour can only be checked by hand on the hardware (wiring, measurements, sleep current), its test file is a
+bench sheet at `test_tagging.bench_sheets` (default `tests/bench/<ID>.md`), run by hand before each release. Its tag is one
+`<!-- @req <ID> -->` line per requirement covered, at the top, whatever the test tagging convention.
+
+```markdown
+<!-- @req TECH-HAL-004 -->
+# Bench — TECH-HAL-004 sleep current
+
+**Requirement:** [TECH-HAL-004](../../requirements/technical.md#tech-hal-004)
+
+## Equipment
+
+- Multimeter in µA range, in series with the battery
+
+## Setup
+
+1. Flash the release build; disconnect the programmer.
+
+## Steps
+
+1. Power on, wait for the first transmission, then 10 s.
+2. Read the current.
+
+## Pass criteria
+
+- Sleep current below 5 µA.
+
+## Results
+
+| Date | Release (tag / commit) | measurements | Pass | By | Notes |
+|------|------------------------|--------------|------|----|-------|
+| 2026-11-20 | v1.2.0 | 3.8 µA | ✅ | AL | |
+```
+
+Add one Results row per release run. `Pass` is `yes`/`✅` or `no`/`❌`.
+
+### bring-up.md
+
+`bring-up.md`, next to the sheets, is the release checklist: the order in which the sheets are run before each
+release. `/rbd release <tag>` follows it.
+
+```markdown
+# Bench bring-up — release checklist
+
+Run these sheets in order before tagging a release; record one Results row per sheet for the release.
+
+1. [TECH-HAL-004 sleep current](TECH-HAL-004.md)
+2. [FUNC-RADIO-002 transmission range](FUNC-RADIO-002.md)
+```
 
 ## docs/architecture.md
 

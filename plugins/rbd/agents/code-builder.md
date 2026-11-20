@@ -38,8 +38,11 @@ You receive:
 - Possibly `resume mode` with a list of modified production files: a previous run was interrupted before its
   commit. Keep those changes, check them against the tests and the architecture (Steps 1–2), complete what is
   missing, then go on from Step 6. Do not start over.
-- Or, instead of test files, a `NO NATIVE TEST: <reason>` from test-builder: no native test can observe this
-  requirement. Implement from the requirement text; still run the full suite and the linter.
+- Or, instead of test files, a `NO NATIVE TEST: <reason>` from test-builder: the requirement is verified by the build
+  or by inspection. Implement from the requirement text; still run the full suite and the linter.
+- Possibly a bench sheet (see `references/formats.md`) instead of, or next to, software tests: that behaviour is
+  checked by hand on the hardware. Implement from the requirement text and the sheet's pass criteria. code-builder
+  does not run bench sheets: they are run by hand before each release. Still run the full suite and the linter.
 
 ---
 

@@ -76,6 +76,8 @@ Provide the agent with:
 - The validated requirement ID and its full description.
 - The path to `.rbd/config.yml`.
 
+For a manual hardware check, the committed test file is a bench sheet (see `references/formats.md`).
+
 The agent handles everything: test design, GWT structure, parametrized test conventions, user review, size check, hard gate (tag presence on every function), lint, and commit.
 
 **Route based on the agent's return signal:**
@@ -83,7 +85,7 @@ The agent handles everything: test design, GWT structure, parametrized test conv
 | Signal | Next action |
 |--------|-------------|
 | `TESTS COMMITTED: test(<ID>): ...` | Proceed to Phase 5. |
-| `NO NATIVE TEST: <reason>` | The requirement's verification is not `test`. Proceed to Phase 5 and give code-builder the reason. |
+| `NO NATIVE TEST: <reason>` | The requirement's verification is `build` or `inspection`. Proceed to Phase 5 and give code-builder the reason. |
 | `TOO_LARGE: <reason>` | The requirement is too large to test coherently. Re-dispatch requirement-analyst for splitting. Provide the `TOO_LARGE` reason as context so the agent knows where to split. |
 
 ---
@@ -149,6 +151,22 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
      to the default branch or delete its base branch so the forge retargets it; otherwise it merges into a stale branch.
 4. Report all issues. Block the push if any check in steps 1–2 fails.
 5. If all checks pass → confirm and allow the push.
+
+---
+
+## Release — `/rbd release <tag>`
+
+Bench sheets are run by hand, once per release. Before creating a release tag:
+
+1. Read the bench sheets (`test_tagging.bench_sheets` in `.rbd/config.yml`, default `tests/bench/*.md`) in the
+   order of `bring-up.md`, then any sheet it does not list.
+2. For each sheet, find a Results row whose `Release (tag / commit)` is `<tag>` or the candidate commit
+   (`git rev-parse --short HEAD`, or the full hash) and whose `Pass` is `yes` or `✅`.
+3. Print the list in that order, each sheet with its passing row or `missing`.
+4. If a sheet is missing → stop: list the sheets still to run and creates no tag.
+5. Otherwise run `git tag <tag>` on the candidate commit. Pushing the tag stays with the user.
+
+Without bench sheets, the gate passes. Outside this step, a missing bench result blocks nothing.
 
 ---
 
