@@ -112,13 +112,20 @@
 **Title:** Requirement deletion  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
-**Description:** The `requirement-analyst` agent handles deletion of an existing requirement. It emits the signal `REQUIREMENT DELETED: <ID>`. The workflow cycle ends and the user is informed.
+**Description:** The `requirement-analyst` agent handles deletion of an existing requirement. It emits the signal `REQUIREMENT DELETED: <ID>`. The workflow cycle ends and the user is informed. When another requirement replaces the deprecated one, the deprecated entry carries a `**Superseded by:**` line linking to the replacement, checked like any requirement link ([FUNC-AUDIT-021](functional.md#func-audit-021)).
 
 ### FUNC-REQ-008
 **Title:** Verification field for requirements without native tests  
-**Status:** validated  
+**Status:** deprecated  
+**Superseded by:** [FUNC-REQ-009](functional.md#func-req-009)  
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
 **Description:** A requirement may carry a `**Verification:**` line after `**Dependencies:**`, with one of `test`, `inspection`, `build`, `bench` or `bench (pending)`, optionally followed by `—` and details. Without the line, verification is `test`. The `requirement-analyst` sets it when no native test can observe the behaviour (registers, sleep modes, wiring, measurements) and states why in the details.
+
+### FUNC-REQ-009
+**Title:** A requirement is a specification, not a plan  
+**Status:** validated  
+**Dependencies:** [FUNC-REQ-004](functional.md#func-req-004)  
+**Description:** When challenging a draft, the `requirement-analyst` checks that the requirement is observable from outside the unit, survives a refactor (it names no class, method, file or register, except a boundary interface), states its reason, and can be verified on its own. It moves the how (classes, helpers, registers, file layout) to `docs/architecture.md`. It writes no test information in a requirement: no `Verification:`, `Test:` or `Verified by` line, no test or bench status; input → output examples stay, under `Examples:`. It proposes no TECH requirement that only names the code behind another requirement: the tests of a helper are tagged with the requirement whose behaviour uses it.
 
 ---
 
@@ -254,7 +261,7 @@
 **Title:** C2 check — requirement precision and testability  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-coherence` verifies that each requirement is precise enough to be testable (no vague terms such as "handle", "optimize" without measurable criteria). Any imprecise requirement generates a C2 finding.
+**Description:** `audit-coherence` verifies that each requirement is precise enough to be testable (no vague terms such as "handle", "optimize" without measurable criteria). Any imprecise requirement generates a C2 finding. So does, in any requirement, a test-information sentence or field (`Verification:`, `Test:`, `Verified by`, `Acceptance:`), and a TECH requirement that only names the code behind another requirement ([FUNC-REQ-009](functional.md#func-req-009)).
 
 ### FUNC-AUDIT-005
 **Title:** C3 check — dependency validity  
