@@ -8,7 +8,7 @@
 **Title:** Phase detection at invocation  
 **Status:** validated  
 **Dependencies:** [CONF-IDLVL-001](configuration.md#conf-idlvl-001)  
-**Description:** At every `/rbd` skill invocation, the system checks whether `.rbd/config.yml` exists. If absent, it starts Phase 1 (Init). If present, it determines the current phase from the last commit, pending files, and the user's stated intent.
+**Description:** At every `/rbd` skill invocation, the system checks whether `.rbd/config.yml` exists. If absent, it starts Phase 1 (Init). If present, a user intent that names a new requirement, or another requirement than the one in progress, starts Phase 2. Otherwise it resumes from the last RBD commit of the requirement in progress: after `req(ID)` or `arch(ID)` → Phase 4; after `test(ID)` with no implementation commit for that ID → Phase 5; after the implementation commit → Phase 6. Any other state is ambiguous ([FUNC-ORCH-002](functional.md#func-orch-002)).
 
 ### FUNC-ORCH-002
 **Title:** Ambiguous phase resolution  
@@ -20,13 +20,13 @@
 **Title:** Inter-phase routing via agent return signals  
 **Status:** validated  
 **Dependencies:** [FUNC-ORCH-001](functional.md#func-orch-001)  
-**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `REQUIREMENT DELETED`, `SPLIT REQUIRED`, `TESTS COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `IMPLEMENTATION COMMITTED`, `SCOPE TOO WIDE`, `ARCH MISMATCH`, and `REVIEW PASSED` / `REVIEW FAILED` in Phase 6). The orchestrator contains no business logic.
+**Description:** The orchestrator routes progression between phases solely through agent return signals (`REQUIREMENT VALIDATED`, `REQUIREMENT DELETED`, `SPLIT REQUIRED`, `TESTS COMMITTED`, `TOO_LARGE`, `NO NATIVE TEST`, `IMPLEMENTATION COMMITTED`, `SCOPE TOO WIDE`, `ARCH MISMATCH`, and `REVIEW PASSED` / `REVIEW FAILED` in Phase 6).
 
 ### FUNC-ORCH-004
 **Title:** Exclusive delegation to specialized agents  
 **Status:** validated  
 **Dependencies:** [FUNC-ORCH-003](functional.md#func-orch-003)  
-**Description:** Each phase is fully delegated to a dedicated agent. The orchestrator provides context (requirement ID, config files, test files) and routes the return signal. It makes no domain decisions.
+**Description:** Each phase is fully delegated to a dedicated agent. The orchestrator provides context (requirement ID, config files, test files) and routes the return signal; that it takes no domain decision is [TECH-AGENT-001](technical.md#tech-agent-001).
 
 ### FUNC-ORCH-005
 **Title:** Orchestrator handles ARCH MISMATCH signal from code-builder  
@@ -48,7 +48,7 @@
 **Title:** Interactive ID format negotiation  
 **Status:** validated  
 **Dependencies:** [CONF-IDLVL-001](configuration.md#conf-idlvl-001)  
-**Description:** During Phase 1, the system asks the user which intermediate levels they want in requirement IDs (e.g. `domain`, `feature`). It displays a resulting example ID for each category (FUNC, TECH, PERF, UI, CONF) and confirms the format with the user.
+**Description:** During Phase 1, the system asks the user which intermediate levels they want in requirement IDs (e.g. `domain`, `feature`). It displays a resulting example ID for each category (FUNC, TECH, PERF, UI, CONF, PLAT) and confirms the format with the user.
 
 ### FUNC-INIT-002
 **Title:** Test framework and language elicitation  
@@ -66,7 +66,7 @@
 **Title:** Creation of all project files and initial commit  
 **Status:** validated  
 **Dependencies:** [FUNC-INIT-001](functional.md#func-init-001), [FUNC-INIT-002](functional.md#func-init-002), [FUNC-INIT-003](functional.md#func-init-003)  
-**Description:** At the end of Phase 1, the system generates and writes: `.rbd/config.yml`, `.rbd/plan-files.yml`, `requirements/functional.md`, `requirements/technical.md`, `requirements/performance.md`, `requirements/ui.md`, `requirements/configuration.md`, `audits/exclusions.yml`. All files are committed with the message `plan: init rbd project`.
+**Description:** At the end of Phase 1, the system generates and writes: `.rbd/config.yml`, `.rbd/plan-files.yml`, `requirements/functional.md`, `requirements/technical.md`, `requirements/performance.md`, `requirements/ui.md`, `requirements/configuration.md`, `requirements/platform.md`, `audits/exclusions.yml`. All files are committed with the message `plan: init rbd project`.
 
 ---
 
@@ -76,13 +76,13 @@
 **Title:** Requirement elicitation via dialogue  
 **Status:** validated  
 **Dependencies:** [FUNC-INIT-004](functional.md#func-init-004)  
-**Description:** The `requirement-analyst` agent engages in dialogue with the user to elicit a new requirement: title, category (FUNC/TECH/PERF/UI/CONF), target component, and full description. It also handles update and deletion of existing requirements.
+**Description:** The `requirement-analyst` agent engages in dialogue with the user to elicit a new requirement: title, category (FUNC/TECH/PERF/UI/CONF/PLAT), target component, and full description. It also handles update and deletion of existing requirements.
 
 ### FUNC-REQ-002
 **Title:** Requirement size challenge  
 **Status:** validated  
 **Dependencies:** [FUNC-REQ-001](functional.md#func-req-001)  
-**Description:** Before validation, the agent challenges any requirement whose scope exceeds what can be tested in a single coherent test suite (e.g. "CRUD for the entire module"). If too large, it emits a `SPLIT REQUIRED` signal with a reason and cleans up the draft.
+**Description:** Before validation, the agent challenges a requirement whose description exceeds 100 words, or that describes two or more behaviours that can be tested independently (e.g. "CRUD for the entire module"). If the user agrees to split, it emits a `SPLIT REQUIRED` signal with a reason and cleans up the draft.
 
 ### FUNC-REQ-003
 **Title:** Semantic overlap challenge  
@@ -167,8 +167,8 @@
 ### FUNC-TEST-002
 **Title:** Mandatory requirement ID tag on every test function  
 **Status:** validated  
-**Dependencies:** [FUNC-TEST-001](functional.md#func-test-001), [TECH-TAG-001](technical.md#tech-tag-001)  
-**Description:** Every test function carries a requirement ID tag using the convention defined in `.rbd/config.yml`. Missing tag is a hard gate: the commit is rejected.
+**Dependencies:** [FUNC-TEST-001](functional.md#func-test-001)  
+**Description:** Every test function carries a requirement ID tag using the convention defined in `.rbd/config.yml`. Missing tag is a hard gate enforced by `test-builder` before every test commit: the commit is rejected. `audit-traceability` re-checks it (T6a, [FUNC-AUDIT-013](functional.md#func-audit-013)).
 
 ### FUNC-TEST-003
 **Title:** Parametrized tests for multiple cases  
@@ -180,7 +180,7 @@
 **Title:** TOO_LARGE signal when requirement is too large to test  
 **Status:** validated  
 **Dependencies:** [FUNC-TEST-001](functional.md#func-test-001)  
-**Description:** If `test-builder` cannot design a coherent test suite for a requirement, it emits the signal `TOO_LARGE: <reason>`. The orchestrator then re-dispatches `requirement-analyst` for splitting, providing the reason as context.
+**Description:** If the tests for a requirement would exceed 400 lines, or cover behaviours that can be tested independently, `test-builder` commits nothing and emits the signal `TOO_LARGE: <reason>`. The orchestrator then re-dispatches `requirement-analyst` for splitting, providing the reason as context.
 
 ### FUNC-TEST-005
 **Title:** Test file linting before commit  
@@ -208,7 +208,7 @@
 **Title:** Design pattern analysis with alternative proposals  
 **Status:** validated  
 **Dependencies:** [FUNC-TEST-005](functional.md#func-test-005)  
-**Description:** The `code-builder` agent reads test files to understand the contracts, then analyzes existing design patterns in the project. For non-trivial choices, it proposes at least two alternatives to the user before implementing.
+**Description:** The `code-builder` agent reads test files to understand the contracts, then analyzes existing design patterns in the project. When more than one approach is viable (a different component, design pattern or public interface), it proposes at least two to the user before implementing.
 
 ### FUNC-IMPL-002
 **Title:** Production code implementation  
@@ -232,7 +232,7 @@
 **Title:** SCOPE TOO WIDE signal when implementation exceeds the requirement  
 **Status:** validated  
 **Dependencies:** [FUNC-IMPL-002](functional.md#func-impl-002)  
-**Description:** If `code-builder` detects that the necessary implementation exceeds the requirement's scope (typically > 500-600 lines or modifications to unplanned components), it emits the signal `SCOPE TOO WIDE: <reason>`. The orchestrator asks the user to split the requirement or justify an exception.
+**Description:** If `code-builder` finds that the implementation exceeds the requirement's scope (more than 600 lines added, or changes to a component that the traceability table of `docs/architecture.md` does not assign to the requirement), it emits the signal `SCOPE TOO WIDE: <reason>`. The orchestrator asks the user to split the requirement or justify an exception.
 
 ### FUNC-IMPL-006
 **Title:** Architectural boundary check before writing any code  
@@ -254,7 +254,7 @@
 **Title:** Parallel dispatch of coherence and traceability agents  
 **Status:** validated  
 **Dependencies:** [PERF-AUDIT-001](performance.md#perf-audit-001)  
-**Description:** The `rbd-audit` skill dispatches `audit-coherence` and `audit-traceability` simultaneously. Both agents run in parallel and each return a JSON array of findings.
+**Description:** The `rbd-audit` skill dispatches `audit-coherence` and `audit-traceability`, each returning a JSON array of findings, and merges both arrays into one report. That they run concurrently is [PERF-AUDIT-001](performance.md#perf-audit-001).
 
 ### FUNC-AUDIT-003
 **Title:** C1 check — semantic overlap between requirements  
@@ -284,7 +284,7 @@
 **Title:** C5 check — architecture coherence  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002)  
-**Description:** `audit-coherence` verifies that each requirement is assigned to an existing component in `docs/architecture.md`. Any requirement without a valid component generates a C5 finding, and so does a traceability row that restates the requirement differently from its current text.
+**Description:** `audit-coherence` verifies that the component each requirement's traceability row assigns in `docs/architecture.md` is responsible for that behaviour. A responsibility mismatch generates a C5 finding, and so does a traceability row that restates the requirement differently from its current text. A missing row is reported by T5 ([FUNC-AUDIT-012](functional.md#func-audit-012)), not by C5.
 
 ### FUNC-AUDIT-008
 **Title:** T1 check — test coverage per requirement  
@@ -372,7 +372,7 @@
 **Title:** R1 check — requirement coverage in commits  
 **Status:** validated  
 **Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** `rbd-review` verifies that every ID referenced in commit prefixes (`feat(ID)`, `tech(ID)`, etc.) corresponds to an existing requirement with status `validated`.
+**Description:** `rbd-review` verifies that every ID referenced in commit prefixes (`feat(ID)`, `tech(ID)`, etc., ranges expanded) corresponds to an existing requirement with a status the pre-push hook accepts ([FUNC-PUSH-002](functional.md#func-push-002)): `validated` or `deprecated`, or also `draft` for the prefixes of [CONF-DRAFT-001](configuration.md#conf-draft-001).
 
 ### FUNC-REVIEW-004
 **Title:** R2 check — uncovered behaviors via inference  
@@ -384,13 +384,13 @@
 **Title:** R3 check — commit prefix consistency  
 **Status:** validated  
 **Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** `rbd-review` verifies that all commits in the MR use valid RBD prefixes (feat/tech/perf/ui/conf/arch/test/plan/req). Any commit without a valid prefix generates an R3 finding.
+**Description:** `rbd-review` verifies that all commits in the MR use a prefix the pre-push hook accepts: those of [TECH-FMT-001](technical.md#tech-fmt-001) and the project's extra prefixes ([CONF-PREFIX-001](configuration.md#conf-prefix-001)). An implementation commit's prefix must match the category of at least one ID it cites (`FUNC` → `feat`, `TECH` → `tech`, `PERF` → `perf`, `UI` → `ui`, `CONF` → `conf`). Any other commit generates an R3 finding.
 
 ### FUNC-REVIEW-006
 **Title:** R4 check — test presence for each implementation commit  
 **Status:** validated  
 **Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** `rbd-review` verifies that every implementation commit (`feat/tech/perf/ui/conf`(ID):) has a corresponding test commit (`test(ID):`) in the MR or in the branch history.
+**Description:** `rbd-review` verifies that every implementation commit (`feat/tech/perf/ui/conf`(ID):) has a corresponding test commit (`test(ID):`, which may add a bench sheet) in the MR or in the branch history, except for a requirement whose `**Verification:**` is `build` or `inspection` ([FUNC-REQ-008](functional.md#func-req-008)).
 
 ### FUNC-REVIEW-007
 **Title:** Review report generation  
@@ -406,7 +406,7 @@
 **Title:** Block push if open audit findings exist  
 **Status:** validated  
 **Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [FUNC-AUDIT-014](functional.md#func-audit-014)  
-**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). Names are ordered by date, then by same-day suffix: `-audit.md` before `-audit-2.md`, and `-audit-2.md` before `-audit-10.md`. If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
+**Description:** Before any `git push`, the hook checks the latest audit report: the last `audits/*-audit*.md` by file name, since reports are named `YYYY-MM-DD-audit.md` (file modification times change on checkout and say nothing). Review reports (`*-review-*.md`) are not audit reports and are ignored. Names are ordered by date, then by same-day suffix: `-audit.md` before `-audit-2.md`, and `-audit-2.md` before `-audit-10.md`. If any findings have status `open`, the push is blocked and the user is informed of the findings to resolve.
 
 ### FUNC-PUSH-002
 **Title:** Commit alignment validation  
@@ -418,7 +418,7 @@
 **Title:** rbd-review safety net trigger when remote MR exists  
 **Status:** validated  
 **Dependencies:** [FUNC-REVIEW-001](functional.md#func-review-001)  
-**Description:** If a remote MR/PR exists for the current branch at push time, Phase 6 of the `rbd` skill triggers `rbd-review` for analysis. The pre-push hook does not: as a command script it cannot run a skill. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped (rbd-review will be triggered at merge time).
+**Description:** If a remote MR/PR exists for the current branch at push time, Phase 6 of the `rbd` skill triggers `rbd-review` for analysis. The pre-push hook does not: as a command script it cannot run a skill. This acts as a safety net for pushes made outside the RBD workflow, ensuring that any code reaching the remote is reviewed against requirements even when the developer did not go through the standard RBD cycle. If no MR exists yet, this step is skipped: the review runs at the first Phase 6 after the MR is opened, or on a manual `/rbd-review`.
 
 ### FUNC-PUSH-004
 **Title:** Pre-push validation state caching via dotfile  
@@ -468,7 +468,7 @@
 **Title:** T7 check — derives_from traceability for PLAT requirements  
 **Status:** validated  
 **Dependencies:** [FUNC-AUDIT-002](functional.md#func-audit-002), [CONF-PLAT-001](configuration.md#conf-plat-001)  
-**Description:** `audit-traceability` verifies that every `PLAT-*` requirement with status `validated` has a `derives_from:` frontmatter field referencing an existing FUNC or TECH requirement with status `validated`. Any PLAT requirement missing this field, or referencing a non-existent or deprecated ID, generates a T7 finding (traceability violation).
+**Description:** `audit-traceability` verifies that every `PLAT-*` requirement with status `validated` has a `derives_from:` line in its requirement block referencing an existing FUNC or TECH requirement with status `validated`. Any PLAT requirement missing this line, or referencing a non-existent or deprecated ID, generates a T7 finding (traceability violation).
 
 ### FUNC-AUDIT-021
 **Title:** T8 check — requirement ID links  
