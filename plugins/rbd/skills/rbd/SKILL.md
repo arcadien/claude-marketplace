@@ -19,7 +19,7 @@ On invocation:
    Phase 2. Otherwise resume from the last RBD commit of the requirement in progress:
    - after `req(ID):` or `arch(ID):` → Phase 4;
    - after `test(ID):` with no implementation commit for that ID → Phase 5;
-   - after the implementation commit (`feat/tech/perf/ui/conf(ID):`) → Phase 6.
+   - after the implementation commit (`feat/tech/perf/ui/conf/plat(ID):`) → Phase 6.
 4. If the phase is ambiguous, ask the user what they want to work on.
 
 ---
@@ -143,7 +143,7 @@ Run before any `git push`. The pre-push hook runs steps 1 and 2 mechanically on 
 
 1. Read the latest report in `audits/`. If any finding has status `open` → block the push. Tell the user which findings must be resolved first.
 2. **Commit alignment check (mechanical):** List all commits on the current branch not present on the base branch. Verify:
-   - Every `req/test/feat/tech/perf/ui/conf/arch` commit follows the `prefix(ID):` format.
+   - Every `req/test/feat/tech/perf/ui/conf/plat/arch` commit follows the `prefix(ID):` format.
    - Every referenced ID exists in `requirements/*.md` with status `validated` (or `deprecated`); `req` commits are not looked up.
    - Merge commits are skipped.
    - No code file was modified outside of a properly prefixed commit.

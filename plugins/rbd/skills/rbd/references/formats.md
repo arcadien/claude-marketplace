@@ -69,16 +69,25 @@ Each category file has a header and one entry per requirement:
 # Functional Requirements
 
 ### FUNC-AUTH-LOGIN-001
+
 **Title:** User can log in with email and password
+
 **Status:** draft | validated | deprecated
+
 **Dependencies:** TECH-DB-001
+
 **Verification:** test
+
 **Description:** A user authenticates with a valid email address and password, so that only account
 owners reach their data. On success, a session token is returned. On failure, an error message is
 shown that does not reveal whether the email or the password was wrong.
+
 **Examples:** `alice@example.com` + right password → token; `alice@example.com` + wrong password →
 "invalid credentials"; unknown email → "invalid credentials".
 ```
+
+Put a blank line between fields, so each renders as its own paragraph; end a field line with neither trailing spaces
+nor `\`. Readers find a field anywhere between the `###` heading and the next heading.
 
 A requirement is a specification, not a plan: it is observable from outside the unit, names no class, method, file or
 register (except a boundary interface), states its reason and is verifiable on its own. It carries no test
@@ -97,6 +106,7 @@ A deprecated requirement replaced by another one carries an optional line after 
 
 ```markdown
 **Status:** deprecated
+
 **Superseded by:** [FUNC-AUTH-LOGIN-002](functional.md#func-auth-login-002)
 ```
 
@@ -121,6 +131,7 @@ tech(TECH-DB-001): implement connection pooling
 perf(PERF-API-001): optimize query response time
 ui(UI-FORM-001): implement login form
 conf(CONF-HTTP-TIMEOUT-001): set HTTP request timeout to 30s
+plat(PLAT-COMM-001): implement the MQTT transport on the ESP32 Wi-Fi stack
 arch(FUNC-AUTH-001): add AuthService and IUserRepository to component diagram
 plan: add Jest/TypeScript tagging support to rbd config
 
