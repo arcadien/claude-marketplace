@@ -37,7 +37,7 @@
 **Title:** Non-plan commits must follow the prefix(ID): format  
 **Status:** validated  
 **Dependencies:** none  
-**Description:** Every commit that modifies requirements, tests, production code, or architecture must follow the format `prefix(ID): <description>` where `prefix` is one of: req, test, feat, tech, perf, ui, conf, arch. Commits outside the RBD cycle use `plan`, `chore`, `fix`, `docs`, `style` or `refactor` (or an extra prefix of [CONF-PREFIX-001](configuration.md#conf-prefix-001)), which need no requirement ID.
+**Description:** Every commit that modifies requirements, tests, production code, or architecture must follow the format `prefix(ID): <description>` where `prefix` is one of: req, test, feat, tech, perf, ui, conf, plat, arch. Commits outside the RBD cycle use `plan`, `chore`, `fix`, `docs`, `style` or `refactor` (or an extra prefix of [CONF-PREFIX-001](configuration.md#conf-prefix-001)), which need no requirement ID.
 
 ### TECH-AUDIT-001
 **Title:** Audit agents are strictly read-only  
