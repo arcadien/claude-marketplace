@@ -1,6 +1,6 @@
 # Architecture — RBD Plugin
 
-Last updated: 2026-11-20 — triggering requirement: [FUNC-REVIEW-005](../requirements/functional.md#func-review-005)
+Last updated: 2026-11-23 — triggering requirement: [UI-DOC-003](../requirements/ui.md#ui-doc-003)
 
 ---
 
@@ -171,7 +171,7 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-AUDIT-007](../requirements/functional.md#func-audit-007) | C5 check — architecture coherence | `audit-coherence` |
 | [FUNC-AUDIT-008](../requirements/functional.md#func-audit-008) | T1 check — coverage by a test or a bench sheet | `audit-traceability` |
 | [FUNC-AUDIT-009](../requirements/functional.md#func-audit-009) | T2 check — tag validity in tests and bench sheets | `audit-traceability` |
-| [FUNC-AUDIT-010](../requirements/functional.md#func-audit-010) | T3 check — implementation coverage | `audit-traceability` |
+| [FUNC-AUDIT-010](../requirements/functional.md#func-audit-010) | T3 check — implementation coverage, Superseded by followed | `audit-traceability` |
 | [FUNC-AUDIT-011](../requirements/functional.md#func-audit-011) | T4 check — plan file coverage | `audit-traceability` |
 | [FUNC-AUDIT-012](../requirements/functional.md#func-audit-012) | T5 check — architecture document currency | `audit-traceability` |
 | [FUNC-AUDIT-013](../requirements/functional.md#func-audit-013) | T6 check — test structure conventions, bench sheet tag | `audit-traceability` |
@@ -197,7 +197,7 @@ If a future requirement introduces a component that depends on an external servi
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
 | [TECH-SEP-002](../requirements/technical.md#tech-sep-002) | code-builder must not modify test files | `code-builder` |
 | [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate (deprecated, superseded by [FUNC-TEST-002](../requirements/functional.md#func-test-002)) | — |
-| [TECH-FMT-001](../requirements/technical.md#tech-fmt-001) | RBD-cycle commits follow prefix(ID):; plan, chore, fix, docs, style, refactor need no ID | `pre-push hook`, `rbd-review`, `test-builder`, `code-builder` |
+| [TECH-FMT-001](../requirements/technical.md#tech-fmt-001) | RBD-cycle commits follow prefix(ID): (plat for PLAT); plan, chore, fix, docs, style, refactor need no ID | `pre-push hook`, `rbd-review`, `test-builder`, `code-builder` |
 | [TECH-AUDIT-001](../requirements/technical.md#tech-audit-001) | Audit agents are strictly read-only | `audit-coherence`, `audit-traceability` |
 | [TECH-AGENT-001](../requirements/technical.md#tech-agent-001) | Each phase is delegated to a dedicated agent | `rbd` |
 | [CONF-IDLVL-001](../requirements/configuration.md#conf-idlvl-001) | Configurable intermediate ID classification levels | `init-agent`, `rbd` |
@@ -213,6 +213,7 @@ If a future requirement introduces a component that depends on an external servi
 | [CONF-PLAT-001](../requirements/configuration.md#conf-plat-001) | PLAT as a recognized requirement category in config | `init-agent`, `rbd` |
 | [FUNC-AUDIT-016](../requirements/functional.md#func-audit-016) | T7 check — derives_from traceability for PLAT requirements | `audit-traceability` |
 | [UI-DOC-002](../requirements/ui.md#ui-doc-002) | Markdown hyperlinks for derives_from references in PLAT requirements | `requirement-analyst` |
+| [UI-DOC-003](../requirements/ui.md#ui-doc-003) | Requirement fields as separate paragraphs | `requirement-analyst`, `pre-push hook`, `rbd-links`, `audit-traceability` |
 | [FUNC-METRICS-001](../requirements/functional.md#func-metrics-001) | Coverage metrics report per category and subcategory, bench counted apart | `rbd-metrics` |
 | [FUNC-METRICS-002](../requirements/functional.md#func-metrics-002) | Opt-in req-to-green latency per requirement | `rbd-metrics` |
 | [FUNC-RELEASE-001](../requirements/functional.md#func-release-001) | Release gate on bench sheets | `rbd` |
