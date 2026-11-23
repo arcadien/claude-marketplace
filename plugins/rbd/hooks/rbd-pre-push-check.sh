@@ -81,8 +81,8 @@ RANGE=$(git rev-parse --verify -q "@{u}" 2>/dev/null || printf '%s' "$BASE")
 # extra_commit_prefixes: [hw, ...] in .rbd/config.yml (CONF-PREFIX-001)
 EXTRA=$(sed -n 's/^extra_commit_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
   | tr -d ' "'"'"'\r' | tr ',' '|')
-VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
-NEEDS_REQ='^(req|test|feat|tech|perf|ui|conf|arch)[:(]'
+VALID_PREFIX="^(req|test|feat|tech|perf|ui|conf|plat|arch|plan|chore|fix|docs|style|refactor${EXTRA:+|$EXTRA})[:(]"
+NEEDS_REQ='^(req|test|feat|tech|perf|ui|conf|plat|arch)[:(]'
 # draft_ok_prefixes: [test, ...] in .rbd/config.yml: these prefixes may also cite draft requirements (CONF-DRAFT-001)
 DRAFT_OK=$(sed -n 's/^draft_ok_prefixes:[[:space:]]*\[\(.*\)\].*/\1/p' "$RBD_ROOT/.rbd/config.yml" 2>/dev/null \
   | tr -d ' "'"'"'\r' | tr ',' '|')
