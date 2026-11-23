@@ -9,6 +9,8 @@
 #   TECH-HOOK-002  — the repository being pushed is checked, only when it holds an RBD project
 #   CONF-PREFIX-001 — `extra_commit_prefixes` in .rbd/config.yml are accepted
 #   CONF-DRAFT-001  — prefixes in `draft_ok_prefixes` may cite draft requirements
+#   TECH-FMT-001    — plat(ID) implements a PLAT requirement
+#   UI-DOC-003      — the status is found with a blank line between fields
 #
 # Each case builds a throwaway repository with a bare remote and runs the real
 # hook script on a PreToolUse JSON payload. Exit code 0 = allowed, 2 = blocked.
@@ -137,11 +139,15 @@ test_pushed_commits_not_rechecked() {
 test_requirement_ids_checked() {
   echo "test_requirement_ids_checked"
   # @req: FUNC-PUSH-002
-  # Given requirements FUNC-A-001, FUNC-A-002 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated
+  # @req: TECH-FMT-001
+  # @req: UI-DOC-003
+  # Given requirements FUNC-A-001, FUNC-A-002 and TECH-B-001 validated, FUNC-C-001 still draft, FUNC-D-001 deprecated,
+  # and PLAT-E-001 validated, written with a blank line between fields
   local r; r=$(new_repo ids)
   mkdir -p "$r/requirements"
   printf '%s\n' '### FUNC-A-001' '**Status:** validated  ' '' '### FUNC-A-002' '**Status:** validated  ' '' '### FUNC-C-001' '**Status:** draft  ' '' '### FUNC-D-001' '**Status:** deprecated  ' > "$r/requirements/functional.md"
   printf '%s\n' '### TECH-B-001' '**Title:** t  ' '**Status:** validated  ' > "$r/requirements/technical.md"
+  printf '%s\n' '### PLAT-E-001' '' '**Title:** t' '' '**Status:** validated' '' '**Description:** d' > "$r/requirements/platform.md"
   git -C "$r" add . && git -C "$r" commit -q -m "plan: requirements" && git -C "$r" push -q origin main
   git -C "$r" switch -q -c work
   # When a branch carries one commit with this message
@@ -168,6 +174,8 @@ test_requirement_ids_checked() {
 0|req(FUNC-NEW-001): new requirement, not looked up
 2|req: no id
 0|fix: no id needed
+0|plat(PLAT-E-001): validated PLAT id, fields separated by blank lines
+2|plat: no id
 CASES
 }
 
