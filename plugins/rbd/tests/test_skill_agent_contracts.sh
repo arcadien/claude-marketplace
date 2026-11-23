@@ -196,6 +196,9 @@ FUNC-RELEASE-001|skills/rbd/SKILL.md|at least 7 characters
 FUNC-AUDIT-010|agents/audit-traceability.md|adds or changes a bench sheet
 FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|adds or changes a bench sheet
 FUNC-AUDIT-010|agents/audit-traceability.md|needs only the implementation commit
+FUNC-AUDIT-010|agents/audit-traceability.md|feat/tech/perf/ui/conf/plat
+FUNC-AUDIT-010|agents/audit-traceability.md|Superseded by:.* names
+FUNC-AUDIT-010|skills/rbd-audit/references/checklist.md|Superseded by:.* names
 FUNC-AUDIT-013|agents/audit-traceability.md|bench sheet without a .<!-- @req
 FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|\(N bench\)
 FUNC-METRICS-001|skills/rbd-metrics/SKILL.md|"bench":
@@ -306,6 +309,7 @@ test_audit_review_contracts() {
   # @req: FUNC-PUSH-003
   # @req: TECH-FMT-001
   # @req: UI-DOC-001
+  # @req: UI-DOC-003
   # Given the audit and review instruction files and the hook
   # When they are searched for each rule of the audit and the review
   # Then every rule is stated
@@ -327,6 +331,13 @@ FUNC-REVIEW-004|skills/rbd-review/SKILL.md|### Check R2: Uncovered Behaviors
 FUNC-REVIEW-005|skills/rbd-review/SKILL.md|extra_commit_prefixes
 FUNC-REVIEW-005|skills/rbd-review/SKILL.md|at least one ID it cites
 FUNC-REVIEW-006|skills/rbd-review/SKILL.md|.build. or .inspection.
+FUNC-REVIEW-005|skills/rbd-review/SKILL.md|PLAT-\*. → must use .plat\(ID\)
+FUNC-REVIEW-006|skills/rbd-review/SKILL.md|feat/tech/perf/ui/conf/plat
+TECH-FMT-001|agents/code-builder.md|plat\(<ID>\)
+TECH-FMT-001|skills/rbd/references/formats.md|plat\(PLAT-
+UI-DOC-003|skills/rbd/references/formats.md|blank line between fields
+UI-DOC-003|agents/requirement-analyst.md|blank line between fields
+UI-DOC-003|agents/audit-traceability.md|anywhere between the requirement.s .###. heading
 FUNC-PUSH-003|skills/rbd/SKILL.md|first Phase 6 after the MR is opened
 FUNC-PUSH-003|skills/rbd/SKILL.md|!triggered at merge time
 TECH-FMT-001|hooks/rbd-pre-push-check.sh|plan.chore.fix.docs.style.refactor

@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.18.0] - 2026-11-23
+
+Feedback from tinySensor on 0.17.0.
+
+### Features
+
+- tech(TECH-FMT-001,FUNC-PUSH-002): new `plat(ID):` prefix for PLAT requirements, accepted by the pre-push hook
+  (an ID is required)
+- feat(FUNC-REVIEW-005,FUNC-REVIEW-006): rbd-review maps `PLAT-*` to `plat(ID):` and counts it as an implementation
+- feat(FUNC-AUDIT-010): T3 counts `plat(ID):`, and an implementation commit citing a deprecated requirement whose
+  `**Superseded by:**` names X counts as an implementation commit of X
+- ui(UI-DOC-003): requirement template with a blank line between fields, so each field renders as its own paragraph;
+  requirement-analyst writes that layout; audit agents find a field anywhere in the requirement block
+
+### Tests
+
+- Hook cases for `plat(PLAT-ID)` and a status read after a blank line; contract cases for the three changes
+
+### Configuration
+
+- The plugin's own `requirements/*.md` use the new field layout (whitespace only)
+
 ## [0.17.0] - 2026-11-20
 
 Feedback from tinySensor (PR #94): bench test sheets count as coverage, requirements carry no test information.

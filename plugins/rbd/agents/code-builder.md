@@ -139,6 +139,7 @@ Commit with the correct category prefix (see `references/formats.md`):
 - `perf(<ID>):` — performance requirement (PERF-*)
 - `ui(<ID>):` — UI requirement (UI-*)
 - `conf(<ID>):` — configuration value (CONF-*)
+- `plat(<ID>):` — platform requirement (PLAT-*)
 
 Commit as soon as the linter and the full suite are green. The commit body lists the checks that passed, on one line,
 for example `Checks: lint, build, full test suite (42 passed)`.

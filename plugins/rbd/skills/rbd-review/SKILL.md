@@ -34,7 +34,7 @@ For a merged PR, check that its head commit reached the default branch:
 
 ### Check R1: Requirement Coverage
 
-- Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):`, `arch(ID):`, `test(ID):`).
+- Extract all requirement IDs from commit messages on the branch (patterns: `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):`, `plat(ID):`, `arch(ID):`, `test(ID):`).
 - Expand ID ranges: `FUNC-X-001..015` cites every ID from `FUNC-X-001` to `FUNC-X-015` (same digit count).
 - For each extracted ID: verify the requirement exists in `requirements/*.md` with a status the pre-push hook accepts:
   `validated` or `deprecated`, or also `draft` when the commit prefix is listed in `draft_ok_prefixes` of
@@ -50,8 +50,8 @@ For a merged PR, check that its head commit reached the default branch:
 
 ### Check R3: Commit Prefix Consistency
 
-- Accepted prefixes are those of the pre-push hook: `req`, `test`, `feat`, `tech`, `perf`, `ui`, `conf`, `arch`,
-  `plan`, `chore`, `fix`, `docs`, `style`, `refactor`, and the `extra_commit_prefixes` of `.rbd/config.yml`.
+- Accepted prefixes are those of the pre-push hook: `req`, `test`, `feat`, `tech`, `perf`, `ui`, `conf`, `plat`,
+  `arch`, `plan`, `chore`, `fix`, `docs`, `style`, `refactor`, and the `extra_commit_prefixes` of `.rbd/config.yml`.
   Flag any other prefix.
 - An implementation commit's prefix matches the category of at least one ID it cites:
   - `FUNC-*` → must use `feat(ID):`
@@ -59,13 +59,14 @@ For a merged PR, check that its head commit reached the default branch:
   - `PERF-*` → must use `perf(ID):`
   - `UI-*` → must use `ui(ID):`
   - `CONF-*` → must use `conf(ID):`
+  - `PLAT-*` → must use `plat(ID):`
   - Architecture updates → must use `arch(ID):` where ID is any validated requirement
 - Flag mismatches. A multi-requirement commit is accepted when its prefix matches one of its IDs; note whether
   splitting was feasible.
 
 ### Check R4: Test Presence
 
-- For every `feat/tech/perf/ui/conf` commit, verify there is a corresponding `test(ID):` commit (it may add a bench
+- For every `feat/tech/perf/ui/conf/plat` commit, verify there is a corresponding `test(ID):` commit (it may add a bench
   sheet) on the branch or in its history.
 - A requirement whose `**Verification:**` is `build` or `inspection` needs no test commit.
 - Flag implementation commits without a matching test commit.

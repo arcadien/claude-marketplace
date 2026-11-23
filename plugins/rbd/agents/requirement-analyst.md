@@ -104,7 +104,8 @@ you are about to commit is identical to the validated text, commit without askin
 
 ### Step 5 — Commit
 
-Append or update `requirements/<category>.md` using the format in `references/formats.md`.
+Append or update `requirements/<category>.md` using the format in `references/formats.md`: one field per line, a
+blank line between fields (no trailing spaces, no `\`).
 When an automatic check that is not a test verifies the behaviour (the compilation, an inspection of the build output),
 agree with the user on `**Verification:** build` or `**Verification:** inspection`, and name the check after `—`.
 Otherwise leave it out: verification is then `test`. A manual hardware check is no verification value: test-builder

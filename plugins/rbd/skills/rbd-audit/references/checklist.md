@@ -56,7 +56,8 @@ For every test tag found across all test files:
 
 For each validated requirement (status: `validated`):
 
-- Check git log for a commit matching `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
+- Check git log for a commit matching `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):` or `plat(ID):`.
+  A commit citing a `deprecated` requirement whose `**Superseded by:**` names ID counts too.
 - Check git log for a commit matching `test(ID):`.
 - States to flag:
   - `test(ID):` commit exists but no implementation commit → "tests committed, implementation missing"

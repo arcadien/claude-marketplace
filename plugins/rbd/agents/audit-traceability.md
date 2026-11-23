@@ -27,7 +27,10 @@ You never modify any file. Your sole output is a JSON array of findings.
    `<!-- @req <ID> -->` line.
 2. Read `.rbd/plan-files.yml` to get the list of monitored plan files.
 3. Read `audits/exclusions.yml` to note already-excluded findings.
-4. Read all `requirements/*.md` files (functional, technical, performance, ui, configuration). Build a map of `{ ID → status }` for all requirements.
+4. Read all `requirements/*.md` files (functional, technical, performance, ui, configuration, platform). Build a map of
+   `{ ID → status, superseded by }` for all requirements.
+   Find each field anywhere between the requirement's `###` heading and the next heading: fields may be separated by
+   blank lines.
 
 ## Since-last mode
 
@@ -71,7 +74,10 @@ A commit header may cite an ID range: `FUNC-X-001..015` cites every ID from `FUN
 
 For each requirement with status `validated`:
 
-- Run `git log --oneline <hash>` and grep for `feat(ID):`, `tech(ID):`, `perf(ID):`, `ui(ID):`, or `conf(ID):`.
+- Run `git log --oneline <hash>` and grep for an implementation commit (feat/tech/perf/ui/conf/plat): `feat(ID):`,
+  `tech(ID):`, `perf(ID):`, `ui(ID):`, `conf(ID):` or `plat(ID):`.
+- An implementation commit citing a `deprecated` requirement whose `**Superseded by:**` names ID also counts as an
+  implementation commit of ID.
 - Run `git log --oneline <hash>` and grep for `test(ID):`.
 - Flag incoherent states: test commit without implementation commit, or implementation commit without test commit.
 - A requirement whose `**Verification:**` is `build` or `inspection` needs only the implementation commit.
