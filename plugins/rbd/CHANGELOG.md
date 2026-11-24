@@ -1,5 +1,20 @@
 # Changelog
 
+## [Unreleased]
+
+Feature request from the SPIT audit of 2026-11-24 (finding 10).
+
+### Features
+
+- feat(FUNC-COMMIT-001,TECH-HOOK-003): plan file commit gate: a commit changing a file of `.rbd/plan-files.yml` is
+  refused unless its prefix is `plan:` or accepted for that file in `accepted_prefixes:`; runs as a PreToolUse hook
+  on `git commit -m`, and as a git `commit-msg` hook once installed (see the README)
+
+### Tests
+
+- Prefix cases per plan file through the commit-msg entry, real commits through the shim (merge not checked),
+  PreToolUse commands (`-a`, `git add`, heredoc, `cd`, `-C`, text only, monorepo)
+
 ## [0.18.0] - 2026-11-23
 
 Feedback from tinySensor on 0.17.0.

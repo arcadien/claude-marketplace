@@ -129,6 +129,25 @@ tests/bench/                         # created when a manual hardware check is n
 - Tests still tagged with a `draft` ID are a T2 warning of `/rbd-audit`; a `validated` requirement depending on a
   `draft` one is a C3 finding. Re-validate the draft requirement, or remove the tests, their tag or the dependency.
 
+## Plan File Commit Gate
+
+A commit that changes a file listed in `.rbd/plan-files.yml` is refused unless its subject starts with `plan:` or
+with a prefix that `accepted_prefixes:` allows for that file: the commit-time version of audit check T4. Merge
+commits are not checked.
+
+- Inside Claude Code it runs as a PreToolUse hook on `git commit -m …`, nothing to install. It sees the index, `-a`,
+  and the paths of a `git add` earlier in the same command.
+- To also cover commits made by hand, install the git `commit-msg` hook as a shim calling the plugin script (the
+  shim picks the newest installed version, so it follows plugin updates):
+
+  ```bash
+  cat > .git/hooks/commit-msg <<'EOF'
+  #!/bin/sh
+  exec bash "$(ls -d ~/.claude/plugins/cache/*/rbd/*/hooks/rbd-plan-file-check.sh | sort -V | tail -1)" "$1"
+  EOF
+  chmod +x .git/hooks/commit-msg
+  ```
+
 ## Commit Convention
 
 ```text
