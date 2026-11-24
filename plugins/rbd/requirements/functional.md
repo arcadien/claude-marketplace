@@ -698,6 +698,20 @@
 
 ---
 
+## Commit Control (COMMIT)
+
+### FUNC-COMMIT-001
+
+**Title:** A plan file changes only in a plan: commit or a prefix the plan file list accepts for it
+
+**Status:** validated
+
+**Dependencies:** [FUNC-AUDIT-011](functional.md#func-audit-011), [TECH-HOOK-003](technical.md#tech-hook-003)
+
+**Description:** At commit time, RBD refuses a commit that changes a file listed in `.rbd/plan-files.yml` unless its subject starts with `plan:` or with a prefix that `accepted_prefixes:` of that file allows for it (keys are paths or globs, for example `requirements/*.md: [req]`). The refusal names the files and their allowed prefixes. The list and the prefixes are read from `.rbd/plan-files.yml` and never repeated in the hook. Merge commits are not checked. A commit that changes no plan file is not affected. This is the commit-time counterpart of the T4 check, with the same rules.
+
+---
+
 ## Architecture Analysis (ANALYZE)
 
 ### FUNC-ANALYZE-001

@@ -22,6 +22,16 @@
 
 **Description:** The hook runs its checks on the repository the push targets, not on the session's starting directory. The target is the `<dir>` of `git -C <dir> push`, otherwise of the last `cd <dir>` before `git push`, otherwise the `cwd` of the PreToolUse payload; a relative `<dir>` is resolved against that `cwd`. The RBD project is the directory holding `.rbd/config.yml`: the repository root, or else the first subdirectory with a tracked `.rbd/config.yml` (monorepo, such as a marketplace of plugins); its `requirements/`, `audits/` and config are the ones used by the checks. When the target is not inside a git repository, or the repository holds no RBD project, the push is allowed without any check.
 
+### TECH-HOOK-003
+
+**Title:** Plan file commit gate runs as a PreToolUse hook and as a git commit-msg hook
+
+**Status:** validated
+
+**Dependencies:** [TECH-HOOK-001](technical.md#tech-hook-001), [TECH-HOOK-002](technical.md#tech-hook-002)
+
+**Description:** One script of the plugin, `hooks/rbd-plan-file-check.sh`, holds the check of [FUNC-COMMIT-001](functional.md#func-commit-001) and has two entry points. As a `PreToolUse` hook on Bash tool calls, registered in `hooks/hooks.json`, it acts on commands that run `git commit` with a `-m` message, and only those, detected as `git push` is in [TECH-HOOK-001](technical.md#tech-hook-001); it takes the subject from the message, including a heredoc message, and the files from the index, plus the tracked changes with `-a` and the paths of a `git add` earlier in the same command. The repository is found as in [TECH-HOOK-002](technical.md#tech-hook-002), and a repository with no RBD project is not checked. It blocks with exit code 2 and the reason on stderr. As a git `commit-msg` hook, called with the message file, it takes the subject from that file and the files from the index, and refuses with exit code 1 and the reason on stderr; this entry also covers commits made outside Claude, and each project installs it as a shim calling the plugin script. A commit with no `-m` message seen by the PreToolUse entry is left to the `commit-msg` entry.
+
 ### TECH-SEP-001
 
 **Title:** test-builder must not modify production code
