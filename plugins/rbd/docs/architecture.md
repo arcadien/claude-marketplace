@@ -66,6 +66,11 @@ Last updated: 2026-11-23 — triggering requirement: [UI-DOC-003](../requirement
 │  │  (PUSH)          │  audit + commit checks (command script)      │
 │  └──────────────────┘                                              │
 │                                                                    │
+│  ┌──────────────────┐                                              │
+│  │  plan-file hook  │  (PreToolUse on git commit + commit-msg)     │
+│  │  (COMMIT)        │  plan files need plan: or accepted prefix    │
+│  └──────────────────┘                                              │
+│                                                                    │
 │  Shared data (filesystem)                                          │
 │  ─────────────────────────                                         │
 │  .rbd/config.yml          .rbd/plan-files.yml                      │
@@ -92,6 +97,7 @@ Last updated: 2026-11-23 — triggering requirement: [UI-DOC-003](../requirement
 | `rbd-review` | Skill | Triggered manually by MR/PR number or by `rbd` Phase 6; performs R1–R4 checks; generates review report; emits `REVIEW PASSED` or `REVIEW FAILED` |
 | `rbd-links` | Skill + script | Runs `rbd_links.py`: links every cited requirement ID in `requirements/*.md` and `docs/architecture.md` to its heading; `--check` lists broken or missing links without writing |
 | `pre-push hook` | Hook (PreToolUse) | Intercepts `git push` Bash calls; checks open audit findings; validates commit alignment |
+| `plan-file hook` | Hook (PreToolUse + git commit-msg) | Refuses a commit changing a plan file unless its prefix is `plan:` or accepted for that file in `.rbd/plan-files.yml` |
 | `rbd-arch-analyze` | Skill | Dispatches `arch-analyst`; provides full project context (requirements and `docs/architecture.md` of the target project); confirms output path to the user |
 | `arch-analyst` | Agent | Read-only; infers software components of the target project from requirement files and `docs/architecture.md`; produces `docs/analysis-YYYY-MM-DD.md` containing one global component partitioning diagram (`graph LR` or `classDiagram`) and one per-component diagram (`flowchart` or `stateDiagram`) for each identified software component |
 
@@ -191,9 +197,11 @@ If a future requirement introduces a component that depends on an external servi
 | [FUNC-PUSH-002](../requirements/functional.md#func-push-002) | Commit alignment validation | `pre-push hook` |
 | [FUNC-PUSH-003](../requirements/functional.md#func-push-003) | rbd-review safety net trigger when remote MR exists | `rbd`, `rbd-review` |
 | [FUNC-PUSH-005](../requirements/functional.md#func-push-005) | Warning for stacked PRs | `rbd`, `rbd-review` |
+| [FUNC-COMMIT-001](../requirements/functional.md#func-commit-001) | Plan file changes only under plan: or an accepted prefix | `plan-file hook` |
 | [PERF-AUDIT-001](../requirements/performance.md#perf-audit-001) | Coherence and traceability audit agents run in parallel | `rbd-audit` |
 | [TECH-HOOK-001](../requirements/technical.md#tech-hook-001) | PreToolUse Bash hook for git push interception | `pre-push hook` |
 | [TECH-HOOK-002](../requirements/technical.md#tech-hook-002) | Hook checks the repository being pushed, only an RBD project | `pre-push hook` |
+| [TECH-HOOK-003](../requirements/technical.md#tech-hook-003) | Plan file gate as PreToolUse hook on git commit and as git commit-msg hook | `plan-file hook` |
 | [TECH-SEP-001](../requirements/technical.md#tech-sep-001) | test-builder must not modify production code | `test-builder` |
 | [TECH-SEP-002](../requirements/technical.md#tech-sep-002) | code-builder must not modify test files | `code-builder` |
 | [TECH-TAG-001](../requirements/technical.md#tech-tag-001) | Untagged test functions are a hard gate (deprecated, superseded by [FUNC-TEST-002](../requirements/functional.md#func-test-002)) | — |

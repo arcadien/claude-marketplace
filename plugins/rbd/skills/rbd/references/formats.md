@@ -59,6 +59,8 @@ accepted_prefixes:
   requirements/*.md: [req, plan]
 ```
 
+The same rules are applied at commit time by the plan file commit gate (`hooks/rbd-plan-file-check.sh`).
+
 Update this file whenever a new workflow file is added to the project. The update itself is a `plan:` commit.
 
 ## `requirements/<category>.md`
