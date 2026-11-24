@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.19.0] - 2026-11-24
 
 Feature request from the SPIT audit of 2026-11-24 (finding 10).
 
