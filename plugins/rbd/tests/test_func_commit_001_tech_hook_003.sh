@@ -29,9 +29,10 @@ new_repo() {
   (
     cd "$d" || exit 1
     git config user.email t@t && git config user.name t
-    mkdir -p src "$rbd/requirements" "$rbd/audits"
-    echo a > "$rbd/requirements/functional.md"
-    echo a > "$rbd/audits/exclusions.yml"
+    local files="$rbd"; [ "$rbd" = none ] && files=.
+    mkdir -p src "$files/requirements" "$files/audits"
+    echo a > "$files/requirements/functional.md"
+    echo a > "$files/audits/exclusions.yml"
     echo a > src/main.c
     if [ "$rbd" != none ]; then
       mkdir -p "$rbd/.rbd"
@@ -212,8 +213,7 @@ test_pretool_repositories() {
   assert_rc "non-RBD repository not checked" 0 "$(pretool "$r" 'git commit -m "docs: x"')"
   # Given an RBD project in a subdirectory (monorepo)
   r=$(new_repo mono plugins/p)
-  touch_file "$r" plugins/p/requirements/functional.md && touch_file "$r" requirements/functional.md
-  git -C "$r" add .
+  touch_file "$r" plugins/p/requirements/functional.md && git -C "$r" add .
   # Then plan file paths are relative to the RBD project
   assert_rc "subproject plan file checked" 2 "$(pretool "$r" 'git commit -m "docs: x"')"
   assert_contains "subproject path named" "plugins/p/requirements/functional.md" "$(cat "$WORK/err")"
